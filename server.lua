@@ -2,10 +2,6 @@ QBCore = nil
 
 TriggerEvent('QBCore:GetObject', function(obj) QBCore = obj end)
 
-local rainbowCards = { "rainbowmewtwogx", "rainbowvmaxcharizard", "rainbowvmaxpikachu", "snorlaxvmaxrainbow"}
-
-local basicTotal = #basicCards
-
 RegisterServerEvent('Cards:Server:rewarditem')
 AddEventHandler('Cards:Server:rewarditem', function()
     local Player = QBCore.Functions.GetPlayer(source)
