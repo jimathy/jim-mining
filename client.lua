@@ -312,126 +312,127 @@ end)
 --Selling Ore
 RegisterNetEvent('jim-mining:SellOre', function()
 	TriggerEvent('nh-context:sendMenu', {
-		{   id = 1, header = "Sell Batches of Ores for Cash",
-			txt = "", }, 
-        {   id = 2, header = "Copper Ore",
-            txt = "Sell ALL for $"..Config.SellItems['copperore'].." each",
-            params = { event = "jim-mining:SellOre:Copper",
-            args = { number = 1, id = 1 } } }, 
-		{   id = 3,	header = "Iron Ore",
-            txt = "Sell ALL at $"..Config.SellItems['ironore'].." each",
-            params = { event = "jim-mining:SellAnim",
-            args = { number = 1, id = 2 } } },
-		{   id = 4, header = "Gold Ore",
-            txt = "Sell ALL at $"..Config.SellItems['goldore'].." each",
-            params = { event = "jim-mining:SellAnim",
-			args = { number = 1, id = 3 } } },
-		{   id = 5, header = "Carbon",
-            txt = "Sell ALL at $"..Config.SellItems['goldore'].." each",
-            params = { event = "jim-mining:SellAnim",
-			args = { number = 1, id = 4 } } }, })
+	{   id = 1, header = "Sell Batches of Ores for Cash",
+		txt = "", }, 
+	{   id = 2, header = "Copper Ore",
+		txt = "Sell ALL at $"..Config.SellItems['copperore'].." each",
+		params = { event = "jim-mining:SellOre",
+		args = { number = 1, id = 1 } } }, 
+	{   id = 3,	header = "Iron Ore",
+		txt = "Sell ALL at $"..Config.SellItems['ironore'].." each",
+		params = { event = "jim-mining:SellOre",
+		args = { number = 1, id = 2 } } },
+	{   id = 4, header = "Gold Ore",
+		txt = "Sell ALL at $"..Config.SellItems['goldore'].." each",
+		params = { event = "jim-mining:SellOre",
+		args = { number = 1, id = 3 } } },
+	{   id = 5, header = "Carbon",
+		txt = "Sell ALL at $"..Config.SellItems['goldore'].." each",
+		params = { event = "jim-mining:SellOre",
+		args = { number = 1, id = 4 } } }, })
 end)
 --Jewel Selling
 RegisterNetEvent('jim-mining:JewelSeller', function()
     TriggerEvent('nh-context:sendMenu', {
-        {   id = 1, header = "Sell Emeralds",
-            txt = "Sell all Emeralds",
-            params = { event = "jim-mining:SellAnim",
-            args = { number = 1, id = 1 } } },
-        {   id = 2, header = "Sell Rubys",
-			txt = "Sells all Rubys",
-			params = { event = "jim-mining:SellAnim",
-				args = { number = 1, id = 2	} } },
-		{   id = 3, header = "Sell Diamonds",
-			txt = "Sells all Diamonds",
-			params = { event = "jim-mining:SellAnim",
-            args = { number = 1, id = 3 } } },
-		{   id = 4, header = "Sell Rings",
-			txt = "Sells all Rings",
-			params = { event = "jim-mining:SellAnim",
-            args = { number = 1, id = 4 } } }, })
+	{   id = 1, header = "Sell Emeralds",
+		txt = "Sell all Emeralds",
+		params = { event = "jim-mining:SellAnim",
+		args = { number = 1, id = 1 } } },
+	{   id = 2, header = "Sell Rubys",
+		txt = "Sells all Rubys",
+		params = { event = "jim-mining:SellAnim",
+			args = { number = 1, id = 2	} } },
+	{   id = 3, header = "Sell Diamonds",
+		txt = "Sells all Diamonds",
+		params = { event = "jim-mining:SellAnim",
+		args = { number = 1, id = 3 } } },
+	{   id = 4, header = "Sell Rings",
+		txt = "Sells all Rings",
+		params = { event = "jim-mining:SellAnim",
+		args = { number = 1, id = 4 } } }, })
 end)
 --Cutting Jewels
 RegisterNetEvent('jim-mining:JewelCut', function()
     TriggerEvent('nh-context:sendMenu', {
-	    {   id = 1, header = "Jewelry Cutting Bench",
-            txt = "", },
-        {   id = 2, header = "Cut Emerald",
-            txt = "Carefully cut to increase value",
-            params = { event = "jim-mining:CutStart",
-            args = { number = 1, id = 1 } } },
-        {   id = 3, header = "Cut Ruby",
-            txt = "Carefully cut to increase value",
-            params = { event = "jim-mining:CutStart",
-			args = { number = 1, id = 2	} } },
-		{   id = 4, header = "Cut Diamond",
-            txt = "Carefully cut to increase value",
-            params = { event = "jim-mining:CutStart",
-            args = { number = 1, id = 3 } } },
-		{   id = 5, header = "Make Rings",
-            txt = "Go to Ring Crafting Section",
-            params = { event = "jim-mining:JewelCut:Ring",
-            args = { number = 1, id = 4 } } }, })
+	{   id = 1, header = "Jewelry Cutting Bench",
+		txt = "", },
+	{   id = 2, header = "Cut Emerald",
+		txt = "Carefully cut to increase value",
+		params = { event = "jim-mining:CutStart",
+		args = { number = 1, id = 1 } } },
+	{   id = 3, header = "Cut Ruby",
+		txt = "Carefully cut to increase value",
+		params = { event = "jim-mining:CutStart",
+		args = { number = 1, id = 2	} } },
+	{   id = 4, header = "Cut Diamond",
+		txt = "Carefully cut to increase value",
+		params = { event = "jim-mining:CutStart",
+		args = { number = 1, id = 3 } } },
+	{   id = 5, header = "Make Rings",
+		txt = "Go to Ring Crafting Section",
+		params = { event = "jim-mining:JewelCut:Ring",
+		args = { number = 1, id = 4 } } }, })
 end)
 --Making rings > goes to and from the jewel cut menu
 RegisterNetEvent('jim-mining:JewelCut:Ring', function()
     TriggerEvent('nh-context:sendMenu', {
-		{   id = 1, header = "< Go Back",
-			txt = "",
-			params = { event = "jim-mining:JewelCut",
-			args = { number = 1, id = 1 } } },
-        {   id = 2, header = "Make Gold Ring",
-            txt = "Carefully cut to increase value",
-            params = { event = "jim-mining:CutStart",
-            args = { number = 1, id = 2 } } },
-        {   id = 3, header = "Make Emerald Ring",
-            txt = "Carefully cut to increase value",
-            params = { event = "jim-mining:CutStart",
-			args = { number = 1, id = 3	} } },
-		{   id = 4, header = "Make Ruby Ring",
-            txt = "Carefully cut to increase value",
-            params = { event = "jim-mining:CutStart",
-            args = { number = 1, id = 4 } } },
-		{   id = 5, header = "Make Diamond Ring",
-            txt = "Requires: 1 Drill - 1 Gold Ore",
-            params = { event = "jim-mining:CutStart",
-            args = { number = 1, id = 5 } } }, })
+	{   id = 1, header = "< Go Back",
+		txt = "",
+		params = { event = "jim-mining:JewelCut",
+		args = { number = 1, id = 1 } } },
+	{   id = 2, header = "Make Gold Ring",
+		txt = "Carefully cut to increase value",
+		params = { event = "jim-mining:CutStart",
+		args = { number = 1, id = 2 } } },
+	{   id = 3, header = "Make Emerald Ring",
+		txt = "Carefully cut to increase value",
+		params = { event = "jim-mining:CutStart",
+		args = { number = 1, id = 3	} } },
+	{   id = 4, header = "Make Ruby Ring",
+		txt = "Carefully cut to increase value",
+		params = { event = "jim-mining:CutStart",
+		args = { number = 1, id = 4 } } },
+	{   id = 5, header = "Make Diamond Ring",
+		txt = "Requires: 1 Drill - 1 Gold Ore",
+		params = { event = "jim-mining:CutStart",
+		args = { number = 1, id = 5 } } }, })
 end)
 
 --Smelting
 RegisterNetEvent('jim-mining:SmeltMenu', function()
     TriggerEvent('nh-context:sendMenu', {
-		{   id = 1, header = "Smelt Copper Ore",
-			txt = "Smelt Copper Ore into 10 Copper",
-			params = { event = "jim-mining:JewelCut",
-			args = { number = 1, id = 1 } } },
-        {   id = 2, header = "Smelt Gold",
-            txt = "Smelt 2 Gold Ore into 1 Gold Bar",
-            params = { event = "jim-mining:CutStart",
-            args = { number = 1, id = 2 } } },
-        {   id = 3, header = "Smelt Iron",
-            txt = "Smelt Iron Ore into Iron",
-            params = { event = "jim-mining:CutStart",
-			args = { number = 1, id = 3	} } },
-		{   id = 4, header = "Smelt Steel",
-            txt = "Smelt Iron and Carbon into Steel",
-            params = { event = "jim-mining:CutStart",
-            args = { number = 1, id = 4 } } }, })
+	{   id = 1, header = "Smelt Copper Ore",
+		txt = "Smelt Copper Ore into 10 Copper",
+		params = { event = "jim-mining:JewelCut",
+		args = { number = 1, id = 1 } } },
+	{   id = 2, header = "Smelt Gold",
+		txt = "Smelt 2 Gold Ore into 1 Gold Bar",
+		params = { event = "jim-mining:CutStart",
+		args = { number = 1, id = 2 } } },
+	{   id = 3, header = "Smelt Iron",
+		txt = "Smelt Iron Ore into Iron",
+		params = { event = "jim-mining:CutStart",
+		args = { number = 1, id = 3	} } },
+	{   id = 4, header = "Smelt Steel",
+		txt = "Smelt Iron and Carbon into Steel",
+		params = { event = "jim-mining:CutStart",
+		args = { number = 1, id = 4 } } }, })
 end)
 
 
-RegisterNetEvent('jim-mining:SellOre:Copper')
+--[[RegisterNetEvent('jim-mining:SellOre:Copper')
 AddEventHandler('jim-mining:SellOre:Copper',function(data)
 	TriggerEvent('QBCore:Notify',source,"test "..data.id)
 	QBCore.Functions.TriggerCallback("jim-mining:CopperCheck", function(amount) 
 		if amount then 
 			CopperSell()
 		else 
-			QBCore.Functions.Notify("You don't have any Copper", "error")
+			QBCore.Functions.Notify("You don't have any Copper Ore", "error")
 		end
 	end)
 end)
 
 function CopperSell()
 	TriggerServerEvent('jim-mining:Sellcopper')
-end
+	TriggerNetEvent('jim-mining:SellAnim')
+end]]

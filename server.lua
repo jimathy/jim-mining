@@ -21,7 +21,7 @@ AddEventHandler('jim-mining:CrackReward', function()
     TriggerClientEvent("inventory:client:ItemBox", source, QBCore.Shared.Items[RewardPool[oreToGive]], "add", amount)
 end)
 
-RegisterServerEvent('jim-mining:OreCheck')
+--[[RegisterServerEvent('jim-mining:OreCheck')
 AddEventHandler('jim-mining:OreCheck', function()
     local src = source
 	local Player = QBCore.Functions.GetPlayer(source)
@@ -45,4 +45,23 @@ AddEventHandler('jim-mining:Sellcopper', function()
     local src = source 
     local Player = QBCore.Functions.GetPlayer(src) 
     TriggerClientEvent('inventory:client:ItemBox', source, QBCore.Shared.Items['copperore'], "remove", 1)
+end)]]
+
+RegisterNetEvent('jim-mining:SellOre')
+AddEventHandler('jim-mining:SellOre', function(data)
+    local src = source
+	local Player = QBCore.Functions.GetPlayer(source)
+	if data.id == 1 then
+		local Ore = Player.Functions.GetItemByName("copperore")
+	if data.id == 2 then
+	    local Ore = Player.Functions.GetItemByName("ironore")
+	if data.id == 3 then
+		local Ore = Player.Functions.GetItemByName("goldore")
+	if data.id == 4 then
+		local Ore = Player.Functions.GetItemByName("carbon")
+	end
+	
+    TriggerClientEvent("inventory:client:ItemBox", source, QBCore.Shared.Items[Ore], "remove", Ore.amount)
+	
+	TriggerNetEvent('jim-mining:SellAnim')
 end)
