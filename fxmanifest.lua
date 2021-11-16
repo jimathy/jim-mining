@@ -6,15 +6,15 @@ game "gta5"
 
 dependencies {
 	'nh-context',
-    'bt-target',
+	'bt-target',
 }
 
 client_scripts {
-    'client.lua',
-    'config.lua',
+	'client.lua',
+	'config.lua',
 }
 
 server_script {
-    'server.lua',
-    'config.lua',
+	'server.lua',
+	'config.lua',
 }
