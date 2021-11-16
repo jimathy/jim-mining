@@ -122,6 +122,9 @@ function CreateProps()
 		--SetEntityHeading(prop,GetEntityHeading(prop)-90)
 		FreezeEntityPosition(prop, true)           
     end
+	local bench = CreateObject(GetHashKey("prop_rock_2_a"),v.coords,false,false,false)
+	SetEntityHeading(bench,GetEntityHeading(bench)-90)
+	FreezeEntityPosition(bench, true)  
 end
 
 -----------------------------------------------------------
@@ -135,22 +138,31 @@ Citizen.CreateThread(function()
 	{ options = { { event = "jim-mining:exitMine", icon = "fas fa-certificate", label = "Leave Mine", }, },
 		job = {"all"}, distance = 1.5
 	})
+	--Smelter to turn stone into ore
 	exports['bt-target']:AddCircleZone("Smelter", Config.Locations['Smelter'].location, 3.0, { name="Smelter", debugPoly=false, useZ=true, }, 
 	{ options = { { event = "", icon = "fas fa-certificate", label = "Use Smelter", }, },
 		job = {"all"}, distance = 10.0
 	})
+	--Ore Buyer
 	exports['bt-target']:AddCircleZone("Buyer", Config.Locations['Buyer'].location, 2.0, { name="Buyer", debugPoly=false, useZ=true, }, 
-	{ options = { { event = "", icon = "fas fa-certificate", label = "Sell Ore", },
-			      { event = "", icon = "fas fa-certificate", label = "Sell Ore", },
-				  { event = "", icon = "fas fa-certificate", label = "Sell Ore", },
-				  { event = "", icon = "fas fa-certificate", label = "Sell Ore", },
-				  { event = "", icon = "fas fa-certificate", label = "Sell Ore", },	},
+	{ options = { { event = "", icon = "fas fa-certificate", label = "Talk to Ore Buyer", },	},
+		job = {"all"}, distance = 1.5
+	})
+	--Jewel Cutting Bench
+	exports['bt-target']:AddCircleZone("JewelCut", Config.Locations['JewelCut'].location, 2.0, { name="JewelCut", debugPoly=false, useZ=true, }, 
+	{ options = { { event = "", icon = "fas fa-certificate", label = "Use Jewel Cutting Bench", },	},
+		job = {"all"}, distance = 1.5
+	})
+	--Jewel Buyer
+	exports['bt-target']:AddCircleZone("JewelBuyer", Config.Locations['Buyer2'].location, 2.0, { name="JewelBuyer", debugPoly=false, useZ=true, }, 
+	{ options = { { event = "", icon = "fas fa-certificate", label = "Talk To Jewel Buyer", },	},
 		job = {"all"}, distance = 1.5
 	})
 end)
 
 -----------------------------------------------------------
 
+--Teleporters for mineshaft doors
 RegisterNetEvent('jim-mining:enterMine')
 AddEventHandler('jim-mining:enterMine', function ()
     DoScreenFadeOut(500)
@@ -177,6 +189,7 @@ end)
 
 -----------------------------------------------------------
 
+--Ore Usage 3D Text's
 Citizen.CreateThread(function()
     local pos = GetEntityCoords(GetPlayerPed(-1))
 	for k, v in pairs(Config.OrePositions) do
@@ -192,5 +205,81 @@ Citizen.CreateThread(function()
 				end  
 			end
 		end
+	end
+end)
+
+------------------------------------------------------------
+
+
+function JewelCutting(menu)
+		_menuPool = NativeUI.CreatePool()
+		mainMenu = NativeUI.CreateMenu("", "Cut your jewels", "", "", "shopui_title_exec_vechupgrade", "shopui_title_exec_vechupgrade")
+		_menuPool:Add(mainMenu)
+
+		_menuPool:ControlDisablingEnabled(false)
+		_menuPool:MouseControlsEnabled(false)
+
+		Emerald = NativeUI.CreateItem("Emerald", "")
+		Ruby = NativeUI.CreateItem("Ruby", "")
+		Diamond = NativeUI.CreateItem("Diamond", "")
+
+		menu:AddItem(Emerald)
+		menu:AddItem(Ruby)
+		menu:AddItem(Diamond)
+		menu.OnItemSelect = function(sender, item, index)
+		
+		if item == Emerald then
+			--TriggerServerEvent('')
+		elseif item == Ruby then
+			--TriggerServerEvent('')
+		elseif item == Diamond then
+			--TriggerServerEvent('')
+		end
+	end   
+end
+
+function OreSeller(menu)
+		_menuPool = NativeUI.CreatePool()
+		mainMenu = NativeUI.CreateMenu("", "Sell your ores for Cash", "", "", "shopui_title_exec_vechupgrade", "shopui_title_exec_vechupgrade")
+		_menuPool:Add(mainMenu)
+
+		_menuPool:ControlDisablingEnabled(false)
+		_menuPool:MouseControlsEnabled(false)
+
+		CopperOre = NativeUI.CreateItem("Copper Ore - $"..Config.SellItems['copperore'].amount.." each", "")
+		IronOre = NativeUI.CreateItem("Iron Ore $"..Config.SellItems['copperore'].amount.." each", "")
+		GoldOre = NativeUI.CreateItem("Gold Ore $"..Config.SellItems['copperore'].amount.." each", "")
+		TinOre = NativeUI.CreateItem("Tin Ore $"..Config.SellItems['copperore'].amount.." each", "")
+		Coal = NativeUI.CreateItem("Coal $"..Config.SellItems['copperore'].amount.." each", "")
+
+		menu:AddItem(CopperOre)
+		menu:AddItem(IronOre)
+		menu:AddItem(GoldOre)
+		menu:AddItem(TinOre)
+		menu:AddItem(Coal)
+		
+		menu.OnItemSelect = function(sender, item, index)
+		
+		if item == CopperOre then
+			--TriggerServerEvent('')
+		elseif item == IronOre then
+			--TriggerServerEvent('')
+		elseif item == GoldOre then
+			--TriggerServerEvent('')
+		elseif item == TinOre then
+			--TriggerServerEvent('')
+		elseif item == Coal then
+			--TriggerServerEvent('')
+		end
+	end   
+end
+
+OreSeller(mainMenu)
+_menuPool:RefreshIndex()
+
+Citizen.CreateThread(function()
+	while true do
+		Citizen.Wait(1)
+		_menuPool:ProcessMenus()
 	end
 end)

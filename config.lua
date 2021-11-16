@@ -24,6 +24,8 @@ Config.Locations =  {
 	['MineLeave'] = { name = "Leave Mine", location = vector3(758.87,-816.09,26.29), heading = 100.0, blipTrue = false }, -- The location where you enter the mine 
 	['Smelter'] = {	name = "Smelter", location = vector3(758.87,-816.09,26.29), blipTrue = true }, -- The location of the smelter
 	['Buyer'] = { name = "Ore Buyer", location = vector3(758.87,-816.09,26.29), blipTrue = true}, -- The Location of the ore buyer
+	['JewelCut'] = { name = "Jewel Cutting", location = vector3(758.87,-816.09,26.29), blipTrue = false}, -- The Location of the jewel buyer, most likely leave this as Vangelico Jeweler
+	['Buyer2'] = { name = "Jewel Buyer", location = vector3(758.87,-816.09,26.29), blipTrue = false}, -- The Location of the jewel buyer, most likely leave this as Vangelico Jeweler
 }
 
 ------------------------------------------------------------
@@ -42,6 +44,23 @@ Config.OrePositions = {
 	{ coords = vector3(-531.41, 5419.53, 63.35-0.97), },
 },
 
+-----------------------------------------------------------
+--Mining rewards stone
+Config.MineReward = "stone"
+
+--Smelting rewards ores/diamonds
+--Need to find a better way to do random chance.
+--Easiest way seems to add multiples to this section. More names, more chance to drop them.
+Config.RewardPool = {
+	'copperore', 'copperore', 'copperore', 'copperore', 'copperore', 'copperore', -- 6x
+	'goldore', 'goldore', 'goldore', -- 3x
+	'ironore', 'ironore', 'ironore', 'ironore', 'ironore', 'ironore', -- 6x
+	'tinore', 'tinore', 'tinore', 'tinore', 'tinore', 'tinore', 'tinore', 'tinore', 'tinore', -- 9x
+	'coal', 'coal', 'coal', 'coal', 'coal', 'coal', 'coal', 'coal', 'coal', 'coal', --10x
+	'uncut_ruby',
+	'uncut_emerald',
+	'uncut_diamond',
+}
 ------------------------------------------------------------
 Config.SellItems = { -- Not working on yet
 	['copperore'] = 100,
