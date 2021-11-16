@@ -10,18 +10,6 @@ AddEventHandler('jim-mining:MineReward', function()
     TriggerClientEvent("inventory:client:ItemBox", source, QBCore.Shared.Items["stone"], "add", randomChance)
 end)
 
---Not sure why, but had to put the reward pool here as it claimed the Config version was NIL
-RewardPool = {
-	'copperore', 'copperore', 'copperore', 'copperore', 'copperore', 'copperore', -- 6x
-	'goldore', 'goldore', 'goldore', -- 3x
-	'ironore', 'ironore', 'ironore', 'ironore', 'ironore', 'ironore', -- 6x
-	--'tinore', 'tinore', 'tinore', 'tinore', 'tinore', 'tinore', 'tinore', 'tinore', 'tinore', -- 9x
-	--'coal', 'coal', 'coal', 'coal', 'coal', 'coal', 'coal', 'coal', 'coal', 'coal', --10x
-	--'uncut_ruby',
-	--'uncut_emerald',
-	--'uncut_diamond',
-}
-
 RegisterServerEvent('jim-mining:CrackReward')
 AddEventHandler('jim-mining:CrackReward', function()
     local Player = QBCore.Functions.GetPlayer(source)
@@ -31,4 +19,30 @@ AddEventHandler('jim-mining:CrackReward', function()
     local amount = math.random(1, 2)
     Player.Functions.AddItem(RewardPool[oreToGive], amount)
     TriggerClientEvent("inventory:client:ItemBox", source, QBCore.Shared.Items[RewardPool[oreToGive]], "add", amount)
+end)
+
+RegisterServerEvent('jim-mining:OreCheck')
+AddEventHandler('jim-mining:OreCheck', function()
+    local src = source
+	local Player = QBCore.Functions.GetPlayer(source)
+    local Ore = Player.Functions.GetItemByName("copperore")
+    TriggerClientEvent("inventory:client:ItemBox", source, QBCore.Shared.Items[Ore], "remove", Ore.amount)
+end)
+
+QBCore.Functions.CreateCallback('jim-mining:CopperCheck',function(source, cb)
+    local src = source 
+    local Player = QBCore.Functions.GetPlayer(src)
+    local Copper = Player.Functions.GetItemByName('copperore')
+    if Copper then 
+        cb(true)
+    else 
+        cb(false)
+    end
+end)
+
+RegisterServerEvent('jim-mining:Sellcopper')
+AddEventHandler('jim-mining:Sellcopper', function()
+    local src = source 
+    local Player = QBCore.Functions.GetPlayer(src) 
+    TriggerClientEvent('inventory:client:ItemBox', source, QBCore.Shared.Items['copperore'], "remove", 1)
 end)

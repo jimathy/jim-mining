@@ -33,9 +33,8 @@ Config = {
 -- Mine and Mine Leave have headings for the player locations
 Config.Locations =  {
 	['Mine'] = { name = "Mine", location = vector3(-595.15,2091.23,131.46-1.03), heading = 61.59, blipTrue = true }, -- The location where you enter the mine 
-	['MineLeave'] = { name = "Leave Mine", location = vector3(-594.88,2087.71,131.5-1.03), heading = 169.83, blipTrue = false }, -- The location where you enter the mine 
 	['Smelter'] = {	name = "Smelter", location = vector3(1112.29, -2009.9, 31.46), blipTrue = true }, -- The location of the smelter
-	['Cracking'] = {	name = "Stone Cracking", location = vector3(1109.27,-1992.68,30.99-1.03), heading = 305.0-180.0, blipTrue = false }, -- The location of the smelter
+	['Cracking'] = { name = "Stone Cracking", location = vector3(1109.27,-1992.68,30.99-1.03), heading = 305.0-180.0, blipTrue = false }, -- The location of the smelter
 	['Buyer'] = { name = "Ore Buyer", location = vector3(1085.7,-2001.04,31.41-1.03), heading = 323.73, blipTrue = false }, -- The Location of the ore buyer
 	['JewelCut'] = { name = "Jewel Cutting", location = vector3(1077.24, -1984.22, 31.0-0.97), heading = 300.0, blipTrue = false }, -- The Location of the jewel buyer, most likely leave this as Vangelico Jeweler
 	['Buyer2'] = { name = "Jewel Buyer", location = vector3(-629.85, -240.31, 38.16-1.03), heading = 105.74, blipTrue = false }, -- The Location of the jewel buyer, most likely leave this as Vangelico Jeweler
@@ -55,13 +54,12 @@ Config.OrePositions = {
 --Mining rewards stone
 Config.MineReward = { "stone" }
 
---Smelting rewards ores/diamonds
---Need to find a better way to do random chance.
---Easiest way seems to add multiples to this section. More names, more chance to drop them.
 Config.RewardPool = {
 	'copperore', 'copperore', 'copperore', 'copperore', 'copperore', 'copperore', -- 6x
-	'goldore', 'goldore', 'goldore', -- 3x
+	'goldore', 'goldore', -- 3x
 	'ironore', 'ironore', 'ironore', 'ironore', 'ironore', 'ironore', -- 6x
+    'carbon', 'carbon', 'carbon', 'carbon', --4x
+    'metalscrap',
 	--'tinore', 'tinore', 'tinore', 'tinore', 'tinore', 'tinore', 'tinore', 'tinore', 'tinore', -- 9x
 	--'coal', 'coal', 'coal', 'coal', 'coal', 'coal', 'coal', 'coal', 'coal', 'coal', --10x
 	--'uncut_ruby',
@@ -88,7 +86,6 @@ Config.Distance = 40.0 --The distance you want peds to spawn at
 
 Config.PedList = { -- APPARENTLY You can call config locations IN the config, learn't that one today
 	{ model = "S_M_Y_Construct_01", coords = Config.Locations['Mine'].location, heading = Config.Locations['Mine'].heading, gender = "male", scenario = "WORLD_HUMAN_CLIPBOARD", }, -- Outside Mine
-	{ model = "S_M_Y_Construct_02", coords = Config.Locations['MineLeave'].location, heading = Config.Locations['MineLeave'].heading, gender = "male", scenario = "WORLD_HUMAN_CLIPBOARD", }, -- Inside Mine
 	{ model = "S_M_Y_Construct_01", coords = Config.Locations['Buyer'].location, heading = Config.Locations['Buyer'].heading, gender = "male", scenario = "WORLD_HUMAN_CLIPBOARD", }, -- Ore Buyer
 	{ model = "S_M_M_HighSec_03", coords = Config.Locations['Buyer2'].location, heading = Config.Locations['Buyer2'].heading, gender = "male", scenario = "WORLD_HUMAN_CLIPBOARD", }, -- Jewel Buyer
 }
@@ -104,4 +101,27 @@ Config.MineLights = {
 	{ coords = vector3(-583.94, 2041.11, 129.11+1.73), },
 	{ coords = vector3(-577.49, 2030.93, 128.24+1.73), },
 	{ coords = vector3(-567.83, 2020.27, 127.58+1.73), },
+}
+
+------------------------------------------------------------
+--Mining Store Items
+Config.Items = {
+    label = "Mining Store",  slots = 4,
+    items = {
+	[1] = { name = "water_bottle",
+			price = 0, amount = 100,
+			info = {}, type = "item",
+			slot = 1, },
+	[2] = { name = "sandwich",
+			price = 0, amount = 250,
+			info = {}, type = "item",
+			slot = 2, },
+	[3] = { name = "bandage",
+			price = 0, amount = 100,
+			info = {}, type = "item",
+			slot = 3, },
+	[4] = { name = "weapon_flashlight",
+			price = 0, amount = 1,
+			info = {}, type = "item",
+			slot = 4, }, }
 }

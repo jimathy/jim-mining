@@ -139,53 +139,59 @@ function CreateProps()
     end
 	for k,v in pairs(Config.MineLights) do
 		prop = prop+1
-		local prop = CreateObject(GetHashKey("xs_prop_arena_lights_ceiling_l_c"),v.coords.x,false,false,false)
+		local prop = CreateObject(GetHashKey("xs_prop_arena_lights_ceiling_l_c"),v.coords.x, v.coords.y, v.coords.z+1.03,false,false,false)
 		--SetEntityHeading(prop,GetEntityHeading(prop)-90)
 		FreezeEntityPosition(prop, true)           
     end
+	--Jewel Cutting Bench
 	local bench = CreateObject(GetHashKey("gr_prop_gr_bench_04b"),Config.Locations['JewelCut'].location,false,false,false)
 	SetEntityHeading(bench,GetEntityHeading(bench)-Config.Locations['JewelCut'].heading)
 	FreezeEntityPosition(bench, true)
+
+	--Stone Cracking Bench
 	local bench2 = CreateObject(GetHashKey("prop_tool_bench02"),Config.Locations['Cracking'].location,false,false,false)
 	SetEntityHeading(bench2,GetEntityHeading(bench2)-Config.Locations['Cracking'].heading)
 	FreezeEntityPosition(bench2, true)
+	--Stone Prop for bench
+	local bench2prop = CreateObject(GetHashKey("cs_x_rubweec"),Config.Locations['Cracking'].location.x, Config.Locations['Cracking'].location.y, Config.Locations['Cracking'].location.z+0.83,false,false,false)
+	SetEntityHeading(bench2prop,GetEntityHeading(bench2prop)-Config.Locations['Cracking'].heading+90)
+	FreezeEntityPosition(bench2prop, true)
+	local bench2prop2 = CreateObject(GetHashKey("prop_worklight_03a"),Config.Locations['Cracking'].location.x-1.4, Config.Locations['Cracking'].location.y+1.08, Config.Locations['Cracking'].location.z,false,false,false)
+	SetEntityHeading(bench2prop2,GetEntityHeading(bench2prop2)-Config.Locations['Cracking'].heading+180)
+	FreezeEntityPosition(bench2prop2, true)
 end
 
 -----------------------------------------------------------
 
 Citizen.CreateThread(function()
 	exports['bt-target']:AddCircleZone("MineStart", Config.Locations['Mine'].location, 2.0, { name="MineStart", debugPoly=false, useZ=true, }, 
-	{ options = { { event = "jim-mining:enterMine", icon = "fas fa-certificate", label = "Enter Mine", }, },
-		job = {"all"}, distance = 1.5
-	})
-	exports['bt-target']:AddCircleZone("MineLeave", Config.Locations['MineLeave'].location, 2.0, { name="MineLeave", debugPoly=false, useZ=true, }, 
-	{ options = { { event = "jim-mining:exitMine", icon = "fas fa-certificate", label = "Leave Mine", }, },
-		job = {"all"}, distance = 1.5
+	{ options = { { event = "jim-mining:openShop", icon = "fas fa-certificate", label = "Browse Store", }, },
+		job = {"all"}, distance = 2.0
 	})
 	--Smelter to turn stone into ore
 	exports['bt-target']:AddCircleZone("Smelter", Config.Locations['Smelter'].location, 3.0, { name="Smelter", debugPoly=false, useZ=true, }, 
-	{ options = { { event = "jim-mining:SmeltStart", icon = "fas fa-certificate", label = "Use Smelter", }, },
+	{ options = { { event = "jim-mining:SmeltMenu", icon = "fas fa-certificate", label = "Use Smelter", }, },
 		job = {"all"}, distance = 10.0
 	})
 	--Ore Buyer
 	exports['bt-target']:AddCircleZone("Buyer", Config.Locations['Buyer'].location, 2.0, { name="Buyer", debugPoly=false, useZ=true, }, 
-	{ options = { { event = "", icon = "fas fa-certificate", label = "Talk to Ore Buyer", },	},
-		job = {"all"}, distance = 1.5
+	{ options = { { event = "jim-mining:SellOre", icon = "fas fa-certificate", label = "Sell Ores", },	},
+		job = {"all"}, distance = 2.0
 	})
 	--Jewel Cutting Bench
 	exports['bt-target']:AddCircleZone("JewelCut", Config.Locations['JewelCut'].location, 2.0, { name="JewelCut", debugPoly=false, useZ=true, }, 
-	{ options = { { event = "", icon = "fas fa-certificate", label = "Use Jewel Cutting Bench", },	},
-		job = {"all"}, distance = 1.5
+	{ options = { { event = "jim-mining:JewelCut", icon = "fas fa-certificate", label = "Use Jewel Cutting Bench", },	},
+		job = {"all"}, distance = 2.0
 	})
 	--Jewel Buyer
 	exports['bt-target']:AddCircleZone("JewelBuyer", Config.Locations['Buyer2'].location, 2.0, { name="JewelBuyer", debugPoly=false, useZ=true, }, 
-	{ options = { { event = "", icon = "fas fa-certificate", label = "Talk To Jewel Buyer", },	},
-		job = {"all"}, distance = 1.5
+	{ options = { { event = "jim-mining:JewelSeller", icon = "fas fa-certificate", label = "Talk To Jewel Buyer", },	},
+		job = {"all"}, distance = 2.0
 	})
 	--Cracking Bench
 	exports['bt-target']:AddCircleZone("CrackingBench", Config.Locations['Cracking'].location, 2.0, { name="CrackingBench", debugPoly=false, useZ=true, }, 
 	{ options = { { event = "jim-mining:CrackStart", icon = "fas fa-certificate", label = "Use Cracking Bench", },	},
-		job = {"all"}, distance = 1.5
+		job = {"all"}, distance = 2.0
 	})
 	local ore = 0
 	for k,v in pairs(Config.OrePositions) do
@@ -198,40 +204,21 @@ Citizen.CreateThread(function()
 end)
 
 -----------------------------------------------------------
-
---Teleporters for mineshaft doors
-RegisterNetEvent('jim-mining:enterMine')
-AddEventHandler('jim-mining:enterMine', function ()
-    DoScreenFadeOut(500)
-        while not IsScreenFadedOut() do
-            Citizen.Wait(10)
-        end
-        SetEntityCoords(PlayerPedId(), 
-									Config.Locations['MineLeave'].location.x+0.2,
-									Config.Locations['MineLeave'].location.y-0.3,
-									Config.Locations['MineLeave'].location.z, 0, 0, 0, false)
-        SetEntityHeading(PlayerPedId(), Config.Locations['MineLeave'].heading)
-        Citizen.Wait(100)
-    DoScreenFadeIn(1000)
+--Mining Store Opening
+RegisterNetEvent('jim-mining:openShop')
+AddEventHandler('jim-mining:openShop', function ()
+	TriggerServerEvent("inventory:server:OpenInventory", "shop", "mine", Config.Items)
 end)
-
-RegisterNetEvent('jim-mining:exitMine')
-AddEventHandler('jim-mining:exitMine', function ()
-    DoScreenFadeOut(500)
-        while not IsScreenFadedOut() do
-            Citizen.Wait(10)
-        end
-        SetEntityCoords(PlayerPedId(), 
-									Config.Locations['Mine'].location.x-0.2,
-									Config.Locations['Mine'].location.y+0.3,
-									Config.Locations['Mine'].location.z, 0, 0, 0, false)
-        SetEntityHeading(PlayerPedId(), Config.Locations['Mine'].heading)
-        Citizen.Wait(100)
-    DoScreenFadeIn(1000)
-end)
-
 ------------------------------------------------------------
 -- Mine Ore Command / Animations
+
+function loadAnimDict( dict )
+    while ( not HasAnimDictLoaded( dict ) ) do
+        RequestAnimDict( dict )
+        Citizen.Wait( 5 )
+    end
+end 
+
 RegisterNetEvent('jim-mining:MineOre')
 AddEventHandler('jim-mining:MineOre', function ()
 	local pos = GetEntityCoords(GetPlayerPed(-1))
@@ -263,184 +250,188 @@ AddEventHandler('jim-mining:MineOre', function ()
 	end)
 end)
 
-function loadAnimDict( dict )
-    while ( not HasAnimDictLoaded( dict ) ) do
-        RequestAnimDict( dict )
-        Citizen.Wait( 5 )
-    end
-end 
 ------------------------------------------------------------
+
 -- Smelt Command / Animations
 RegisterNetEvent('jim-mining:CrackStart')
 AddEventHandler('jim-mining:CrackStart', function ()
 	local pos = GetEntityCoords(GetPlayerPed(-1))
-	--loadAnimDict("anim@heists@fleeca_bank@drilling")
-	--TaskPlayAnim(GetPlayerPed(-1), 'anim@heists@fleeca_bank@drilling', 'drill_straight_idle' , 3.0, 3.0, -1, 1, 0, false, false, false)
-	--local pos = GetEntityCoords(GetPlayerPed(-1), true)
-	--local DrillObject = CreateObject(GetHashKey("hei_prop_heist_drill"), pos.x, pos.y, pos.z, true, true, true)
-	--AttachEntityToEntity(DrillObject, GetPlayerPed(-1), GetPedBoneIndex(GetPlayerPed(-1), 57005), 0.14, 0, -0.01, 90.0, -90.0, 180.0, true, true, false, true, 1, true)
-
+	loadAnimDict('amb@prop_human_parking_meter@male@idle_a')
+	TaskPlayAnim(GetPlayerPed(-1), 'amb@prop_human_parking_meter@male@idle_a', 'idle_a' , 3.0, 3.0, -1, 1, 0, false, false, false)
 	QBCore.Functions.Progressbar("open_locker_drill", "Cracking Stone..", math.random(10000,15000), false, true, {
 		disableMovement = true,
 		disableCarMovement = true,
 		disableMouse = false,
 		disableCombat = true,
 	}, {}, {}, {}, function() -- Done
-		--StopAnimTask(GetPlayerPed(-1), "anim@heists@fleeca_bank@drilling", "drill_straight_idle", 1.0)
-		--DetachEntity(DrillObject, true, true)
-		--DeleteObject(DrillObject)
+		StopAnimTask(GetPlayerPed(-1), 'amb@prop_human_parking_meter@male@idle_a', 'idle_a', 1.0)
 			TriggerServerEvent('jim-mining:CrackReward')
 			QBCore.Functions.Notify("Success!", "success")
 			IsDrilling = false
 	end, function() -- Cancel
-		--StopAnimTask(GetPlayerPed(-1), "anim@heists@fleeca_bank@drilling", "drill_straight_idle", 1.0)
-		--TriggerServerEvent('qb-bankrobbery:server:setLockerState', bankId, lockerId, 'isBusy', false)
-		--DetachEntity(DrillObject, true, true)
-		--DeleteObject(DrillObject)
+		StopAnimTask(GetPlayerPed(-1), 'amb@prop_human_parking_meter@male@idle_a', 'idle_a', 1.0)
 		QBCore.Functions.Notify("Cancelled..", "error")
 		IsDrilling = false
 	end)
 end)
 
-function loadAnimDict( dict )
-    while ( not HasAnimDictLoaded( dict ) ) do
-        RequestAnimDict( dict )
-        Citizen.Wait( 5 )
-    end
-end 
+-- Smelt Command / Animations
+RegisterNetEvent('jim-mining:CutStart')
+AddEventHandler('jim-mining:CutStart', function ()
+	local pos = GetEntityCoords(GetPlayerPed(-1))
+	loadAnimDict('amb@prop_human_parking_meter@male@idle_a')
+	TaskPlayAnim(GetPlayerPed(-1), 'amb@prop_human_parking_meter@male@idle_a', 'idle_a' , 3.0, 3.0, -1, 1, 0, false, false, false)
+	QBCore.Functions.Progressbar("open_locker_drill", "Cutting..", math.random(10000,15000), false, true, {
+		disableMovement = true,
+		disableCarMovement = true,
+		disableMouse = false,
+		disableCombat = true,
+	}, {}, {}, {}, function() -- Done
+		StopAnimTask(GetPlayerPed(-1), 'amb@prop_human_parking_meter@male@idle_a', 'idle_a', 1.0)
+			--TriggerServerEvent('jim-mining:CrackReward')
+			QBCore.Functions.Notify("Success!", "success")
+			IsDrilling = false
+	end, function() -- Cancel
+		StopAnimTask(GetPlayerPed(-1), 'amb@prop_human_parking_meter@male@idle_a', 'idle_a', 1.0)
+		QBCore.Functions.Notify("Cancelled..", "error")
+		IsDrilling = false
+	end)
+end)
 ------------------------------------------------------------
---[[_JewelPool = NativeUI.CreatePool()
-JewelMenu = NativeUI.CreateMenu("", "Cut your jewels", "", "", "shopui_title_exec_vechupgrade", "shopui_title_exec_vechupgrade")
-_JewelPool:Add(JewelMenu)
-
-_JewelPool:ControlDisablingEnabled(false)
-_JewelPool:MouseControlsEnabled(false)
-
-function JewelCutting(menu)
-		Emerald = NativeUI.CreateItem("Emerald", "")
-		Ruby = NativeUI.CreateItem("Ruby", "")
-		Diamond = NativeUI.CreateItem("Diamond", "")
-
-		menu:AddItem(Emerald)
-		menu:AddItem(Ruby)
-		menu:AddItem(Diamond)
-		menu.OnItemSelect = function(sender, item, index)
-		
-		if item == Emerald then
-			--TriggerServerEvent('')
-		elseif item == Ruby then
-			--TriggerServerEvent('')
-		elseif item == Diamond then
-			--TriggerServerEvent('')
-		end
-	end   
-end
-
-
-JewelCutting(JewelMenu)
-_JewelPool:RefreshIndex()
-
-Citizen.CreateThread(function()
-	while true do
-		Citizen.Wait(1)
-		_JewelPool:ProcessMenus()
-	end
+--Sell Anim small Test
+RegisterNetEvent('jim-mining:SellAnim')
+AddEventHandler('jim-mining:SellAnim', function(data)
+	local pid = PlayerPedId()
+	loadAnimDict("mp_common")
+	TaskPlayAnim(pid, "mp_common", "givetake2_a", 100.0, 200.0, 0.3, 120, 0.2, 0, 0, 0)
+	Wait(1500)
+	StopAnimTask(pid, "mp_common", "givetake2_a", 1.0)
+end)
+------------------------------------------------------------
+--Context Menus
+--Selling Ore
+RegisterNetEvent('jim-mining:SellOre', function()
+	TriggerEvent('nh-context:sendMenu', {
+		{   id = 1, header = "Sell Batches of Ores for Cash",
+			txt = "", }, 
+        {   id = 2, header = "Copper Ore",
+            txt = "Sell ALL for $"..Config.SellItems['copperore'].." each",
+            params = { event = "jim-mining:SellOre:Copper",
+            args = { number = 1, id = 1 } } }, 
+		{   id = 3,	header = "Iron Ore",
+            txt = "Sell ALL at $"..Config.SellItems['ironore'].." each",
+            params = { event = "jim-mining:SellAnim",
+            args = { number = 1, id = 2 } } },
+		{   id = 4, header = "Gold Ore",
+            txt = "Sell ALL at $"..Config.SellItems['goldore'].." each",
+            params = { event = "jim-mining:SellAnim",
+			args = { number = 1, id = 3 } } },
+		{   id = 5, header = "Carbon",
+            txt = "Sell ALL at $"..Config.SellItems['goldore'].." each",
+            params = { event = "jim-mining:SellAnim",
+			args = { number = 1, id = 4 } } }, })
+end)
+--Jewel Selling
+RegisterNetEvent('jim-mining:JewelSeller', function()
+    TriggerEvent('nh-context:sendMenu', {
+        {   id = 1, header = "Sell Emeralds",
+            txt = "Sell all Emeralds",
+            params = { event = "jim-mining:SellAnim",
+            args = { number = 1, id = 1 } } },
+        {   id = 2, header = "Sell Rubys",
+			txt = "Sells all Rubys",
+			params = { event = "jim-mining:SellAnim",
+				args = { number = 1, id = 2	} } },
+		{   id = 3, header = "Sell Diamonds",
+			txt = "Sells all Diamonds",
+			params = { event = "jim-mining:SellAnim",
+            args = { number = 1, id = 3 } } },
+		{   id = 4, header = "Sell Rings",
+			txt = "Sells all Rings",
+			params = { event = "jim-mining:SellAnim",
+            args = { number = 1, id = 4 } } }, })
+end)
+--Cutting Jewels
+RegisterNetEvent('jim-mining:JewelCut', function()
+    TriggerEvent('nh-context:sendMenu', {
+	    {   id = 1, header = "Jewelry Cutting Bench",
+            txt = "", },
+        {   id = 2, header = "Cut Emerald",
+            txt = "Carefully cut to increase value",
+            params = { event = "jim-mining:CutStart",
+            args = { number = 1, id = 1 } } },
+        {   id = 3, header = "Cut Ruby",
+            txt = "Carefully cut to increase value",
+            params = { event = "jim-mining:CutStart",
+			args = { number = 1, id = 2	} } },
+		{   id = 4, header = "Cut Diamond",
+            txt = "Carefully cut to increase value",
+            params = { event = "jim-mining:CutStart",
+            args = { number = 1, id = 3 } } },
+		{   id = 5, header = "Make Rings",
+            txt = "Go to Ring Crafting Section",
+            params = { event = "jim-mining:JewelCut:Ring",
+            args = { number = 1, id = 4 } } }, })
+end)
+--Making rings > goes to and from the jewel cut menu
+RegisterNetEvent('jim-mining:JewelCut:Ring', function()
+    TriggerEvent('nh-context:sendMenu', {
+		{   id = 1, header = "< Go Back",
+			txt = "",
+			params = { event = "jim-mining:JewelCut",
+			args = { number = 1, id = 1 } } },
+        {   id = 2, header = "Make Gold Ring",
+            txt = "Carefully cut to increase value",
+            params = { event = "jim-mining:CutStart",
+            args = { number = 1, id = 2 } } },
+        {   id = 3, header = "Make Emerald Ring",
+            txt = "Carefully cut to increase value",
+            params = { event = "jim-mining:CutStart",
+			args = { number = 1, id = 3	} } },
+		{   id = 4, header = "Make Ruby Ring",
+            txt = "Carefully cut to increase value",
+            params = { event = "jim-mining:CutStart",
+            args = { number = 1, id = 4 } } },
+		{   id = 5, header = "Make Diamond Ring",
+            txt = "Requires: 1 Drill - 1 Gold Ore",
+            params = { event = "jim-mining:CutStart",
+            args = { number = 1, id = 5 } } }, })
 end)
 
-------------------------------
-_OrePool = NativeUI.CreatePool()
-OreMenu = NativeUI.CreateMenu("", "Sell your ores for Cash", "", "", "shopui_title_exec_vechupgrade", "shopui_title_exec_vechupgrade")
-_OrePool:Add(mainMenu)
-
-_OrePool:ControlDisablingEnabled(false)
-_OrePool:MouseControlsEnabled(false)
-
-function OreSeller(menu)
-
-		CopperOre = NativeUI.CreateItem("Copper Ore - $"..Config.SellItems['copperore'].amount.." each", "")
-		IronOre = NativeUI.CreateItem("Iron Ore $"..Config.SellItems['copperore'].amount.." each", "")
-		GoldOre = NativeUI.CreateItem("Gold Ore $"..Config.SellItems['copperore'].amount.." each", "")
-		TinOre = NativeUI.CreateItem("Tin Ore $"..Config.SellItems['copperore'].amount.." each", "")
-		Coal = NativeUI.CreateItem("Coal $"..Config.SellItems['copperore'].amount.." each", "")
-
-		menu:AddItem(CopperOre)
-		menu:AddItem(IronOre)
-		menu:AddItem(GoldOre)
-		menu:AddItem(TinOre)
-		menu:AddItem(Coal)
-		
-		menu.OnItemSelect = function(sender, item, index)
-		
-		if item == CopperOre then
-			--TriggerServerEvent('')
-		elseif item == IronOre then
-			--TriggerServerEvent('')
-		elseif item == GoldOre then
-			--TriggerServerEvent('')
-		elseif item == TinOre then
-			--TriggerServerEvent('')
-		elseif item == Coal then
-			--TriggerServerEvent('')
-		end
-	end   
-end
-
-OreSeller(OreMenu)
-_OrePool:RefreshIndex()
-
-Citizen.CreateThread(function()
-	while true do
-		Citizen.Wait(1)
-		_OrePool:ProcessMenus()
-	end
+--Smelting
+RegisterNetEvent('jim-mining:SmeltMenu', function()
+    TriggerEvent('nh-context:sendMenu', {
+		{   id = 1, header = "Smelt Copper Ore",
+			txt = "Smelt Copper Ore into 10 Copper",
+			params = { event = "jim-mining:JewelCut",
+			args = { number = 1, id = 1 } } },
+        {   id = 2, header = "Smelt Gold",
+            txt = "Smelt 2 Gold Ore into 1 Gold Bar",
+            params = { event = "jim-mining:CutStart",
+            args = { number = 1, id = 2 } } },
+        {   id = 3, header = "Smelt Iron",
+            txt = "Smelt Iron Ore into Iron",
+            params = { event = "jim-mining:CutStart",
+			args = { number = 1, id = 3	} } },
+		{   id = 4, header = "Smelt Steel",
+            txt = "Smelt Iron and Carbon into Steel",
+            params = { event = "jim-mining:CutStart",
+            args = { number = 1, id = 4 } } }, })
 end)
 
-------------------------------
-_SmeltPool = NativeUI.CreatePool()
-SmeltMenu = NativeUI.CreateMenu("", "Sell your ores for Cash", "", "", "shopui_title_exec_vechupgrade", "shopui_title_exec_vechupgrade")
-_SmeltPool:Add(mainMenu)
 
-_SmeltPool:ControlDisablingEnabled(false)
-_SmeltPool:MouseControlsEnabled(false)
-
-function SmeltMenu(menu)
-
-		CopperOre = NativeUI.CreateItem("Copper Ore - $"..Config.SellItems['copperore'].amount.." each", "")
-		IronOre = NativeUI.CreateItem("Iron Ore $"..Config.SellItems['copperore'].amount.." each", "")
-		GoldOre = NativeUI.CreateItem("Gold Ore $"..Config.SellItems['copperore'].amount.." each", "")
-		TinOre = NativeUI.CreateItem("Tin Ore $"..Config.SellItems['copperore'].amount.." each", "")
-		Coal = NativeUI.CreateItem("Coal $"..Config.SellItems['copperore'].amount.." each", "")
-
-		menu:AddItem(CopperOre)
-		menu:AddItem(IronOre)
-		menu:AddItem(GoldOre)
-		menu:AddItem(TinOre)
-		menu:AddItem(Coal)
-		
-		menu.OnItemSelect = function(sender, item, index)
-		
-		if item == CopperOre then
-			--TriggerServerEvent('')
-		elseif item == IronOre then
-			--TriggerServerEvent('')
-		elseif item == GoldOre then
-			--TriggerServerEvent('')
-		elseif item == TinOre then
-			--TriggerServerEvent('')
-		elseif item == Coal then
-			--TriggerServerEvent('')
+RegisterNetEvent('jim-mining:SellOre:Copper')
+AddEventHandler('jim-mining:SellOre:Copper',function(data)
+	TriggerEvent('QBCore:Notify',source,"test "..data.id)
+	QBCore.Functions.TriggerCallback("jim-mining:CopperCheck", function(amount) 
+		if amount then 
+			CopperSell()
+		else 
+			QBCore.Functions.Notify("You don't have any Copper", "error")
 		end
-	end   
-end
-
-SmeltMenu(SmeltMenu)
-_SmeltPool:RefreshIndex()
-
-Citizen.CreateThread(function()
-	while true do
-		Citizen.Wait(1)
-		_SmeltPool:ProcessMenus()
-	end
+	end)
 end)
 
-]]
+function CopperSell()
+	TriggerServerEvent('jim-mining:Sellcopper')
+end

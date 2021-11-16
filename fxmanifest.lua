@@ -5,15 +5,16 @@ fx_version "cerulean"
 game "gta5"
 
 dependencies {
-	'NativeUI',
+	'nh-context',
+    'bt-target',
 }
 
 client_scripts {
-	'@NativeUI/NativeUI.lua',
     'client.lua',
     'config.lua',
 }
 
 server_script {
     'server.lua',
+    'config.lua',
 }
