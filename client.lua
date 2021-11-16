@@ -4,16 +4,22 @@ TriggerEvent('QBCore:GetObject', function(obj) QBCore = obj end)
 
 function CreateBlips()
 	for k, v in pairs(Config.Locations) do
-		local blip = AddBlipForCoord(v.location)
-		SetBlipAsShortRange(blip, true)
-		SetBlipSprite(blip, 500)
-		SetBlipColour(blip, 2)
-		SetBlipScale(blip, 0.3)
-		SetBlipDisplay(blip, 6)
+		if Config.Locations[k].blipTrue then
+			local blip = AddBlipForCoord(v.location)
+			SetBlipAsShortRange(blip, true)
+			SetBlipSprite(blip, 466)
+			SetBlipColour(blip, 2)
+			SetBlipScale(blip, 0.6)
+			SetBlipDisplay(blip, 6)
 
-		BeginTextCommandSetBlipName('STRING')
-		AddTextComponentString(v.label)
-		EndTextCommandSetBlipName(blip)
+			BeginTextCommandSetBlipName('STRING')
+			if Config.BlipNamer then
+				AddTextComponentString(Config.Locations[k].name)
+			else
+				AddTextComponentString("Mining")
+			end
+			EndTextCommandSetBlipName(blip)
+		end
 	end
 end
 
@@ -24,12 +30,14 @@ Citizen.CreateThread(function()
 	if Config.Pedspawn then
 		CreatePeds()
 	end
-	if Config.PropSpawn then
+	--if Config.PropSpawn then
 		CreateProps()
-	end
+	--end
 end)
 
 -----------------------------------------------------------
+
+local peds = {}
 
 function CreatePeds()
 	while true do
@@ -122,9 +130,15 @@ function CreateProps()
 		--SetEntityHeading(prop,GetEntityHeading(prop)-90)
 		FreezeEntityPosition(prop, true)           
     end
-	local bench = CreateObject(GetHashKey("prop_rock_2_a"),v.coords,false,false,false)
-	SetEntityHeading(bench,GetEntityHeading(bench)-90)
-	FreezeEntityPosition(bench, true)  
+	for k,v in pairs(Config.MineLights) do
+		prop = prop+1
+		local prop = CreateObject(GetHashKey("xs_prop_arena_lights_ceiling_l_c"),v.coords,false,false,false)
+		--SetEntityHeading(prop,GetEntityHeading(prop)-90)
+		FreezeEntityPosition(prop, true)           
+    end
+	local bench = CreateObject(GetHashKey("gr_prop_gr_bench_04b"),Config.Locations['JewelCut'].location,false,false,false)
+	SetEntityHeading(bench,GetEntityHeading(bench)-Config.Locations['JewelCut'].heading)
+	FreezeEntityPosition(bench, true)
 end
 
 -----------------------------------------------------------
@@ -158,6 +172,14 @@ Citizen.CreateThread(function()
 	{ options = { { event = "", icon = "fas fa-certificate", label = "Talk To Jewel Buyer", },	},
 		job = {"all"}, distance = 1.5
 	})
+	local ore = 0
+	for k,v in pairs(Config.OrePositions) do
+		ore = ore+1
+		exports['bt-target']:AddCircleZone(ore, v.coords, 2.0, { name=ore, debugPoly=false, useZ=true, }, 
+		{ options = { { event = "", icon = "fas fa-certificate", label = "Mine ore", },	},
+			job = {"all"}, distance = 2.5
+		})
+	end
 end)
 
 -----------------------------------------------------------
@@ -169,8 +191,11 @@ AddEventHandler('jim-mining:enterMine', function ()
         while not IsScreenFadedOut() do
             Citizen.Wait(10)
         end
-        SetEntityCoords(PlayerPedId(), Config.Locations['MineLeave'].location, 0, 0, 0, false)
-        SetEntityHeading(PlayerPedId(), Config.TeleLocations['MineLeave'].heading)
+        SetEntityCoords(PlayerPedId(), 
+									Config.Locations['MineLeave'].location.x+0.2,
+									Config.Locations['MineLeave'].location.y-0.3,
+									Config.Locations['MineLeave'].location.z, 0, 0, 0, false)
+        SetEntityHeading(PlayerPedId(), Config.Locations['MineLeave'].heading)
         Citizen.Wait(100)
     DoScreenFadeIn(1000)
 end)
@@ -181,37 +206,19 @@ AddEventHandler('jim-mining:exitMine', function ()
         while not IsScreenFadedOut() do
             Citizen.Wait(10)
         end
-        SetEntityCoords(PlayerPedId(), Config.TeleLocations['Mine'].location, 0, 0, 0, false)
-        SetEntityHeading(PlayerPedId(), onfig.TeleLocations['Mine'].heading)
+        SetEntityCoords(PlayerPedId(), 
+									Config.Locations['Mine'].location.x-0.2,
+									Config.Locations['Mine'].location.y+0.3,
+									Config.Locations['Mine'].location.z, 0, 0, 0, false)
+        SetEntityHeading(PlayerPedId(), Config.Locations['Mine'].heading)
         Citizen.Wait(100)
     DoScreenFadeIn(1000)
-end)
-
------------------------------------------------------------
-
---Ore Usage 3D Text's
-Citizen.CreateThread(function()
-    local pos = GetEntityCoords(GetPlayerPed(-1))
-	for k, v in pairs(Config.OrePositions) do
-		if (GetDistanceBetweenCoords(pos, v.x, v.y, v.z, true) < 4.5) then
-			if onDuty then
-				if (GetDistanceBetweenCoords(pos, v.x, v.y, v.z, true) < 1.5) then
-					DrawText3D(v.x, v.y, v.z, "[~g~E~w~] - Mine Ore")
-					if IsControlJustReleased(0, Config.Keys["E"]) then
-						TriggerServerEvent("")
-					end
-				elseif (GetDistanceBetweenCoords(pos, v.x, v.y, v.z, true) < 2.5) then
-					DrawText3D(v.x, v.y, v.z, "Mine Ore")
-				end  
-			end
-		end
-	end
 end)
 
 ------------------------------------------------------------
 
 
-function JewelCutting(menu)
+--[[function JewelCutting(menu)
 		_menuPool = NativeUI.CreatePool()
 		mainMenu = NativeUI.CreateMenu("", "Cut your jewels", "", "", "shopui_title_exec_vechupgrade", "shopui_title_exec_vechupgrade")
 		_menuPool:Add(mainMenu)
@@ -282,4 +289,4 @@ Citizen.CreateThread(function()
 		Citizen.Wait(1)
 		_menuPool:ProcessMenus()
 	end
-end)
+end)]]

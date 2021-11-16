@@ -11,10 +11,9 @@ dependencies {
 client_scripts {
 	'@NativeUI/NativeUI.lua',
     'client.lua',
+    'config.lua',
 }
 
 server_script {
     'server.lua',
 }
-
-server_script "config.lua"
