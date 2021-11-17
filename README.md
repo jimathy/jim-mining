@@ -19,12 +19,21 @@ After deving for a month on a server of messed up and mismatched scripts...I've 
 - Features Stone Cracking bench to fend off to the often used "Throw the rocks in smelter and magically organise ores"
 - Features Jewel cutting bench as an attempt to add more than just gold bars and such to sell
 
+	["uncut_emerald"] 				 = {["name"] = "uncut_emerald", 			  	["label"] = "Uncut Emerald", 			["weight"] = 100, 		["type"] = "item", 		["image"] = "uncut_emerald.png", 		["unique"] = false, 	["useable"] = false, 	["shouldClose"] = false, ["rare"] = false,   ["combinable"] = nil,   ["description"] = "A rough Emerald"},
+	["uncut_ruby"] 					 = {["name"] = "uncut_ruby", 			  	  	["label"] = "Uncut Ruby", 				["weight"] = 100, 		["type"] = "item", 		["image"] = "uncut_ruby.png", 			["unique"] = false, 	["useable"] = false, 	["shouldClose"] = false, ["rare"] = false,   ["combinable"] = nil,   ["description"] = "A rough ruby"},
+	["uncut_diamond"] 				 = {["name"] = "uncut_diamond", 			  	["label"] = "Uncut Diamond", 			["weight"] = 100, 		["type"] = "item", 		["image"] = "uncut_diamond.png", 		["unique"] = false, 	["useable"] = false, 	["shouldClose"] = false, ["rare"] = false,   ["combinable"] = nil,   ["description"] = "A rough diamond"},
 
-Current Dilema:
-Currently stumped on the GetItemByName command.
-Every time I try to call it, it claims it's a nil value and I can't work out why.
+	["emerald"] 					 = {["name"] = "emerald", 			  	  		["label"] = "Emerald", 					["weight"] = 100, 		["type"] = "item", 		["image"] = "emerald.png", 				["unique"] = false, 	["useable"] = false, 	["shouldClose"] = false, ["rare"] = false,   ["combinable"] = nil,   ["description"] = "A Emerald that shimmers"},
+	["ruby"] 					 	 = {["name"] = "ruby", 			  	  			["label"] = "Ruby", 					["weight"] = 100, 		["type"] = "item", 		["image"] = "emerald.png", 				["unique"] = false, 	["useable"] = false, 	["shouldClose"] = false, ["rare"] = false,   ["combinable"] = nil,   ["description"] = "A Ruby that shimmers"},
+	["diamond"] 					 = {["name"] = "Diamond", 			  	  		["label"] = "Diamond", 					["weight"] = 100, 		["type"] = "item", 		["image"] = "emerald.png", 				["unique"] = false, 	["useable"] = false, 	["shouldClose"] = false, ["rare"] = false,   ["combinable"] = nil,   ["description"] = "A Diamond that shimmers"},
 
-If anyone finds this and can give me a hint please DO. It's killing me being so close to finishing this.
+	["gold_ring"] 					 = {["name"] = "gold_ring", 			  	  	["label"] = "Gold Ring", 				["weight"] = 200, 		["type"] = "item", 		["image"] = "diamond_ring.png", 		["unique"] = false, 	["useable"] = false, 	["shouldClose"] = true,	   ["combinable"] = nil,   ["description"] = "A gold ring seems like the jackpot to me!"},
+	["diamond_ring"] 				 = {["name"] = "diamond_ring", 			  	  	["label"] = "Diamond Ring", 			["weight"] = 200, 		["type"] = "item", 		["image"] = "diamond_ring.png", 		["unique"] = false, 	["useable"] = false, 	["shouldClose"] = true,	   ["combinable"] = nil,   ["description"] = "A diamond ring seems like the jackpot to me!"},
+	["goldchain"] 				 	 = {["name"] = "goldchain", 			  	  	["label"] = "Golden Chain", 			["weight"] = 200, 		["type"] = "item", 		["image"] = "goldchain.png", 			["unique"] = false, 	["useable"] = false, 	["shouldClose"] = true,	   ["combinable"] = nil,   ["description"] = "A golden chain seems like the jackpot to me!"},
+	["10kgoldchain"] 				 = {["name"] = "10kgoldchain", 			  	  	["label"] = "10k Gold Chain", 			["weight"] = 200, 		["type"] = "item", 		["image"] = "10kgoldchain.png", 		["unique"] = false, 	["useable"] = false, 	["shouldClose"] = true,	   ["combinable"] = nil,   ["description"] = "10 karat golden chain."},
 
-Once that's figured out I can move on to the crafting (which is basically the same system) and its done and ready!
-(oh if anyone has any good images for gems/ores, please let me know)
+	["carbon"] 					 	 = {["name"] = "carbon", 			  	  		["label"] = "Carbon", 					["weight"] = 1000, 		["type"] = "item", 		["image"] = "carbon.png", 				["unique"] = false, 	["useable"] = false, 	["shouldClose"] = false, ["rare"] = false,   ["combinable"] = nil,   ["description"] = "Carbon, a base ore."},
+	["ironore"] 					 = {["name"] = "ironore", 			  	  		["label"] = "Iron Ore", 				["weight"] = 1000, 		["type"] = "item", 		["image"] = "ironore.png", 				["unique"] = false, 	["useable"] = false, 	["shouldClose"] = false, ["rare"] = false,   ["combinable"] = nil,   ["description"] = "Iron, a base ore."},
+	["copperore"] 					 = {["name"] = "copperore", 			  	  	["label"] = "Copper Ore", 				["weight"] = 1000, 		["type"] = "item", 		["image"] = "copperore.png", 			["unique"] = false, 	["useable"] = false, 	["shouldClose"] = false, ["rare"] = false,   ["combinable"] = nil,   ["description"] = "Copper, a base ore."},
+	["goldore"] 					 = {["name"] = "goldore", 			  	  		["label"] = "Gold Ore", 				["weight"] = 1000, 		["type"] = "item", 		["image"] = "goldore.png", 				["unique"] = false, 	["useable"] = false, 	["shouldClose"] = false, ["rare"] = false,   ["combinable"] = nil,   ["description"] = "Gold Ore"},
+	
