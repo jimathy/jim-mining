@@ -185,7 +185,7 @@ Citizen.CreateThread(function()
 	})
 	--Jewel Buyer
 	exports['bt-target']:AddCircleZone("JewelBuyer", Config.Locations['Buyer2'].location, 2.0, { name="JewelBuyer", debugPoly=false, useZ=true, }, 
-	{ options = { { event = "jim-mining:JewelSeller", icon = "fas fa-certificate", label = "Talk To Jewel Buyer", },	},
+	{ options = { { event = "jim-mining:JewelSell", icon = "fas fa-certificate", label = "Talk To Jewel Buyer", },	},
 		job = {"all"}, distance = 2.0
 	})
 	--Cracking Bench
@@ -221,58 +221,69 @@ end
 
 RegisterNetEvent('jim-mining:MineOre')
 AddEventHandler('jim-mining:MineOre', function ()
-	local pos = GetEntityCoords(GetPlayerPed(-1))
-	loadAnimDict("anim@heists@fleeca_bank@drilling")
-	TaskPlayAnim(GetPlayerPed(-1), 'anim@heists@fleeca_bank@drilling', 'drill_straight_idle' , 3.0, 3.0, -1, 1, 0, false, false, false)
-	local pos = GetEntityCoords(GetPlayerPed(-1), true)
-	local DrillObject = CreateObject(GetHashKey("hei_prop_heist_drill"), pos.x, pos.y, pos.z, true, true, true)
-	AttachEntityToEntity(DrillObject, GetPlayerPed(-1), GetPedBoneIndex(GetPlayerPed(-1), 57005), 0.14, 0, -0.01, 90.0, -90.0, 180.0, true, true, false, true, 1, true)
+QBCore.Functions.TriggerCallback("QBCore:HasItem", function(data) 
+		if data then 
+			local pos = GetEntityCoords(GetPlayerPed(-1))
+			loadAnimDict("anim@heists@fleeca_bank@drilling")
+			TaskPlayAnim(GetPlayerPed(-1), 'anim@heists@fleeca_bank@drilling', 'drill_straight_idle' , 3.0, 3.0, -1, 1, 0, false, false, false)
+			local pos = GetEntityCoords(GetPlayerPed(-1), true)
+			local DrillObject = CreateObject(GetHashKey("hei_prop_heist_drill"), pos.x, pos.y, pos.z, true, true, true)
+			AttachEntityToEntity(DrillObject, GetPlayerPed(-1), GetPedBoneIndex(GetPlayerPed(-1), 57005), 0.14, 0, -0.01, 90.0, -90.0, 180.0, true, true, false, true, 1, true)
 
-	QBCore.Functions.Progressbar("open_locker_drill", "Drilling Ore..", math.random(10000,15000), false, true, {
-		disableMovement = true,
-		disableCarMovement = true,
-		disableMouse = false,
-		disableCombat = true,
-	}, {}, {}, {}, function() -- Done
-		StopAnimTask(GetPlayerPed(-1), "anim@heists@fleeca_bank@drilling", "drill_straight_idle", 1.0)
-		DetachEntity(DrillObject, true, true)
-		DeleteObject(DrillObject)
-			TriggerServerEvent('jim-mining:MineReward')
-			QBCore.Functions.Notify("Success!", "success")
-			IsDrilling = false
-	end, function() -- Cancel
-		StopAnimTask(GetPlayerPed(-1), "anim@heists@fleeca_bank@drilling", "drill_straight_idle", 1.0)
-		--TriggerServerEvent('qb-bankrobbery:server:setLockerState', bankId, lockerId, 'isBusy', false)
-		DetachEntity(DrillObject, true, true)
-		DeleteObject(DrillObject)
-		QBCore.Functions.Notify("Cancelled..", "error")
-		IsDrilling = false
-	end)
+			QBCore.Functions.Progressbar("open_locker_drill", "Drilling Ore..", math.random(10000,15000), false, true, {
+				disableMovement = true,
+				disableCarMovement = true,
+				disableMouse = false,
+				disableCombat = true,
+			}, {}, {}, {}, function() -- Done
+				StopAnimTask(GetPlayerPed(-1), "anim@heists@fleeca_bank@drilling", "drill_straight_idle", 1.0)
+				DetachEntity(DrillObject, true, true)
+				DeleteObject(DrillObject)
+					TriggerServerEvent('jim-mining:MineReward')
+					IsDrilling = false
+			end, function() -- Cancel
+				StopAnimTask(GetPlayerPed(-1), "anim@heists@fleeca_bank@drilling", "drill_straight_idle", 1.0)
+				--TriggerServerEvent('qb-bankrobbery:server:setLockerState', bankId, lockerId, 'isBusy', false)
+				DetachEntity(DrillObject, true, true)
+				DeleteObject(DrillObject)
+				IsDrilling = false
+			end)
+					else 
+			QBCore.Functions.Notify("No Stone to Crack", "error")
+		end 
+	end, "drill")
 end)
 
 ------------------------------------------------------------
 
--- Smelt Command / Animations
+-- Cracking Command / Animations
+-- Command Starts here where it calls to being the stone inv checking
+
+
 RegisterNetEvent('jim-mining:CrackStart')
 AddEventHandler('jim-mining:CrackStart', function ()
-	local pos = GetEntityCoords(GetPlayerPed(-1))
-	loadAnimDict('amb@prop_human_parking_meter@male@idle_a')
-	TaskPlayAnim(GetPlayerPed(-1), 'amb@prop_human_parking_meter@male@idle_a', 'idle_a' , 3.0, 3.0, -1, 1, 0, false, false, false)
-	QBCore.Functions.Progressbar("open_locker_drill", "Cracking Stone..", math.random(10000,15000), false, true, {
-		disableMovement = true,
-		disableCarMovement = true,
-		disableMouse = false,
-		disableCombat = true,
-	}, {}, {}, {}, function() -- Done
-		StopAnimTask(GetPlayerPed(-1), 'amb@prop_human_parking_meter@male@idle_a', 'idle_a', 1.0)
-			TriggerServerEvent('jim-mining:CrackReward')
-			QBCore.Functions.Notify("Success!", "success")
-			IsDrilling = false
-	end, function() -- Cancel
-		StopAnimTask(GetPlayerPed(-1), 'amb@prop_human_parking_meter@male@idle_a', 'idle_a', 1.0)
-		QBCore.Functions.Notify("Cancelled..", "error")
-		IsDrilling = false
-	end)
+	QBCore.Functions.TriggerCallback("QBCore:HasItem", function(data) 
+		if data then 
+			local pos = GetEntityCoords(GetPlayerPed(-1))
+			loadAnimDict('amb@prop_human_parking_meter@male@idle_a')
+			TaskPlayAnim(GetPlayerPed(-1), 'amb@prop_human_parking_meter@male@idle_a', 'idle_a' , 3.0, 3.0, -1, 1, 0, false, false, false)
+			QBCore.Functions.Progressbar("open_locker_drill", "Cracking Stone..", math.random(10000,15000), false, true, {
+				disableMovement = true,
+				disableCarMovement = true,
+				disableMouse = false,
+				disableCombat = true,
+			}, {}, {}, {}, function() -- Done
+				StopAnimTask(GetPlayerPed(-1), 'amb@prop_human_parking_meter@male@idle_a', 'idle_a', 1.0)
+					TriggerServerEvent('jim-mining:CrackReward')
+					IsDrilling = false
+			end, function() -- Cancel
+				StopAnimTask(GetPlayerPed(-1), 'amb@prop_human_parking_meter@male@idle_a', 'idle_a', 1.0)
+				IsDrilling = false
+			end)
+		else 
+			QBCore.Functions.Notify("No Stone to Crack", "error")
+		end 
+	end, "stone")
 end)
 
 -- Smelt Command / Animations
@@ -298,12 +309,24 @@ AddEventHandler('jim-mining:CutStart', function ()
 	end)
 end)
 ------------------------------------------------------------
+--Sell Anim Ore
+RegisterNetEvent('jim-mining:SellOreAnim')
+AddEventHandler('jim-mining:SellOreAnim', function(data)
+	local pid = PlayerPedId()
+	loadAnimDict("mp_common")
+	TaskPlayAnim(pid, "mp_common", "givetake2_a", 100.0, 200.0, 0.3, 120, 0.2, 0, 0, 0)
+	TriggerServerEvent('jim-mining:SellOre', data.id) -- Had to slip in the sell command during the animation command
+	Wait(1500)
+	StopAnimTask(pid, "mp_common", "givetake2_a", 1.0)
+end)
+
 --Sell Anim small Test
 RegisterNetEvent('jim-mining:SellAnim')
 AddEventHandler('jim-mining:SellAnim', function(data)
 	local pid = PlayerPedId()
 	loadAnimDict("mp_common")
 	TaskPlayAnim(pid, "mp_common", "givetake2_a", 100.0, 200.0, 0.3, 120, 0.2, 0, 0, 0)
+	TriggerServerEvent('jim-mining:SellJewel', data.id) -- Had to slip in the sell command during the animation command
 	Wait(1500)
 	StopAnimTask(pid, "mp_common", "givetake2_a", 1.0)
 end)
@@ -316,41 +339,121 @@ RegisterNetEvent('jim-mining:SellOre', function()
 		txt = "", }, 
 	{   id = 2, header = "Copper Ore",
 		txt = "Sell ALL at $"..Config.SellItems['copperore'].." each",
-		params = { event = "jim-mining:SellOre",
-		args = { number = 1, id = 1 } } }, 
+		params = { event = "jim-mining:SellOreAnim",
+		args = { number = 1, id = 1 } } },
 	{   id = 3,	header = "Iron Ore",
 		txt = "Sell ALL at $"..Config.SellItems['ironore'].." each",
-		params = { event = "jim-mining:SellOre",
+		params = { event = "jim-mining:SellOreAnim",
 		args = { number = 1, id = 2 } } },
 	{   id = 4, header = "Gold Ore",
 		txt = "Sell ALL at $"..Config.SellItems['goldore'].." each",
-		params = { event = "jim-mining:SellOre",
+		params = { event = "jim-mining:SellOreAnim",
 		args = { number = 1, id = 3 } } },
 	{   id = 5, header = "Carbon",
-		txt = "Sell ALL at $"..Config.SellItems['goldore'].." each",
-		params = { event = "jim-mining:SellOre",
+		txt = "Sell ALL at $"..Config.SellItems['carbon'].." each",
+		params = { event = "jim-mining:SellOreAnim",
 		args = { number = 1, id = 4 } } }, })
 end)
---Jewel Selling
-RegisterNetEvent('jim-mining:JewelSeller', function()
+------------------------
+--Jewel Selling Main Menu
+RegisterNetEvent('jim-mining:JewelSell', function()
     TriggerEvent('nh-context:sendMenu', {
-	{   id = 1, header = "Sell Emeralds",
-		txt = "Sell all Emeralds",
-		params = { event = "jim-mining:SellAnim",
+	{   id = 1, header = "Sell your jewellery here",
+		txt = "", }, 
+	{   id = 2, header = "Emeralds",
+		txt = "See all Emerald selling options",
+		params = { event = "jim-mining:JewelSell:Emerald",
 		args = { number = 1, id = 1 } } },
-	{   id = 2, header = "Sell Rubys",
-		txt = "Sells all Rubys",
-		params = { event = "jim-mining:SellAnim",
-			args = { number = 1, id = 2	} } },
-	{   id = 3, header = "Sell Diamonds",
-		txt = "Sells all Diamonds",
-		params = { event = "jim-mining:SellAnim",
+	{   id = 3, header = "Rubys",
+		txt = "See all Ruby selling options",
+		params = { event = "jim-mining:JewelSell:Ruby",
+		args = { number = 1, id = 2	} } },
+	{   id = 4, header = "Diamonds",
+		txt = "See all Diamond selling options",
+		params = { event = "jim-mining:JewelSell:Diamond",
 		args = { number = 1, id = 3 } } },
-	{   id = 4, header = "Sell Rings",
+	{   id = 5, header = "Jewellery",
 		txt = "Sells all Rings",
-		params = { event = "jim-mining:SellAnim",
+		params = { event = "jim-mining:JewelSell:Jewellery",
 		args = { number = 1, id = 4 } } }, })
 end)
+--Jewel Selling - Emerald Menu
+RegisterNetEvent('jim-mining:JewelSell:Emerald', function()
+    TriggerEvent('nh-context:sendMenu', {
+	{   id = 1, header = "< Go Back",
+		txt = "",
+		params = { event = "jim-mining:JewelSell",
+		args = { number = 1, id = 1 } } },
+	{   id = 2, header = "Emeralds",
+		txt = "Sell ALL at $"..Config.SellItems['emerald'].." each",
+		params = { event = "jim-mining:SellAnim",
+		args = { number = 1, id = 10 } } },
+	{   id = 3, header = "Uncut Emeralds",
+		txt = "Sell ALL at $"..Config.SellItems['uncut_emerald'].." each",
+		params = { event = "jim-mining:SellAnim",
+		args = { number = 1, id = 11 } } }, })
+end)
+--Jewel Selling - Ruby Menu
+RegisterNetEvent('jim-mining:JewelSell:Ruby', function()
+    TriggerEvent('nh-context:sendMenu', {
+	{   id = 1, header = "< Go Back",
+		txt = "",
+		params = { event = "jim-mining:JewelSell",
+		args = { number = 1, id = 1 } } },
+	{   id = 2, header = "Rubys",
+		txt = "Sell ALL at $"..Config.SellItems['ruby'].." each",
+		params = { event = "jim-mining:SellAnim",
+		args = { number = 1, id = 12 } } },
+	{   id = 3, header = "Uncut Rubys",
+		txt = "Sell ALL at $"..Config.SellItems['uncut_ruby'].." each",
+		params = { event = "jim-mining:SellAnim",
+		args = { number = 1, id = 13 } } }, })
+end)
+--Jewel Selling - Diamonds Menu
+RegisterNetEvent('jim-mining:JewelSell:Diamond', function()
+    TriggerEvent('nh-context:sendMenu', {
+	{   id = 1, header = "< Go Back",
+		txt = "",
+		params = { event = "jim-mining:JewelSell",
+		args = { number = 1, id = 1 } } },
+	{   id = 2, header = "Diamonds",
+		txt = "Sell ALL at $"..Config.SellItems['diamond'].." each",
+		params = { event = "jim-mining:SellAnim",
+		args = { number = 1, id = 14 } } },
+	{   id = 3, header = "Uncut Diamonds",
+		txt = "Sell ALL at $"..Config.SellItems['uncut_diamond'].." each",
+		params = { event = "jim-mining:SellAnim",
+		args = { number = 1, id = 15 } } }, })
+end)
+--Jewel Selling - Jewellry Menu
+RegisterNetEvent('jim-mining:JewelSell:Jewellery', function()
+    TriggerEvent('nh-context:sendMenu', {
+	{   id = 1, header = "< Go Back",
+		txt = "",
+		params = { event = "jim-mining:JewelSell",
+		args = { number = 1, id = 1 } } },
+	{   id = 2, header = "Diamond Rings",
+		txt = "Sell ALL at $"..Config.SellItems['diamond_ring'].." each",
+		params = { event = "jim-mining:SellAnim",
+		args = { number = 1, id = 16 } } },
+	{   id = 3, header = "Gold Rings",
+		txt = "Sell ALL at $"..Config.SellItems['gold_ring'].." each",
+		params = { event = "jim-mining:SellAnim",
+		args = { number = 1, id = 17 } } },
+	{   id = 3, header = "Gold Chain",
+		txt = "Sell ALL at $"..Config.SellItems['goldchain'].." each",
+		params = { event = "jim-mining:SellAnim",
+		args = { number = 1, id = 18 } } },	
+	{   id = 5, header = "10k Gold Chain",
+		txt = "Sell ALL at $"..Config.SellItems['10kgoldchain'].." each",
+		params = { event = "jim-mining:SellAnim",
+		args = { number = 1, id = 19 } } }, })
+end)
+
+
+------------------------
+
+
 --Cutting Jewels
 RegisterNetEvent('jim-mining:JewelCut', function()
     TriggerEvent('nh-context:sendMenu', {
@@ -384,18 +487,10 @@ RegisterNetEvent('jim-mining:JewelCut:Ring', function()
 		txt = "Carefully cut to increase value",
 		params = { event = "jim-mining:CutStart",
 		args = { number = 1, id = 2 } } },
-	{   id = 3, header = "Make Emerald Ring",
-		txt = "Carefully cut to increase value",
-		params = { event = "jim-mining:CutStart",
-		args = { number = 1, id = 3	} } },
-	{   id = 4, header = "Make Ruby Ring",
-		txt = "Carefully cut to increase value",
-		params = { event = "jim-mining:CutStart",
-		args = { number = 1, id = 4 } } },
-	{   id = 5, header = "Make Diamond Ring",
+	{   id = 2, header = "Make Diamond Ring",
 		txt = "Requires: 1 Drill - 1 Gold Ore",
 		params = { event = "jim-mining:CutStart",
-		args = { number = 1, id = 5 } } }, })
+		args = { number = 1, id = 3 } } }, })
 end)
 
 --Smelting
@@ -406,33 +501,15 @@ RegisterNetEvent('jim-mining:SmeltMenu', function()
 		params = { event = "jim-mining:JewelCut",
 		args = { number = 1, id = 1 } } },
 	{   id = 2, header = "Smelt Gold",
-		txt = "Smelt 2 Gold Ore into 1 Gold Bar",
+		txt = "Smelt 4 Gold Ore into 1 Gold Bar",
 		params = { event = "jim-mining:CutStart",
 		args = { number = 1, id = 2 } } },
 	{   id = 3, header = "Smelt Iron",
-		txt = "Smelt Iron Ore into Iron",
+		txt = "Smelt Iron Ore into 10 Iron",
 		params = { event = "jim-mining:CutStart",
 		args = { number = 1, id = 3	} } },
 	{   id = 4, header = "Smelt Steel",
-		txt = "Smelt Iron and Carbon into Steel",
+		txt = "Smelt Iron Ore and Carbon into Steel",
 		params = { event = "jim-mining:CutStart",
 		args = { number = 1, id = 4 } } }, })
 end)
-
-
---[[RegisterNetEvent('jim-mining:SellOre:Copper')
-AddEventHandler('jim-mining:SellOre:Copper',function(data)
-	TriggerEvent('QBCore:Notify',source,"test "..data.id)
-	QBCore.Functions.TriggerCallback("jim-mining:CopperCheck", function(amount) 
-		if amount then 
-			CopperSell()
-		else 
-			QBCore.Functions.Notify("You don't have any Copper Ore", "error")
-		end
-	end)
-end)
-
-function CopperSell()
-	TriggerServerEvent('jim-mining:Sellcopper')
-	TriggerNetEvent('jim-mining:SellAnim')
-end]]

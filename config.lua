@@ -40,24 +40,37 @@ Config.OrePositions = {
 Config.MineReward = { "stone" }
 
 Config.RewardPool = {
+	'carbon', 'carbon', 'carbon', 'carbon', --4x
 	'copperore', 'copperore', 'copperore', 'copperore', 'copperore', 'copperore', -- 6x
-	'goldore', 'goldore', -- 3x
-	'ironore', 'ironore', 'ironore', 'ironore', 'ironore', 'ironore', -- 6x
-    'carbon', 'carbon', 'carbon', 'carbon', --4x
+	'goldore', 'goldore', 'goldore', --'goldore', -- 3x
+	'ironore', 'ironore', 'ironore', 'ironore', -- 'ironore', 'ironore', -- 6x
     'metalscrap',
-	--'tinore', 'tinore', 'tinore', 'tinore', 'tinore', 'tinore', 'tinore', 'tinore', 'tinore', -- 9x
-	--'coal', 'coal', 'coal', 'coal', 'coal', 'coal', 'coal', 'coal', 'coal', 'coal', --10x
-	--'uncut_ruby',
-	--'uncut_emerald',
-	--'uncut_diamond',
+	'uncut_ruby',
+	'uncut_emerald',
+	'uncut_diamond',
 }
 ------------------------------------------------------------
 Config.SellItems = { -- Not working on yet
 	['copperore'] = 100,
 	['goldore'] = 100,
 	['ironore'] = 100,
-	['tinore'] = 100,
-	['coal'] = 100,
+	['carbon'] = 100,
+	
+	['goldbar'] = 100,
+	
+	['uncut_emerald'] = 100,
+	['uncut_ruby'] = 100,
+	['uncut_diamond'] = 100,
+	
+	['emerald'] = 100,
+	['ruby'] = 100,
+	['diamond'] = 100,
+	
+	['diamond_ring'] = 100,
+	['gold_ring'] = 100,
+	['goldchain'] = 100,
+	['10kgoldchain'] = 100,
+
 }
 ------------------------------------------------------------
 -- Ped Spawning Variables
@@ -108,5 +121,9 @@ Config.Items = {
 	[4] = { name = "weapon_flashlight",
 			price = 0, amount = 1,
 			info = {}, type = "item",
-			slot = 4, }, }
+			slot = 4, }, 
+	[5] = { name = "drill",
+			price = 0, amount = 1,
+			info = {}, type = "item",
+			slot = 5, }, }
 }

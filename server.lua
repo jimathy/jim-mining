@@ -10,58 +10,76 @@ AddEventHandler('jim-mining:MineReward', function()
     TriggerClientEvent("inventory:client:ItemBox", source, QBCore.Shared.Items["stone"], "add", randomChance)
 end)
 
+--Stone Cracking Checking Triggers
+--Command here to check if any stone is in inventory
+
 RegisterServerEvent('jim-mining:CrackReward')
 AddEventHandler('jim-mining:CrackReward', function()
     local Player = QBCore.Functions.GetPlayer(source)
     Player.Functions.RemoveItem('stone', 1)
     TriggerClientEvent("inventory:client:ItemBox", source, QBCore.Shared.Items["stone"], "remove", 1)
-    local oreToGive = math.random(1,#RewardPool)
+    local oreToGive = nil
+    oreToGive = math.random(1,#Config.RewardPool)
     local amount = math.random(1, 2)
-    Player.Functions.AddItem(RewardPool[oreToGive], amount)
-    TriggerClientEvent("inventory:client:ItemBox", source, QBCore.Shared.Items[RewardPool[oreToGive]], "add", amount)
+    Player.Functions.AddItem(Config.RewardPool[oreToGive], amount)
+    TriggerClientEvent("inventory:client:ItemBox", source, QBCore.Shared.Items[Config.RewardPool[oreToGive]], "add", amount)
 end)
 
---[[RegisterServerEvent('jim-mining:OreCheck')
-AddEventHandler('jim-mining:OreCheck', function()
-    local src = source
-	local Player = QBCore.Functions.GetPlayer(source)
-    local Ore = Player.Functions.GetItemByName("copperore")
-    TriggerClientEvent("inventory:client:ItemBox", source, QBCore.Shared.Items[Ore], "remove", Ore.amount)
-end)
-
-QBCore.Functions.CreateCallback('jim-mining:CopperCheck',function(source, cb)
-    local src = source 
-    local Player = QBCore.Functions.GetPlayer(src)
-    local Copper = Player.Functions.GetItemByName('copperore')
-    if Copper then 
-        cb(true)
-    else 
-        cb(false)
-    end
-end)
-
-RegisterServerEvent('jim-mining:Sellcopper')
-AddEventHandler('jim-mining:Sellcopper', function()
-    local src = source 
-    local Player = QBCore.Functions.GetPlayer(src) 
-    TriggerClientEvent('inventory:client:ItemBox', source, QBCore.Shared.Items['copperore'], "remove", 1)
-end)]]
-
-RegisterNetEvent('jim-mining:SellOre')
+RegisterServerEvent('jim-mining:SellOre')
 AddEventHandler('jim-mining:SellOre', function(data)
     local src = source
 	local Player = QBCore.Functions.GetPlayer(source)
-	if data.id == 1 then
-		local Ore = Player.Functions.GetItemByName("copperore")
-	if data.id == 2 then
-	    local Ore = Player.Functions.GetItemByName("ironore")
-	if data.id == 3 then
-		local Ore = Player.Functions.GetItemByName("goldore")
-	if data.id == 4 then
-		local Ore = Player.Functions.GetItemByName("carbon")
+	if data == 1 then
+		currentore = 'copperore'
+	elseif data == 2 then
+		currentore = 'ironore'
+	elseif data == 3 then
+		currentore = 'goldore'
+	elseif data == 4 then
+		currentore = 'carbon'
 	end
 	
-    TriggerClientEvent("inventory:client:ItemBox", source, QBCore.Shared.Items[Ore], "remove", Ore.amount)
-	
-	TriggerNetEvent('jim-mining:SellAnim')
+    if Player.Functions.GetItemByName(currentore) ~= nil then
+		ore = Player.Functions.GetItemByName(currentore).amount
+		pay = (ore * Config.SellItems[currentore])
+		Player.Functions.RemoveItem(currentore, ore)
+		Player.Functions.AddMoney('cash', pay)
+		TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[currentore], 'remove', ore)
+	else
+		TriggerClientEvent('QBCore:Notify', source, "You don't have any to sell.", "error")
+	end
+end)
+
+RegisterServerEvent('jim-mining:SellJewel')
+AddEventHandler('jim-mining:SellJewel', function(data)
+    local src = source
+	local Player = QBCore.Functions.GetPlayer(source)
+	if data == 10 then
+		currentjewel = 'emerald'
+	elseif data == 11 then
+		currentjewel = 'uncut_emerald'
+	elseif data == 12 then
+		currentjewel = 'ruby'
+	elseif data == 13 then
+		currentjewel = 'uncut_ruby'
+	elseif data == 14 then
+		currentjewel = 'diamond'
+	elseif data == 15 then
+		currentjewel = 'uncut_diamond'
+	elseif data == 16 then
+		currentjewel = 'diamond_ring'
+	elseif data == 17 then
+        currentjewel = 'gold_ring'
+	elseif data == 18 then
+		currentjewel = 'goldchain'
+	end
+	if Player.Functions.GetItemByName(currentjewel) ~= nil then
+		jewel = Player.Functions.GetItemByName(currentjewel).amount
+		pay = (jewel * Config.SellItems[currentjewel])
+		Player.Functions.RemoveItem(currentjewel, jewel)
+		Player.Functions.AddMoney('cash', pay)
+		TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[currentjewel], 'remove', jewel)
+	else
+		TriggerClientEvent('QBCore:Notify', source, "You don't have any to sell.", "error")
+	end
 end)
