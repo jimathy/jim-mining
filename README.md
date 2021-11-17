@@ -19,7 +19,23 @@ After deving for a month on a server of messed up and mismatched scripts...I've 
 - Features Stone Cracking bench to fend off to the often used "Throw the rocks in smelter and magically organise ores"
 - Features Jewel cutting bench as an attempt to add more than just gold bars and such to sell
 
-	["uncut_emerald"] 				 = {["name"] = "uncut_emerald", 			  	["label"] = "Uncut Emerald", 			["weight"] = 100, 		["type"] = "item", 		["image"] = "uncut_emerald.png", 		["unique"] = false, 	["useable"] = false, 	["shouldClose"] = false, ["rare"] = false,   ["combinable"] = nil,   ["description"] = "A rough Emerald"},
+## Dependencies
+- nh-context - for the menus
+- bt-target - for the third eye selection
+
+## How to install
+# Minimal
+- Place in your resources folder
+- add the following code to your server.cfg/resources.cfg
+```
+ensure jim-mining
+```
+- If you don't want to add my items and repurpose this with your own items ignore the bottom part
+- If you want to use my items then:
+## Put this in your shared.lua if you want to add and use the items
+
+```
+["uncut_emerald"] 				 = {["name"] = "uncut_emerald", 			  	["label"] = "Uncut Emerald", 			["weight"] = 100, 		["type"] = "item", 		["image"] = "uncut_emerald.png", 		["unique"] = false, 	["useable"] = false, 	["shouldClose"] = false, ["rare"] = false,   ["combinable"] = nil,   ["description"] = "A rough Emerald"},
 	["uncut_ruby"] 					 = {["name"] = "uncut_ruby", 			  	  	["label"] = "Uncut Ruby", 				["weight"] = 100, 		["type"] = "item", 		["image"] = "uncut_ruby.png", 			["unique"] = false, 	["useable"] = false, 	["shouldClose"] = false, ["rare"] = false,   ["combinable"] = nil,   ["description"] = "A rough ruby"},
 	["uncut_diamond"] 				 = {["name"] = "uncut_diamond", 			  	["label"] = "Uncut Diamond", 			["weight"] = 100, 		["type"] = "item", 		["image"] = "uncut_diamond.png", 		["unique"] = false, 	["useable"] = false, 	["shouldClose"] = false, ["rare"] = false,   ["combinable"] = nil,   ["description"] = "A rough diamond"},
 
@@ -36,4 +52,4 @@ After deving for a month on a server of messed up and mismatched scripts...I've 
 	["ironore"] 					 = {["name"] = "ironore", 			  	  		["label"] = "Iron Ore", 				["weight"] = 1000, 		["type"] = "item", 		["image"] = "ironore.png", 				["unique"] = false, 	["useable"] = false, 	["shouldClose"] = false, ["rare"] = false,   ["combinable"] = nil,   ["description"] = "Iron, a base ore."},
 	["copperore"] 					 = {["name"] = "copperore", 			  	  	["label"] = "Copper Ore", 				["weight"] = 1000, 		["type"] = "item", 		["image"] = "copperore.png", 			["unique"] = false, 	["useable"] = false, 	["shouldClose"] = false, ["rare"] = false,   ["combinable"] = nil,   ["description"] = "Copper, a base ore."},
 	["goldore"] 					 = {["name"] = "goldore", 			  	  		["label"] = "Gold Ore", 				["weight"] = 1000, 		["type"] = "item", 		["image"] = "goldore.png", 				["unique"] = false, 	["useable"] = false, 	["shouldClose"] = false, ["rare"] = false,   ["combinable"] = nil,   ["description"] = "Gold Ore"},
-	
+```
