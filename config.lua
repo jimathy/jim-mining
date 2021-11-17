@@ -21,8 +21,8 @@ Config.Locations =  {
 	['Smelter'] = {	name = "Smelter", location = vector3(1112.29, -2009.9, 31.46), blipTrue = true }, -- The location of the smelter
 	['Cracking'] = { name = "Stone Cracking", location = vector3(1109.27,-1992.68,30.99-1.03), heading = 305.0-180.0, blipTrue = false }, -- The location of the smelter
 	['Buyer'] = { name = "Ore Buyer", location = vector3(1085.7,-2001.04,31.41-1.03), heading = 323.73, blipTrue = false }, -- The Location of the ore buyer
-	['JewelCut'] = { name = "Jewel Cutting", location = vector3(1077.24, -1984.22, 31.0-0.97), heading = 300.0, blipTrue = false }, -- The Location of the jewel buyer, most likely leave this as Vangelico Jeweler
-	['Buyer2'] = { name = "Jewel Buyer", location = vector3(-629.85, -240.31, 38.16-1.03), heading = 105.74, blipTrue = false }, -- The Location of the jewel buyer, most likely leave this as Vangelico Jeweler
+	['JewelCut'] = { name = "Jewel Cutting", location = vector3(1077.24, -1984.22, 31.0-0.97), heading = 300.0, blipTrue = false }, -- The Location of the jewel cutting bench. Couldn't decide so left in smeltery
+	['Buyer2'] = { name = "Jewel Buyer", location = vector3(-629.85, -240.31, 38.16-1.03), heading = 105.74, blipTrue = false }, -- The Location of the jewel buyer, I left this as Vangelico, others will proabably change to pawn shops
 }
 
 ------------------------------------------------------------
@@ -72,6 +72,9 @@ Config.SellItems = { -- Not working on yet
 	['10kgoldchain'] = 100,
 
 }
+
+Config.Crafting = {
+}
 ------------------------------------------------------------
 -- Ped Spawning Variables
 Config.Pedspawn = true -- Do you want to spawn peds for main locations?
@@ -92,19 +95,19 @@ Config.PedList = { -- APPARENTLY You can call config locations IN the config, le
 --Added mine lighting for my first world NVE problems
 --Don't always light up...
 Config.MineLights = {
-	{ coords = vector3(-594.30, 2082.89, 131.40+1.73), },
-	{ coords = vector3(-591.85, 2073.95, 131.35+1.73), },
-	{ coords = vector3(-589.98, 2066.16, 131.02+1.73), },
-	{ coords = vector3(-587.83, 2052.98, 130.21+1.73), },
-	{ coords = vector3(-583.94, 2041.11, 129.11+1.73), },
-	{ coords = vector3(-577.49, 2030.93, 128.24+1.73), },
-	{ coords = vector3(-567.83, 2020.27, 127.58+1.73), },
+	{ coords = vector3(-594.30, 2082.89, 131.40+1.53), },
+	{ coords = vector3(-591.85, 2073.95, 131.35+1.53), },
+	{ coords = vector3(-589.98, 2066.16, 131.02+1.53), },
+	{ coords = vector3(-587.83, 2052.98, 130.21+1.53), },
+	{ coords = vector3(-583.94, 2041.11, 129.11+1.53), },
+	{ coords = vector3(-577.49, 2030.93, 128.24+1.53), },
+	{ coords = vector3(-567.83, 2020.27, 127.58+1.53), },
 }
 
 ------------------------------------------------------------
 --Mining Store Items
 Config.Items = {
-    label = "Mining Store",  slots = 4,
+    label = "Mining Store",  slots = 5,
     items = {
 	[1] = { name = "water_bottle",
 			price = 0, amount = 100,
