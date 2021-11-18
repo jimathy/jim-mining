@@ -76,15 +76,6 @@ Config.SellItems = { -- Not working on yet
 Config.Crafting = {
 }
 ------------------------------------------------------------
--- Ped Spawning Variables
-Config.Pedspawn = true -- Do you want to spawn peds for main locations?
-
-Config.Invincible = true --Do you want the peds to be invincible?
-Config.Frozen = true --Do you want the peds to be unable to move? It's probably a yes, so leave true in there.
-Config.Stoic = true --Do you want the peds to react to what is happening in their surroundings?
-Config.Fade = true -- Do you want the peds to fade into/out of existence? It looks better than just *POP* its there.
-Config.Distance = 40.0 --The distance you want peds to spawn at
-
 Config.PedList = { -- APPARENTLY You can call config locations IN the config, learn't that one today
 	{ model = "S_M_Y_Construct_01", coords = Config.Locations['Mine'].location, heading = Config.Locations['Mine'].heading, gender = "male", scenario = "WORLD_HUMAN_CLIPBOARD", }, -- Outside Mine
 	{ model = "S_M_Y_Construct_01", coords = Config.Locations['Buyer'].location, heading = Config.Locations['Buyer'].heading, gender = "male", scenario = "WORLD_HUMAN_CLIPBOARD", }, -- Ore Buyer
