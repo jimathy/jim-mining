@@ -5,7 +5,7 @@ First script created by me from scratch
 After deving for a month on a server of messed up and mismatched scripts...I've learn't to do things in a tidy and dynamic way that most don't.
 
 - Highly customisable via config.lua
-- 
+
 - Customisable points for mining
   - Add a Location for an ore to the config and it will use this location for both bt-target and a prop
   - Can place them anywhere, doesn't have to be just one mining location
