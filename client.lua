@@ -2,6 +2,11 @@ local QBCore = nil
 
 TriggerEvent('QBCore:GetObject', function(obj) QBCore = obj end)
 
+RegisterNetEvent('QBCore:Client:OnPlayerLoaded')
+AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
+	print("Jim-Mining - Mining Script by Jimathy")
+end)
+
 function CreateBlips()
 	for k, v in pairs(Config.Locations) do
 		if Config.Locations[k].blipTrue then
