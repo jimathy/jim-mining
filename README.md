@@ -5,6 +5,7 @@ First script created by me from scratch
 After deving for a month on a server of messed up and mismatched scripts...I've learn't to do things in a tidy and dynamic way that most don't.
 
 - Highly customisable via config.lua
+- 
 - Customisable points for mining
   - Add a Location for an ore to the config and it will use this location for both bt-target and a prop
   - Can place them anywhere, doesn't have to be just one mining location
@@ -13,12 +14,18 @@ After deving for a month on a server of messed up and mismatched scripts...I've 
 - NPC's spawn on the blip locations
   - These locations can also give third eye and select ones have context menus for selling points
 
+- NPC's Spawn at Mineshaft + Quarry so your players can go to either
+
 - Features simplistic crafting that doesnt need another system
-  - Simple "take this item, give this item" crafting
+  - Simple "take this item, give this item" crafting used with 
 
 - Features Stone Cracking bench to fend off to the often used "Throw the rocks in smelter and magically organise ores"
-- Features Jewel cutting bench as an attempt to add more than just gold bars and such to sell
+  - Ores and jewels are rewarded here instead of at the mines 
 
+- Features Jewel Cutting bench as an attempt to add more than just gold bars and such to sell
+  - You can use your gold bars and jewels to craft other items to sell to a Jewellery Buyer
+
+- Should be easy to understand and add/remove items you want or not
 ## Dependencies
 - nh-context - for the menus
 - bt-target - for the third eye selection
