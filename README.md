@@ -25,12 +25,12 @@ After deving for a month on a server of messed up and mismatched scripts...I've 
 
 ## How to install
 # Minimal
+If you want to use your own items or repurpose this script:
 - Place in your resources folder
 - add the following code to your server.cfg/resources.cfg
 ```
 ensure jim-mining
 ```
-- If you don't want to add my items and repurpose this with your own items ignore the bottom part
 - If you want to use my items then:
 ## Put this in your shared.lua if you want to add and use the items
 
