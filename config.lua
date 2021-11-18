@@ -12,11 +12,13 @@ Config = {
 	Distance = 40.0, --The distance you want peds to spawn at
 }
 
+--Config.Pedspawn = false
 --Blips and Locations
 -- Each one has individual blip enablers
 -- Mine and Mine Leave have headings for the player locations
 Config.Locations =  {
 	['Mine'] = { name = "Mine", location = vector3(-595.15,2091.23,131.46-1.03), heading = 61.59, blipTrue = true }, -- The location where you enter the mine 
+	['Quarry'] = { name = "Quarry", location = vector3(2961.02, 2754.14, 43.71-1.03), heading = 200.0, blipTrue = true }, -- The location where you enter the mine 
 	['Smelter'] = {	name = "Smelter", location = vector3(1112.29, -2009.9, 31.46), blipTrue = true }, -- The location of the smelter
 	['Cracking'] = { name = "Stone Cracking", location = vector3(1109.27,-1992.68,30.99-1.03), heading = 305.0-180.0, blipTrue = false }, -- The location of the smelter
 	['Buyer'] = { name = "Ore Buyer", location = vector3(1085.7,-2001.04,31.41-1.03), heading = 323.73, blipTrue = false }, -- The Location of the ore buyer
@@ -28,15 +30,21 @@ Config.Locations =  {
 --Ores and Props
 
 Config.OrePositions = {
+	---MineShaft Locations
 	{ coords = vector3(-587.05, 2059.08, 129.75), },
 	{ coords = vector3(-588.49, 2048.05, 129.95-1.0), },
 	{ coords = vector3(-580.10, 2037.82, 128.8-1.0), },
 	{ coords = vector3(-572.28, 2022.37, 127.93-1.0), },
+	{ coords = vector3(-562.8, 2011.85, 127.55-1.0), },
+	--Quarry Locations
+	{ coords = vector3(2980.37, 2748.4, 43.4-1.5), },
+	{ coords = vector3(2985.77, 2751.19, 43.46-1.5), },
+	{ coords = vector3(2990.38, 2750.4, 43.46-1.5), },
+	{ coords = vector3(3000.77, 2754.15, 43.5-1.5), },
+	{ coords = vector3(2977.74, 2741.16, 44.54-1.5), },
 }
 
 -----------------------------------------------------------
---Mining rewards stone
-Config.MineReward = { "stone" }
 
 Config.RewardPool = {
 	'carbon', 'carbon', 'carbon', 'carbon', --4x
@@ -48,9 +56,9 @@ Config.RewardPool = {
 	'uncut_emerald',
 	'uncut_diamond',
 }
+
 ------------------------------------------------------------
--- Prices items sell for
-Config.SellItems = {
+Config.SellItems = { -- Selling Prices
 	['copperore'] = 100,
 	['goldore'] = 100,
 	['ironore'] = 100,
@@ -72,9 +80,12 @@ Config.SellItems = {
 	['10kgoldchain'] = 100,
 
 }
+
 ------------------------------------------------------------
+
 Config.PedList = { -- APPARENTLY You can call config locations IN the config, learn't that one today
 	{ model = "S_M_Y_Construct_01", coords = Config.Locations['Mine'].location, heading = Config.Locations['Mine'].heading, gender = "male", scenario = "WORLD_HUMAN_CLIPBOARD", }, -- Outside Mine
+	{ model = "S_M_Y_Construct_01", coords = Config.Locations['Quarry'].location, heading = Config.Locations['Quarry'].heading, gender = "male", scenario = "WORLD_HUMAN_CLIPBOARD", }, -- Outside Mine
 	{ model = "S_M_Y_Construct_01", coords = Config.Locations['Buyer'].location, heading = Config.Locations['Buyer'].heading, gender = "male", scenario = "WORLD_HUMAN_CLIPBOARD", }, -- Ore Buyer
 	{ model = "S_M_M_HighSec_03", coords = Config.Locations['Buyer2'].location, heading = Config.Locations['Buyer2'].heading, gender = "male", scenario = "WORLD_HUMAN_CLIPBOARD", }, -- Jewel Buyer
 }

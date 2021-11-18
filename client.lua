@@ -169,7 +169,11 @@ end
 -----------------------------------------------------------
 
 Citizen.CreateThread(function()
-	exports['bt-target']:AddCircleZone("MineStart", Config.Locations['Mine'].location, 2.0, { name="MineStart", debugPoly=false, useZ=true, }, 
+	exports['bt-target']:AddCircleZone("MineShaft", Config.Locations['Mine'].location, 2.0, { name="MineShaft", debugPoly=false, useZ=true, }, 
+	{ options = { { event = "jim-mining:openShop", icon = "fas fa-certificate", label = "Browse Store", }, },
+		job = {"all"}, distance = 2.0
+	})
+	exports['bt-target']:AddCircleZone("Quarry", Config.Locations['Quarry'].location, 2.0, { name="Quarry", debugPoly=false, useZ=true, }, 
 	{ options = { { event = "jim-mining:openShop", icon = "fas fa-certificate", label = "Browse Store", }, },
 		job = {"all"}, distance = 2.0
 	})
@@ -283,47 +287,65 @@ end)
 
 -- Cut Command / Animations
 -- Requires a drill
-RegisterNetEvent('jim-mining:CutStart')
-AddEventHandler('jim-mining:CutStart', function (data)
-	QBCore.Functions.TriggerCallback("QBCore:HasItem", function(item) 
-		if item then 
+RegisterNetEvent('jim-mining:Cutting:Begin')
+AddEventHandler('jim-mining:Cutting:Begin', function (data)
+	QBCore.Functions.TriggerCallback("jim-mining:Cutting:Check:"..data.id,function(hasReq) 
+		if hasReq then 
+			QBCore.Functions.TriggerCallback("QBCore:HasItem", function(item) 
+				if item then 
+					local pos = GetEntityCoords(GetPlayerPed(-1))
+					loadAnimDict('amb@prop_human_parking_meter@male@idle_a')
+					TaskPlayAnim(GetPlayerPed(-1), 'amb@prop_human_parking_meter@male@idle_a', 'idle_a' , 3.0, 3.0, -1, 1, 0, false, false, false)
+					QBCore.Functions.Progressbar("open_locker_drill", "Cutting..", math.random(10000,15000), false, true, {
+						disableMovement = true, disableCarMovement = true,disableMouse = false,	disableCombat = true, }, {}, {}, {}, function() -- Done
+						StopAnimTask(GetPlayerPed(-1), 'amb@prop_human_parking_meter@male@idle_a', 'idle_a', 1.0)
+							TriggerServerEvent('jim-mining:Cutting:Reward', data.id)
+							IsDrilling = false
+					end, function() -- Cancel
+						StopAnimTask(GetPlayerPed(-1), 'amb@prop_human_parking_meter@male@idle_a', 'idle_a', 1.0)
+						IsDrilling = false
+					end)
+				else 
+					QBCore.Functions.Notify("You need a drill to make jewellery", "error")
+				end 
+			end, "drill")
+		else
+			QBCore.Functions.Notify("You don\'t have all ingredients!", "error")
+		end
+	end)
+end)
+
+-- I'm proud of this whole trigger command here
+-- I was worried I'd have to do loads of call backs, back and forths in the this command
+-- I had a theory that (like with notifications) I'd be able to add in a dynamic variable with the trigger being called
+-- IT WORKED, and here we have it calling a item check callback vite the ID it recieves from the menu buttons
+
+-- Smelt Command / Animations
+RegisterNetEvent('jim-mining:Smelting:Begin')
+AddEventHandler('jim-mining:Smelting:Begin', function (data)
+	QBCore.Functions.TriggerCallback("jim-mining:Smelting:Check:"..data.id,function(hasReq) 
+		if hasReq then 
 			local pos = GetEntityCoords(GetPlayerPed(-1))
 			loadAnimDict('amb@prop_human_parking_meter@male@idle_a')
 			TaskPlayAnim(GetPlayerPed(-1), 'amb@prop_human_parking_meter@male@idle_a', 'idle_a' , 3.0, 3.0, -1, 1, 0, false, false, false)
-			QBCore.Functions.Progressbar("open_locker_drill", "Cutting..", math.random(10000,15000), false, true, {
+			QBCore.Functions.Progressbar("open_locker_drill", "Smelting..", math.random(10000,15000), false, true, {
 				disableMovement = true, disableCarMovement = true,disableMouse = false,	disableCombat = true, }, {}, {}, {}, function() -- Done
 				StopAnimTask(GetPlayerPed(-1), 'amb@prop_human_parking_meter@male@idle_a', 'idle_a', 1.0)
-					TriggerServerEvent('jim-mining:Cutting', data.id)
+	
+					TriggerServerEvent('jim-mining:Smelting:Reward', data) -- When animations finished this is called and does the correct reward command via the ID it received from the menu
+	
 					IsDrilling = false
 			end, function() -- Cancel
 				StopAnimTask(GetPlayerPed(-1), 'amb@prop_human_parking_meter@male@idle_a', 'idle_a', 1.0)
 				IsDrilling = false
 			end)
-		else 
-			QBCore.Functions.Notify("You need a drill to make jewellery", "error")
-		end 
-	end, "drill")
-end)
-
--- Smelt Command / Animations
-RegisterNetEvent('jim-mining:SmeltStart')
-AddEventHandler('jim-mining:SmeltStart', function ()
-	local pos = GetEntityCoords(GetPlayerPed(-1))
-	loadAnimDict('amb@prop_human_parking_meter@male@idle_a')
-	TaskPlayAnim(GetPlayerPed(-1), 'amb@prop_human_parking_meter@male@idle_a', 'idle_a' , 3.0, 3.0, -1, 1, 0, false, false, false)
-	QBCore.Functions.Progressbar("open_locker_drill", "Smelting..", math.random(10000,15000), false, true, {
-		disableMovement = true, disableCarMovement = true,disableMouse = false,	disableCombat = true, }, {}, {}, {}, function() -- Done
-		StopAnimTask(GetPlayerPed(-1), 'amb@prop_human_parking_meter@male@idle_a', 'idle_a', 1.0)
-			TriggerServerEvent('jim-mining:Smelting', data.id)
-			IsDrilling = false
-	end, function() -- Cancel
-		StopAnimTask(GetPlayerPed(-1), 'amb@prop_human_parking_meter@male@idle_a', 'idle_a', 1.0)
-		IsDrilling = false
+		else
+			QBCore.Functions.Notify("You don\'t have all ingredients!", "error")
+		end
 	end)
 end)
 
 
---Menu Animation commands
 ------------------------------------------------------------
 --These also lead to the actual selling commands
 
@@ -479,19 +501,19 @@ RegisterNetEvent('jim-mining:SmeltMenu', function()
 		txt = "", }, 
 	{   id = 2, header = "Smelt Copper Ore",
 		txt = "Smelt Copper Ore into 10 Copper",
-		params = { event = "jim-mining:SmeltStart",
+		params = { event = "jim-mining:Smelting:Begin",
 		args = { number = 1, id = 1 } } },
 	{   id = 3, header = "Smelt Gold",
 		txt = "Smelt 4 Gold Ore into 1 Gold Bar",
-		params = { event = "jim-mining:SmeltStart",
+		params = { event = "jim-mining:Smelting:Begin",
 		args = { number = 1, id = 2 } } },
 	{   id = 4, header = "Smelt Iron",
 		txt = "Smelt Iron Ore into 10 Iron",
-		params = { event = "jim-mining:SmeltStart",
+		params = { event = "jim-mining:Smelting:Begin",
 		args = { number = 1, id = 3	} } },
 	{   id = 5, header = "Smelt Steel",
 		txt = "Smelt Iron Ore and Carbon into Steel",
-		params = { event = "jim-mining:SmeltStart",
+		params = { event = "jim-mining:Smelting:Begin",
 		args = { number = 1, id = 4 } } }, })
 end)
 
@@ -505,15 +527,15 @@ RegisterNetEvent('jim-mining:JewelCut', function()
 		txt = "", },
 	{   id = 2, header = "Cut Emerald",
 		txt = "Carefully cut to increase value",
-		params = { event = "jim-mining:CutStart",
+		params = { event = "jim-mining:Cutting:Begin",
 		args = { number = 1, id = 1 } } },
 	{   id = 3, header = "Cut Ruby",
 		txt = "Carefully cut to increase value",
-		params = { event = "jim-mining:CutStart",
+		params = { event = "jim-mining:Cutting:Begin",
 		args = { number = 1, id = 2	} } },
 	{   id = 4, header = "Cut Diamond",
 		txt = "Carefully cut to increase value",
-		params = { event = "jim-mining:CutStart",
+		params = { event = "jim-mining:Cutting:Begin",
 		args = { number = 1, id = 3 } } },
 	{   id = 5, header = "Make Rings",
 		txt = "Go to Ring Crafting Section",
@@ -522,8 +544,8 @@ RegisterNetEvent('jim-mining:JewelCut', function()
 	{   id = 6, header = "Make Necklaces",
 		txt = "Go to Necklace Crafting Section",
 		params = { event = "jim-mining:JewelCut:Necklace",
-		args = { number = 1, id = 4 } } }, })
-end
+		args = { number = 1, id = 5 } } }, })
+end)
 
 RegisterNetEvent('jim-mining:JewelCut:Ring', function()
     TriggerEvent('nh-context:sendMenu', {
@@ -532,12 +554,12 @@ RegisterNetEvent('jim-mining:JewelCut:Ring', function()
 		params = { event = "jim-mining:JewelCut",
 		args = { number = 1, id = 1 } } },
 	{   id = 2, header = "Gold Ring x3",
-		txt = "Carefully cut to increase value",
-		params = { event = "jim-mining:CutStart",
+		txt = "Requires 1 Gold Bar",
+		params = { event = "jim-mining:Cutting:Begin",
 		args = { number = 1, id = 4 } } },
 	{   id = 3, header = "Diamond Ring",
-		txt = "Requires: 1 Drill - 1 Gold Ore",
-		params = { event = "jim-mining:CutStart",
+		txt = "Requires 1 Gold Bar",
+		params = { event = "jim-mining:Cutting:Begin",
 		args = { number = 1, id = 5 } } }, })
 end)
 
@@ -549,11 +571,11 @@ RegisterNetEvent('jim-mining:JewelCut:Necklace', function()
 		args = { number = 1, id = 1 } } },
 	{   id = 2, header = "Gold Chain x3",
 		txt = "Requires 1 Gold Bar",
-		params = { event = "jim-mining:CutStart",
+		params = { event = "jim-mining:Cutting:Begin",
 		args = { number = 1, id = 6 } } },
 	{   id = 3, header = "10k Gold Chain x2",
 		txt = "Requires 1 Gold Bar",
-		params = { event = "jim-mining:CutStart",
+		params = { event = "jim-mining:Cutting:Begin",
 		args = { number = 1, id = 7 } } }, })
 end)
 
