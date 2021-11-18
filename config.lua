@@ -72,9 +72,6 @@ Config.SellItems = {
 	['10kgoldchain'] = 100,
 
 }
-
-Config.Crafting = {
-}
 ------------------------------------------------------------
 Config.PedList = { -- APPARENTLY You can call config locations IN the config, learn't that one today
 	{ model = "S_M_Y_Construct_01", coords = Config.Locations['Mine'].location, heading = Config.Locations['Mine'].heading, gender = "male", scenario = "WORLD_HUMAN_CLIPBOARD", }, -- Outside Mine
