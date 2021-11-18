@@ -23,8 +23,8 @@ After deving for a month on a server of messed up and mismatched scripts...I've 
 - nh-context - for the menus
 - bt-target - for the third eye selection
 
-## How to install
-# Minimal
+# How to install
+## Minimal
 If you want to use your own items or repurpose this script:
 - Place in your resources folder
 - add the following code to your server.cfg/resources.cfg
