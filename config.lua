@@ -49,7 +49,8 @@ Config.RewardPool = {
 	'uncut_diamond',
 }
 ------------------------------------------------------------
-Config.SellItems = { -- Not working on yet
+-- Prices items sell for
+Config.SellItems = {
 	['copperore'] = 100,
 	['goldore'] = 100,
 	['ironore'] = 100,
