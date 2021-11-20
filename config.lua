@@ -55,6 +55,7 @@ Config.RewardPool = {
 	'uncut_ruby',
 	'uncut_emerald',
 	'uncut_diamond',
+	'uncut_sapphire',
 }
 
 ------------------------------------------------------------
@@ -69,12 +70,23 @@ Config.SellItems = { -- Selling Prices
 	['uncut_emerald'] = 100,
 	['uncut_ruby'] = 100,
 	['uncut_diamond'] = 100,
-	
+	['uncut_sapphire'] = 100,
+
 	['emerald'] = 100,
 	['ruby'] = 100,
 	['diamond'] = 100,
-	
+	['sapphire'] = 100,
+
 	['diamond_ring'] = 100,
+	['emerald_ring'] = 100,
+	['ruby_ring'] = 100,
+	['sapphire_ring'] = 100,
+
+	['diamond_necklace'] = 100,
+	['emerald_necklace'] = 100,
+	['ruby_necklace'] = 100,
+	['sapphire_necklace'] = 100,
+
 	['gold_ring'] = 100,
 	['goldchain'] = 100,
 	['10kgoldchain'] = 100,
@@ -106,26 +118,13 @@ Config.MineLights = {
 ------------------------------------------------------------
 --Mining Store Items
 Config.Items = {
-    label = "Mining Store",  slots = 5,
+    label = "Mining Store",  slots = 7,
     items = {
-	[1] = { name = "water_bottle",
-			price = 0, amount = 100,
-			info = {}, type = "item",
-			slot = 1, },
-	[2] = { name = "sandwich",
-			price = 0, amount = 250,
-			info = {}, type = "item",
-			slot = 2, },
-	[3] = { name = "bandage",
-			price = 0, amount = 100,
-			info = {}, type = "item",
-			slot = 3, },
-	[4] = { name = "weapon_flashlight",
-			price = 0, amount = 1,
-			info = {}, type = "item",
-			slot = 4, }, 
-	[5] = { name = "drill",
-			price = 0, amount = 1,
-			info = {}, type = "item",
-			slot = 5, }, }
+	[1] = { name = "water_bottle", price = 0, amount = 100, info = {}, type = "item", slot = 1, },
+	[2] = { name = "sandwich", price = 0, amount = 250, info = {}, type = "item", slot = 2, },
+	[3] = { name = "bandage", price = 0, amount = 100, info = {}, type = "item", slot = 3, },
+	[4] = { name = "weapon_flashlight", price = 0, amount = 100, info = {}, type = "item", slot = 4, }, 
+	[5] = { name = "drill",	price = 0, amount = 100, info = {}, type = "item", slot = 5, }, 
+	[6] = { name = "handdrill",	price = 0, amount = 100, info = {}, type = "item",	slot = 6, },
+	[7] = { name = "drillbit", price = 0, amount = 100,	info = {}, type = "item", slot = 7, }, }		
 }
