@@ -1,6 +1,5 @@
 # jim-mining
-FiveM Custom mining script by me
-First script created by me from scratch
+FiveM Custom mining script by me from scratch
 
 After deving for a month on a server of messed up and mismatched scripts...I've learn't to do things in a tidy and dynamic way that most don't.
 
