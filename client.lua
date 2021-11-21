@@ -2,11 +2,6 @@ local QBCore = nil
 
 TriggerEvent('QBCore:GetObject', function(obj) QBCore = obj end)
 
-RegisterNetEvent('QBCore:Client:OnPlayerLoaded')
-AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
-	print("Jim-Mining - Mining Script by Jimathy")
-end)
-
 function CreateBlips()
 	for k, v in pairs(Config.Locations) do
 		if Config.Locations[k].blipTrue then
@@ -48,23 +43,26 @@ end)
 local peds = {}
 local shopPeds = {}
 function CreatePeds()
-	for k = 1, #Config.PedList, 1 do
-		v = Config.PedList[k]
-		local playerCoords = GetEntityCoords(PlayerPedId())
-		local dist = #(playerCoords - v.coords)
-		if dist < Config.Distance and not peds[k] then
-			local ped = nearPed(v.model, v.coords, v.heading, v.gender, v.animDict, v.animName, v.scenario)
-			peds[k] = {ped = ped}
-		end
-		if dist >= Config.Distance and peds[k] then
-			if Config.Fade then
-				for i = 255, 0, -51 do
-					Citizen.Wait(50)
-					SetEntityAlpha(peds[k].ped, i, false)
-				end
+	while true do
+		Citizen.Wait(500)
+		for k = 1, #Config.PedList, 1 do
+			v = Config.PedList[k]
+			local playerCoords = GetEntityCoords(PlayerPedId())
+			local dist = #(playerCoords - v.coords)
+			if dist < Config.Distance and not peds[k] then
+				local ped = nearPed(v.model, v.coords, v.heading, v.gender, v.animDict, v.animName, v.scenario)
+				peds[k] = {ped = ped}
 			end
-			DeletePed(peds[k].ped)
-			peds[k] = nil
+			if dist >= Config.Distance and peds[k] then
+				if Config.Fade then
+					for i = 255, 0, -51 do
+						Citizen.Wait(50)
+						SetEntityAlpha(peds[k].ped, i, false)
+					end
+				end
+				DeletePed(peds[k].ped)
+				peds[k] = nil
+			end
 		end
 	end
 end
@@ -339,11 +337,11 @@ end)
 --Selling animations are simply a pass item to seller animation
 --Sell Ore Animation
 --Sell Anim small Test
-RegisterNetEvent('jim-mining:SellAnim:Ore')
-AddEventHandler('jim-mining:SellAnim:Ore', function(data)
+RegisterNetEvent('jim-mining:SellAnim')
+AddEventHandler('jim-mining:SellAnim', function(data)
 	local pid = PlayerPedId()
 	loadAnimDict("mp_common")
-	TriggerServerEvent('jim-mining:SellOre', data.id) -- Had to slip in the sell command during the animation command
+	TriggerServerEvent('jim-mining:Selling', data) -- Had to slip in the sell command during the animation command
 	for k,v in pairs (shopPeds) do
         pCoords = GetEntityCoords(PlayerPedId())
         ppCoords = GetEntityCoords(v)
@@ -393,20 +391,20 @@ RegisterNetEvent('jim-mining:SellOre', function()
 		txt = "", }, 
 	{   id = 2, header = "Copper Ore",
 		txt = "Sell ALL at $"..Config.SellItems['copperore'].." each",
-		params = { event = "jim-mining:SellAnim:Ore",
-		args = { number = 1, id = 1 } } },
+		params = { event = "jim-mining:SellAnim",
+		args = { number = 1, mat = 'copperore' } } },
 	{   id = 3,	header = "Iron Ore",
 		txt = "Sell ALL at $"..Config.SellItems['ironore'].." each",
-		params = { event = "jim-mining:SellAnim:Ore",
-		args = { number = 1, id = 2 } } },
+		params = { event = "jim-mining:SellAnim",
+		args = { number = 1,  mat = 'ironore' } } },
 	{   id = 4, header = "Gold Ore",
 		txt = "Sell ALL at $"..Config.SellItems['goldore'].." each",
-		params = { event = "jim-mining:SellAnim:Ore",
-		args = { number = 1, id = 3 } } },
+		params = { event = "jim-mining:SellAnim",
+		args = { number = 1,  mat = 'goldore' } } },
 	{   id = 5, header = "Carbon",
 		txt = "Sell ALL at $"..Config.SellItems['carbon'].." each",
-		params = { event = "jim-mining:SellAnim:Ore",
-		args = { number = 1, id = 4 } } }, })
+		params = { event = "jim-mining:SellAnim",
+		args = { number = 1,  mat = 'carbon' } } }, })
 end)
 ------------------------
 --Jewel Selling Main Menu
@@ -423,10 +421,13 @@ RegisterNetEvent('jim-mining:JewelSell', function()
 	{   id = 4, header = "Diamonds",
 		txt = "See all Diamond selling options",
 		params = { event = "jim-mining:JewelSell:Diamond", } },
-	{   id = 5, header = "Rings",
+	{   id = 5, header = "Sapphires",
+		txt = "See all Sapphire selling options",
+		params = { event = "jim-mining:JewelSell:Sapphire", } },
+	{   id = 6, header = "Rings",
 		txt = "See all Ring Options",
 		params = { event = "jim-mining:JewelSell:Rings", } },
-	{   id = 6, header = "Rings",
+	{   id = 7, header = "Rings",
 		txt = "See all Necklace Options",
 		params = { event = "jim-mining:JewelSell:Necklace", } },})
 end)
@@ -438,12 +439,12 @@ RegisterNetEvent('jim-mining:JewelSell:Emerald', function()
 		params = { event = "jim-mining:JewelSell", } },
 	{   id = 2, header = "Emeralds",
 		txt = "Sell ALL at $"..Config.SellItems['emerald'].." each",
-		params = { event = "jim-mining:SellAnim:Jewel",
-		args = { number = 1, id = 1 } } },
+		params = { event = "jim-mining:SellAnim",
+		args = { number = 1, mat = 'emerald' } } },
 	{   id = 3, header = "Uncut Emeralds",
 		txt = "Sell ALL at $"..Config.SellItems['uncut_emerald'].." each",
-		params = { event = "jim-mining:SellAnim:Jewel",
-		args = { number = 1, id = 2 } } }, })
+		params = { event = "jim-mining:SellAnim",
+		args = { number = 1, mat = 'uncut_emerald' } } }, })
 end)
 --Jewel Selling - Ruby Menu
 RegisterNetEvent('jim-mining:JewelSell:Ruby', function()
@@ -453,12 +454,12 @@ RegisterNetEvent('jim-mining:JewelSell:Ruby', function()
 		params = { event = "jim-mining:JewelSell", } },
 	{   id = 2, header = "Rubys",
 		txt = "Sell ALL at $"..Config.SellItems['ruby'].." each",
-		params = { event = "jim-mining:SellAnim:Jewel",
-		args = { number = 1, id = 3 } } },
+		params = { event = "jim-mining:SellAnim",
+		args = { number = 1, mat = 'ruby' } } },
 	{   id = 3, header = "Uncut Rubys",
 		txt = "Sell ALL at $"..Config.SellItems['uncut_ruby'].." each",
-		params = { event = "jim-mining:SellAnim:Jewel",
-		args = { number = 1, id = 4 } } }, })
+		params = { event = "jim-mining:SellAnim",
+		args = { number = 1, mat = 'uncut_ruby' } } }, })
 end)
 --Jewel Selling - Diamonds Menu
 RegisterNetEvent('jim-mining:JewelSell:Diamond', function()
@@ -468,12 +469,12 @@ RegisterNetEvent('jim-mining:JewelSell:Diamond', function()
 		params = { event = "jim-mining:JewelSell", } },
 	{   id = 2, header = "Diamonds",
 		txt = "Sell ALL at $"..Config.SellItems['diamond'].." each",
-		params = { event = "jim-mining:SellAnim:Jewel",
-		args = { number = 1, id = 5 } } },
+		params = { event = "jim-mining:SellAnim",
+		args = { number = 1, mat = 'diamond' } } },
 	{   id = 3, header = "Uncut Diamonds",
 		txt = "Sell ALL at $"..Config.SellItems['uncut_diamond'].." each",
-		params = { event = "jim-mining:SellAnim:Jewel",
-		args = { number = 1, id = 6 } } }, })
+		params = { event = "jim-mining:SellAnim",
+		args = { number = 1, mat = 'uncut_diamond' } } }, })
 end)
 --Jewel Selling - Sapphire Menu
 RegisterNetEvent('jim-mining:JewelSell:Sapphire', function()
@@ -481,14 +482,14 @@ RegisterNetEvent('jim-mining:JewelSell:Sapphire', function()
 	{   id = 1, header = "< Go Back",
 		txt = "",
 		params = { event = "jim-mining:JewelSell", } },
-	{   id = 2, header = "Diamonds",
+	{   id = 2, header = "Sapphire",
 		txt = "Sell ALL at $"..Config.SellItems['sapphire'].." each",
-		params = { event = "jim-mining:SellAnim:Jewel",
-		args = { number = 1, id = 7 } } },
-	{   id = 3, header = "Uncut Diamonds",
+		params = { event = "jim-mining:SellAnim",
+		args = { number = 1, mat = 'sapphire' } } },
+	{   id = 3, header = "Uncut Sapphire",
 		txt = "Sell ALL at $"..Config.SellItems['uncut_sapphire'].." each",
-		params = { event = "jim-mining:SellAnim:Jewel",
-		args = { number = 1, id = 8} } }, })
+		params = { event = "jim-mining:SellAnim",
+		args = { number = 1, mat = 'uncut_sapphire' } } }, })
 end)
 
 --Jewel Selling - Jewellry Menu
@@ -499,24 +500,24 @@ RegisterNetEvent('jim-mining:JewelSell:Rings', function()
 		params = { event = "jim-mining:JewelSell", } },
 	{   id = 2, header = "Gold Rings",
 		txt = "Sell ALL at $"..Config.SellItems['gold_ring'].." each",
-		params = { event = "jim-mining:SellAnim:Jewel",
-		args = { number = 1, id = 9 } } },
+		params = { event = "jim-mining:SellAnim",
+		args = { number = 1, mat = 'gold_ring' } } },
 	{   id = 3, header = "Diamond Rings",
 		txt = "Sell ALL at $"..Config.SellItems['diamond_ring'].." each",
-		params = { event = "jim-mining:SellAnim:Jewel",
-		args = { number = 1, id = 10 } } },
+		params = { event = "jim-mining:SellAnim",
+		args = { number = 1, mat = 'diamond_ring'} } },
 	{   id = 4, header = "Emerald Rings",
 		txt = "Sell ALL at $"..Config.SellItems['emerald_ring'].." each",
-		params = { event = "jim-mining:SellAnim:Jewel",
-		args = { number = 1, id = 11 } } },
+		params = { event = "jim-mining:SellAnim",
+		args = { number = 1, mat = 'emerald_ring' } } },
 	{   id = 5, header = "Ruby Rings",
 		txt = "Sell ALL at $"..Config.SellItems['ruby_ring'].." each",
-		params = { event = "jim-mining:SellAnim:Jewel",
-		args = { number = 1, id = 12 } } },	
+		params = { event = "jim-mining:SellAnim",
+		args = { number = 1, mat = 'ruby_ring' } } },	
 	{   id = 6, header = "Sapphire Rings",
 		txt = "Sell ALL at $"..Config.SellItems['sapphire_ring'].." each",
-		params = { event = "jim-mining:SellAnim:Jewel",
-		args = { number = 1, id = 13 } } }, })
+		params = { event = "jim-mining:SellAnim",
+		args = { number = 1, mat = 'sapphire_ring' } } }, })
 end)
 --Jewel Selling - Jewellry Menu
 RegisterNetEvent('jim-mining:JewelSell:Necklace', function()
@@ -526,28 +527,28 @@ RegisterNetEvent('jim-mining:JewelSell:Necklace', function()
 		params = { event = "jim-mining:JewelSell", } },
 	{   id = 2, header = "Gold Chains",
 		txt = "Sell ALL at $"..Config.SellItems['goldchain'].." each",
-		params = { event = "jim-mining:SellAnim:Jewel",
-		args = { number = 1, id = 14 } } },
+		params = { event = "jim-mining:SellAnim",
+		args = { number = 1, mat = 'goldchain' } } },
 	{   id = 3, header = "Gold Chains",
 		txt = "Sell ALL at $"..Config.SellItems['10kgoldchain'].." each",
-		params = { event = "jim-mining:SellAnim:Jewel",
-		args = { number = 1, id = 15 } } },
+		params = { event = "jim-mining:SellAnim",
+		args = { number = 1, mat = '10kgoldchain' } } },
 	{   id = 4, header = "Diamond Necklace",
 		txt = "Sell ALL at $"..Config.SellItems['diamond_necklace'].." each",
-		params = { event = "jim-mining:SellAnim:Jewel",
-		args = { number = 1, id = 16 } } },
+		params = { event = "jim-mining:SellAnim",
+		args = { number = 1, mat = 'diamond_necklace' } } },
 	{   id = 5, header = "Emerald Necklace",
 		txt = "Sell ALL at $"..Config.SellItems['emerald_necklace'].." each",
-		params = { event = "jim-mining:SellAnim:Jewel",
-		args = { number = 1, id = 17 } } },
+		params = { event = "jim-mining:SellAnim",
+		args = { number = 1, mat = 'emerald_necklace' } } },
 	{   id = 6, header = "Ruby Necklace",
 		txt = "Sell ALL at $"..Config.SellItems['ruby_necklace'].." each",
-		params = { event = "jim-mining:SellAnim:Jewel",
-		args = { number = 1, id = 18 } } },	
+		params = { event = "jim-mining:SellAnim",
+		args = { number = 1, mat = 'ruby_necklace' } } },	
 	{   id = 7, header = "Sapphire Necklace",
 		txt = "Sell ALL at $"..Config.SellItems['sapphire_necklace'].." each",
-		params = { event = "jim-mining:SellAnim:Jewel",
-		args = { number = 1, id = 19 } } }, })
+		params = { event = "jim-mining:SellAnim",
+		args = { number = 1, mat = 'sapphire_necklace' } } }, })
 end)
 ------------------------
 

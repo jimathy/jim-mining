@@ -25,7 +25,25 @@ AddEventHandler('jim-mining:CrackReward', function()
     TriggerClientEvent("inventory:client:ItemBox", source, QBCore.Shared.Items[Config.RewardPool[oreToGive]], "add", amount)
 end)
 
-RegisterServerEvent('jim-mining:SellOre')
+RegisterNetEvent("jim-mining:Selling")
+AddEventHandler("jim-mining:Selling", function(data)
+    local src = source
+    local Player = QBCore.Functions.GetPlayer(src)
+		
+    local currentitem = data.mat 
+    if Player.Functions.GetItemByName(currentitem) ~= nil then
+        local amount = Player.Functions.GetItemByName(currentitem).amount
+        local pay = (amount * Config.Prices[currentitem].amount)
+        Player.Functions.RemoveItem(currentitem, amount)
+        Player.Functions.AddMoney('cash', pay)
+        TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[currentitem], 'remove', amount)
+    else
+        TriggerClientEvent("QBCore:Notify", src, "You don't have any "..QBCore.Shared.Items[currentitem].label.. "", "error")
+    end
+    Citizen.Wait(1000)
+end)
+
+--[[RegisterServerEvent('jim-mining:SellOre')
 AddEventHandler('jim-mining:SellOre', function(data)
     local src = source
 	local Player = QBCore.Functions.GetPlayer(source)
@@ -38,15 +56,15 @@ AddEventHandler('jim-mining:SellOre', function(data)
 	elseif data == 4 then
 		currentore = 'carbon'
 	end
-	
-    if Player.Functions.GetItemByName(currentore) ~= nil then
-		amount = Player.Functions.GetItemByName(currentore).amount
-		pay = (amount * Config.SellItems[currentore])
-		Player.Functions.RemoveItem(currentore, amount)
+	local currentitem = data.mat
+    if Player.Functions.GetItemByName(currentitem) ~= nil then
+		amount = Player.Functions.GetItemByName(currentitem).amount
+		pay = (amount * Config.SellItems[currentitem])
+		Player.Functions.RemoveItem(currentitem, amount)
 		Player.Functions.AddMoney('cash', pay)
-		TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[currentore], 'remove', amount)
+		TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[currentitem], 'remove', amount)
 	else
-		TriggerClientEvent('QBCore:Notify', source, "You don't have any to sell.", "error")
+		TriggerClientEvent('QBCore:Notify', source, "You don't have any "..QBCore.Shared.Items[material].label.. "", "error")
 	end
 end)
 
@@ -105,7 +123,7 @@ AddEventHandler('jim-mining:SellJewel', function(data)
 	else
 		TriggerClientEvent('QBCore:Notify', source, "You don't have any to sell.", "error")
 	end
-end)
+end)]]
 
 
 --Attempt at making simple crafting/smelting recipies

@@ -1,3 +1,5 @@
+print("Jim-Mining - Mining Script by Jimathy")
+
 Config = {}
 
 Config = {
