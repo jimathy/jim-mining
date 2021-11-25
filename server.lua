@@ -30,101 +30,19 @@ AddEventHandler("jim-mining:Selling", function(data)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
 		
-    local currentitem = data.mat 
-    if Player.Functions.GetItemByName(currentitem) ~= nil then
-        local amount = Player.Functions.GetItemByName(currentitem).amount
-        local pay = (amount * Config.Prices[currentitem].amount)
-        Player.Functions.RemoveItem(currentitem, amount)
+    local currentitem = data
+    if Player.Functions.GetItemByName(data) ~= nil then
+        local amount = Player.Functions.GetItemByName(data).amount
+        local pay = (amount * Config.SellItems[data])
+        Player.Functions.RemoveItem(data, amount)
         Player.Functions.AddMoney('cash', pay)
-        TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[currentitem], 'remove', amount)
+        TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[data], 'remove', amount)
     else
-        TriggerClientEvent("QBCore:Notify", src, "You don't have any "..QBCore.Shared.Items[currentitem].label.. "", "error")
+		TriggerClientEvent("QBCore:Notify", src, data, "error")
+        TriggerClientEvent("QBCore:Notify", src, "You don't have any "..QBCore.Shared.Items[data].label.. "", "error")
     end
     Citizen.Wait(1000)
 end)
-
---[[RegisterServerEvent('jim-mining:SellOre')
-AddEventHandler('jim-mining:SellOre', function(data)
-    local src = source
-	local Player = QBCore.Functions.GetPlayer(source)
-	if data == 1 then
-		currentore = 'copperore'
-	elseif data == 2 then
-		currentore = 'ironore'
-	elseif data == 3 then
-		currentore = 'goldore'
-	elseif data == 4 then
-		currentore = 'carbon'
-	end
-	local currentitem = data.mat
-    if Player.Functions.GetItemByName(currentitem) ~= nil then
-		amount = Player.Functions.GetItemByName(currentitem).amount
-		pay = (amount * Config.SellItems[currentitem])
-		Player.Functions.RemoveItem(currentitem, amount)
-		Player.Functions.AddMoney('cash', pay)
-		TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[currentitem], 'remove', amount)
-	else
-		TriggerClientEvent('QBCore:Notify', source, "You don't have any "..QBCore.Shared.Items[material].label.. "", "error")
-	end
-end)
-
-RegisterServerEvent('jim-mining:SellJewel')
-AddEventHandler('jim-mining:SellJewel', function(data)
-    local src = source
-	local Player = QBCore.Functions.GetPlayer(source)
-	if data == 1 then
-		currentjewel = 'emerald'
-	elseif data == 2 then
-		currentjewel = 'uncut_emerald'
-	elseif data == 3 then
-		currentjewel = 'ruby'
-	elseif data == 4 then
-		currentjewel = 'uncut_ruby'
-	elseif data == 5 then
-		currentjewel = 'diamond'
-	elseif data == 6 then
-		currentjewel = 'uncut_diamond'
-	elseif data == 7 then
-		currentjewel = 'sapphire'
-	elseif data == 8 then
-		currentjewel = 'uncut_sapphire'
-
-	elseif data == 9 then
-		currentjewel = 'gold_ring'
-	elseif data == 10 then
-		currentjewel = 'diamond_ring'
-	elseif data == 11 then
-		currentjewel = 'emerald_ring'
-	elseif data == 12 then
-		currentjewel = 'ruby_ring'
-	elseif data == 13 then
-		currentjewel = 'sapphire_ring'
-
-	elseif data == 14 then
-		currentjewel = 'goldchain'
-	elseif data == 15 then
-		currentjewel = '10kgoldchain'
-	elseif data == 16 then
-		currentjewel = 'diamond_necklace'
-	elseif data == 17 then
-		currentjewel = 'emerald_necklace'
-	elseif data == 18 then
-		currentjewel = 'ruby_necklace'
-	elseif data == 19 then
-		currentjewel = 'sapphire_necklace'
-	end
-	
-	if Player.Functions.GetItemByName(currentjewel) ~= nil then
-		amount = Player.Functions.GetItemByName(currentjewel).amount
-		pay = (amount * Config.SellItems[currentjewel])
-		Player.Functions.RemoveItem(currentjewel, amount)
-		Player.Functions.AddMoney('cash', pay)
-		TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[currentjewel], 'remove', amount)
-	else
-		TriggerClientEvent('QBCore:Notify', source, "You don't have any to sell.", "error")
-	end
-end)]]
-
 
 --Attempt at making simple crafting/smelting recipies
 --Basically choose from the menus which provides an ID, it reads what is required, then gives the result
@@ -177,22 +95,22 @@ RegisterServerEvent('jim-mining:Smelting:Reward')
 AddEventHandler('jim-mining:Smelting:Reward', function(data)
     local src = source
 	local Player = QBCore.Functions.GetPlayer(source)
-	if data.id == 1 then
+	if data == 1 then
 		Player.Functions.RemoveItem('copperore', 1)
 		TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items['copperore'], 'remove', 1)
 		Player.Functions.AddItem("copper", 10)
 		TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["copper"], 'add', 10)
-	elseif data.id == 2 then
+	elseif data == 2 then
 		Player.Functions.RemoveItem('goldore', 4)
 		TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items['goldore'], 'remove', 4)
 		Player.Functions.AddItem("goldbar", 1)
 		TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["goldbar"], 'add', 1)
-	elseif data.id == 3 then
+	elseif data == 3 then
 		Player.Functions.RemoveItem('ironore', 1)
 		TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items['ironore'], 'remove', 1)
 		Player.Functions.AddItem("iron", 10)
 		TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["iron"], 'add', 10)
-	elseif data.id == 4 then
+	elseif data == 4 then
 		Player.Functions.RemoveItem('ironore', 1)
 		Player.Functions.RemoveItem('carbon', 1)
 		TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items['ironore'], 'remove', 1)
