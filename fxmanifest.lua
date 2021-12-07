@@ -7,8 +7,8 @@ game "gta5"
 this_is_a_map 'yes'
 
 dependencies {
-	'nh-context',
-    'bt-target',
+	'qb-menu',
+    'qb-target',
 }
 
 client_scripts {

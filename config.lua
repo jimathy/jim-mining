@@ -14,7 +14,6 @@ Config = {
 	Distance = 40.0, --The distance you want peds to spawn at
 }
 
---Config.Pedspawn = false
 --Blips and Locations
 -- Each one has individual blip enablers
 -- Mine and Mine Leave have headings for the player locations

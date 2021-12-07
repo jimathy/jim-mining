@@ -1,6 +1,6 @@
 QBCore = nil
 
-TriggerEvent('QBCore:GetObject', function(obj) QBCore = obj end)
+QBCore = exports['qb-core']:GetCoreObject()
 
 RegisterServerEvent('jim-mining:MineReward')
 AddEventHandler('jim-mining:MineReward', function()
@@ -29,7 +29,6 @@ RegisterNetEvent("jim-mining:Selling")
 AddEventHandler("jim-mining:Selling", function(data)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-		
     local currentitem = data
     if Player.Functions.GetItemByName(data) ~= nil then
         local amount = Player.Functions.GetItemByName(data).amount
@@ -38,8 +37,24 @@ AddEventHandler("jim-mining:Selling", function(data)
         Player.Functions.AddMoney('cash', pay)
         TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[data], 'remove', amount)
     else
-		TriggerClientEvent("QBCore:Notify", src, data, "error")
-        TriggerClientEvent("QBCore:Notify", src, "You don't have any "..QBCore.Shared.Items[data].label.. "", "error")
+        TriggerClientEvent("QBCore:Notify", src, "You don't have any "..QBCore.Shared.Items[data].label, "error")
+    end
+    Citizen.Wait(1000)
+end)
+
+RegisterNetEvent("jim-mining:SellJewel")
+AddEventHandler("jim-mining:SellJewel", function(data)
+    local src = source
+    local Player = QBCore.Functions.GetPlayer(src)
+    local currentitem = data
+    if Player.Functions.GetItemByName(data) ~= nil then
+        local amount = Player.Functions.GetItemByName(data).amount
+        local pay = (amount * Config.SellItems[data])
+        Player.Functions.RemoveItem(data, amount)
+        Player.Functions.AddMoney('cash', pay)
+        TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[data], 'remove', amount)
+    else
+        TriggerClientEvent("QBCore:Notify", src, "You don't have any "..QBCore.Shared.Items[data].label, "error")
     end
     Citizen.Wait(1000)
 end)
@@ -52,40 +67,49 @@ end)
 QBCore.Functions.CreateCallback('jim-mining:Smelting:Check:1', function(source, cb)
 	local src = source
     local Player = QBCore.Functions.GetPlayer(source)
-	if Player.Functions.GetItemByName('copperore') ~= nil then
-		cb(true)
-	else 
-		cb(false)
+	if Player.Functions.GetItemByName('copperore') ~= nil then cb(true)
+	else cb(false)
 	end
 end)
 
 QBCore.Functions.CreateCallback('jim-mining:Smelting:Check:2', function(source, cb)
 	local src = source
     local Player = QBCore.Functions.GetPlayer(source)
-	if Player.Functions.GetItemByName('goldore').amount >= 4 then
-		cb(true)
-	else 
-		cb(false)
+	local item = Player.Functions.GetItemByName('goldore')
+	if item ~= nil and item.amount >= 4 then cb(true)
+	else cb(false)
 	end
 end)
 
 QBCore.Functions.CreateCallback('jim-mining:Smelting:Check:3', function(source, cb)
 	local src = source
-    local Player = QBCore.Functions.GetPlayer(source)
-	if Player.Functions.GetItemByName('ironore') ~= nil then
-		cb(true)
-	else 
-		cb(false)
+    local Player = QBCore.Functions.GetPlayer(source) 
+	if Player.Functions.GetItemByName('ironore') ~= nil then cb(true)
+	else cb(false)
 	end
 end)
 
 QBCore.Functions.CreateCallback('jim-mining:Smelting:Check:4', function(source, cb)
 	local src = source
     local Player = QBCore.Functions.GetPlayer(source)
-	if Player.Functions.GetItemByName('ironore') ~= nil and Player.Functions.GetItemByName('carbon') ~= nil then
-		cb(true)
-	else 
-		cb(false)
+	if Player.Functions.GetItemByName('ironore') ~= nil and Player.Functions.GetItemByName('carbon') ~= nil then cb(true)
+	else  cb(false)
+	end
+end)
+
+QBCore.Functions.CreateCallback('jim-mining:Smelting:Check:5', function(source, cb)
+	local src = source
+    local Player = QBCore.Functions.GetPlayer(source)
+	if Player.Functions.GetItemByName('bottle') ~= nil then cb(true)
+	else cb(false)
+	end
+end)
+
+QBCore.Functions.CreateCallback('jim-mining:Smelting:Check:6', function(source, cb)
+	local src = source
+    local Player = QBCore.Functions.GetPlayer(source)
+	if Player.Functions.GetItemByName('can') ~= nil then cb(true)
+	else cb(false)
 	end
 end)
 
@@ -117,6 +141,16 @@ AddEventHandler('jim-mining:Smelting:Reward', function(data)
 		TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items['carbon'], 'remove', 1)
 		Player.Functions.AddItem("steel", 2)
 		TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["steel"], 'add', 2)
+	elseif data == 5 then
+		Player.Functions.RemoveItem('bottle', 1)
+		TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items['bottle'], 'remove', 1)
+		Player.Functions.AddItem("glass", 1)
+		TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["glass"], 'add', 1)
+	elseif data == 6 then
+		Player.Functions.RemoveItem('can', 1)
+		TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items['can'], 'remove', 1)
+		Player.Functions.AddItem("aluminum", 1)
+		TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["aluminum"], 'add', 1)
 	end
 end)
 
