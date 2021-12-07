@@ -508,8 +508,8 @@ RegisterNetEvent('jim-mining:SmeltMenu', function()
 	{ header = "Smelt Gold", txt = "Smelt 4 Gold Ore into 1 Gold Bar", params = { event = "jim-mining:Smelting:Begin", args = 2 } },
 	{ header = "Smelt Iron", txt = "Smelt Iron Ore into 10 Iron", params = { event = "jim-mining:Smelting:Begin", args = 3 } },
 	{ header = "Smelt Steel", txt = "Smelt Iron Ore and Carbon into Steel", params = { event = "jim-mining:Smelting:Begin", args = 4 } },
-	{ header = "Melt Bottle", txt = "Melt down a glass bottle", params = { event = "jim-mining:Smelting:Begin", args = 5 } },
-	{ header = "Melt Can", txt = "Melt down an empty can", params = { event = "jim-mining:Smelting:Begin", args = 6 } },
+	--{ header = "Melt Bottle", txt = "Melt down a glass bottle", params = { event = "jim-mining:Smelting:Begin", args = 5 } },
+	--{ header = "Melt Can", txt = "Melt down an empty can", params = { event = "jim-mining:Smelting:Begin", args = 6 } },
 	})
 end)
 
