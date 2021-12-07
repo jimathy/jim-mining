@@ -1,12 +1,13 @@
 # jim-mining
-FiveM Custom mining script by me from scratch
+FiveM Custom QBCORE mining script by me from scratch
 
-After deving for a month on a server of messed up and mismatched scripts...I've learn't to do things in a tidy and dynamic way that most don't.
+After deving for a month on a server of messed up and mismatched scripts...I wanted to do things in a tidy and dynamic way that most I've seen don't.
 
 - Highly customisable via config.lua
+  - Locations are easily changeable/removable
 
 - Customisable points for mining
-  - Add a Location for an ore to the config and it will use this location for both bt-target and a prop
+  - Add a Location for an ore to the config and it will use this location for both qb-target and a prop
   - Can place them anywhere, doesn't have to be just one mining location
   - I opted for a drilling animation as opposed to the pickaxe swinging
 
@@ -24,13 +25,23 @@ After deving for a month on a server of messed up and mismatched scripts...I've 
 - Features Jewel Cutting bench as an attempt to add more than just gold bars and such to sell
   - You can use your gold bars and jewels to craft other items to sell to a Jewellery Buyer
 
+## Video Previews
+- Mineshaft Store: https://streamable.com/lxhpr0
+- Mineshaft Ore Drilling: https://streamable.com/liwhbv
+- Quarry Store and Ores: https://streamable.com/io96nu
+- Stone Cracking: https://streamable.com/jthu81
+- Smelting Menu: https://streamable.com/uv3g32
+- Selling Ore: https://streamable.com/fc5486
+- Gem Cutting & Jewellery Crafting: https://streamable.com/ugcgyo
+- Gem and Jewellery Seller: https://streamable.com/3phhwq
+
 ## Custom Items & Images
   ![General](https://i.imgur.com/0cQ24AY.jpeg)
 
 - Should be easy to understand and add/remove items you want or not
 ## Dependencies
-- nh-context - for the menus
-- bt-target - for the third eye selection
+- qb-menu - for the menus
+- qb-target - for the third eye selection
 
 # How to install
 ## Minimal
@@ -40,7 +51,7 @@ If you want to use your own items or repurpose this script:
 ```
 ensure jim-mining
 ```
-- If you want to use my items then:
+If you want to use my items then:
 ## Put this in your shared.lua if you want to add and use the items
 
 ```
