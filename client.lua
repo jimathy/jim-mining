@@ -117,6 +117,26 @@ end
 -----------------------------------------------------------
 
 function CreateProps()
+	
+	--Hide the mineshaft doors
+	CreateModelHide(vector3(-596.04, 2089.01, 131.41), 10.5, -1241212535, true)
+
+	--Quickly add outside lighting
+		if minelight1 == nil then
+			RequestModel(GetHashKey("prop_worklight_03a"))
+			Wait(100)
+			local minelight1 = CreateObject(GetHashKey("prop_worklight_03a"),-593.29, 2093.22, 131.7-1.05,false,false,false)
+			SetEntityHeading(minelight1,GetEntityHeading(minelight1)-80)
+			FreezeEntityPosition(minelight1, true)
+		end		
+		if minelight2 == nil then
+			RequestModel(GetHashKey("prop_worklight_03a"))
+			Wait(100)
+			local minelight2 = CreateObject(GetHashKey("prop_worklight_03a"),-604.55, 2089.74, 131.15-1.05,false,false,false)
+			SetEntityHeading(minelight2,GetEntityHeading(minelight2)-260)
+			FreezeEntityPosition(minelight2, true)
+		end
+
 	local prop = 0
 	for k,v in pairs(Config.OrePositions) do
 		prop = prop+1
@@ -312,7 +332,7 @@ end)
 -- I'm proud of this whole trigger command here
 -- I was worried I'd have to do loads of call backs, back and forths in the this command
 -- I had a theory that (like with notifications) I'd be able to add in a dynamic variable with the trigger being called
--- IT WORKED, and here we have it calling a item check callback vite the ID it recieves from the menu buttons
+-- IT WORKED, and here we have it calling a item check callback via the ID it recieves from the menu buttons
 
 -- Smelt Command / Animations
 RegisterNetEvent('jim-mining:Smelting:Begin')
@@ -359,6 +379,7 @@ AddEventHandler('jim-mining:SellAnim', function(data)
 	for k,v in pairs (shopPeds) do
         pCoords = GetEntityCoords(PlayerPedId())
         ppCoords = GetEntityCoords(v)
+		ppRot = GetEntityRotation(v)
         dist = #(pCoords - ppCoords)
         if dist < 2 then 
 			TaskPlayAnim(pid, "mp_common", "givetake2_a", 100.0, 200.0, 0.3, 120, 0.2, 0, 0, 0)
@@ -367,6 +388,7 @@ AddEventHandler('jim-mining:SellAnim', function(data)
             StopAnimTask(pid, "mp_common", "givetake2_a", 1.0)
             StopAnimTask(v, "mp_common", "givetake2_a", 1.0)
             RemoveAnimDict("mp_common")
+			SetEntityRotation(v, 0,0,ppRot.z,0,0,false)		
 			break
 		end
 	end
@@ -387,6 +409,7 @@ AddEventHandler('jim-mining:SellAnim:Jewel', function(data)
 	for k,v in pairs (shopPeds) do
         pCoords = GetEntityCoords(PlayerPedId())
         ppCoords = GetEntityCoords(v)
+		ppRot = GetEntityRotation(v)
         dist = #(pCoords - ppCoords)
         if dist < 2 then 
 			TaskPlayAnim(pid, "mp_common", "givetake2_a", 100.0, 200.0, 0.3, 120, 0.2, 0, 0, 0)
@@ -395,7 +418,7 @@ AddEventHandler('jim-mining:SellAnim:Jewel', function(data)
             StopAnimTask(pid, "mp_common", "givetake2_a", 1.0)
             StopAnimTask(v, "mp_common", "givetake2_a", 1.0)
             RemoveAnimDict("mp_common")
-
+			SetEntityRotation(v, 0,0,ppRot.z,0,0,false)
 			break
 		end
 	end	
@@ -504,10 +527,10 @@ RegisterNetEvent('jim-mining:SmeltMenu', function()
     exports['qb-menu']:openMenu({
 	{ header = "Smelter", txt = "Smelt ores down into usable materials", isMenuHeader = true }, 
 	{ header = "", txt = "✘ Close", params = { event = "jim-mining:SellAnim", args = -2 } },
-	{ header = "Smelt Copper Ore", txt = "Smelt Copper Ore into 10 Copper", params = { event = "jim-mining:Smelting:Begin", args = 1 } },
-	{ header = "Smelt Gold", txt = "Smelt 4 Gold Ore into 1 Gold Bar", params = { event = "jim-mining:Smelting:Begin", args = 2 } },
-	{ header = "Smelt Iron", txt = "Smelt Iron Ore into 10 Iron", params = { event = "jim-mining:Smelting:Begin", args = 3 } },
-	{ header = "Smelt Steel", txt = "Smelt Iron Ore and Carbon into Steel", params = { event = "jim-mining:Smelting:Begin", args = 4 } },
+	{ header = QBCore.Shared.Items["copper"].label, txt = "1x "..QBCore.Shared.Items["copperore"].label, params = { event = "jim-mining:Smelting:Begin", args = 1 } },
+	{ header = QBCore.Shared.Items["goldbar"].label, txt = "4x "..QBCore.Shared.Items["goldore"].label, params = { event = "jim-mining:Smelting:Begin", args = 2 } },
+	{ header = QBCore.Shared.Items["iron"].label, txt = "1x "..QBCore.Shared.Items["ironore"].label, params = { event = "jim-mining:Smelting:Begin", args = 3 } },
+	{ header = QBCore.Shared.Items["steel"].label, txt = "1x "..QBCore.Shared.Items["ironore"].label.."<br>1x "..QBCore.Shared.Items["carbon"].label, params = { event = "jim-mining:Smelting:Begin", args = 4 } },
 	--{ header = "Melt Bottle", txt = "Melt down a glass bottle", params = { event = "jim-mining:Smelting:Begin", args = 5 } },
 	--{ header = "Melt Can", txt = "Melt down an empty can", params = { event = "jim-mining:Smelting:Begin", args = 6 } },
 	})

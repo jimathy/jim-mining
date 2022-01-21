@@ -105,15 +105,22 @@ Config.PedList = { -- APPARENTLY You can call config locations IN the config, le
 
 ------------------------------------------------------------
 --Added mine lighting for my first world NVE problems
---Don't always light up...
+--Light Up at Night..or sometimes not at all :(
 Config.MineLights = {
-	{ coords = vector3(-594.30, 2082.89, 131.40+1.53), },
-	{ coords = vector3(-591.85, 2073.95, 131.35+1.53), },
-	{ coords = vector3(-589.98, 2066.16, 131.02+1.53), },
-	{ coords = vector3(-587.83, 2052.98, 130.21+1.53), },
-	{ coords = vector3(-583.94, 2041.11, 129.11+1.53), },
-	{ coords = vector3(-577.49, 2030.93, 128.24+1.53), },
-	{ coords = vector3(-567.83, 2020.27, 127.58+1.53), },
+	{ coords = vector3(-595.52, 2086.38, 131.38+0.45), },
+	{ coords = vector3(-594.30, 2082.89, 131.40+0.65), },
+	{ coords = vector3(-591.85, 2073.95, 131.35+0.65), },
+	{ coords = vector3(-589.98, 2066.16, 131.02+0.55), },
+	{ coords = vector3(-588.92, 2059.21, 130.67+0.45), },
+	{ coords = vector3(-588.69, 2054.36, 130.33+0.25), },
+	{ coords = vector3(-587.11, 2048.25, 129.79+0.25), },
+	{ coords = vector3(-584.51, 2041.63, 129.26+0.0), },
+	{ coords = vector3(-580.87, 2035.56, 128.72+0.0), },
+	{ coords = vector3(-576.07, 2028.91, 128.16+0.0), },
+	{ coords = vector3(-571.74, 2023.9, 127.81+0.0), },
+	{ coords = vector3(-565.44, 2017.63, 127.47+0.0), },
+	{ coords = vector3(-561.39, 2012.64, 127.28+0.0), },
+	{ coords = vector3(-558.24, 2008.18, 127.16+0.0), },
 }
 
 ------------------------------------------------------------
