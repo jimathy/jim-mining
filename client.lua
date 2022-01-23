@@ -21,6 +21,9 @@ function CreateBlips()
 end
 
 Citizen.CreateThread(function()
+	--Hide the mineshaft doors
+	CreateModelHide(vector3(-596.04, 2089.01, 131.41), 10.5, -1241212535, true)
+
     if Config.Blips == true then
 		CreateBlips()
 	end
@@ -117,9 +120,6 @@ end
 -----------------------------------------------------------
 
 function CreateProps()
-	
-	--Hide the mineshaft doors
-	CreateModelHide(vector3(-596.04, 2089.01, 131.41), 10.5, -1241212535, true)
 
 	--Quickly add outside lighting
 		if minelight1 == nil then
