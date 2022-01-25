@@ -52,7 +52,10 @@ If you want to use your own items or repurpose this script:
 ensure jim-mining
 ```
 If you want to use my items then:
-## Put this in your shared.lua if you want to add and use the items
+
+- Add the images to your inventory folder
+
+- Put these lines in your shared.lua
 
 ```
 	-- jim-mining stuff
