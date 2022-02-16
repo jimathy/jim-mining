@@ -136,3 +136,34 @@ Config.Items = {
 	[6] = { name = "handdrill",	price = 0, amount = 100, info = {}, type = "item",	slot = 6, },
 	[7] = { name = "drillbit", price = 0, amount = 100,	info = {}, type = "item", slot = 7, }, }		
 }
+
+Crafting = {}
+Crafting.SmeltMenu = {
+	[1] = { ["copper"] = { ["copperore"] = 1 } },
+	[2] = { ["goldbar"] = { ["goldore"] = 1 } },
+	[3] = { ["iron"] = { ["ironore"] = 1 } },
+	[4] = { ["steel"] = { ["ironore"] = 1, ["carbon"] = 1 } },
+	--[5] = { ["aluminum"] = { ["can"] = 1, } },
+	--[6] = { ["glass"] = { ["bottle"] = 1, } },
+}
+Crafting.GemCut = {
+	[1] = { ["emerald"] = { ["uncut_emerald"] = 1, } },
+	[2] = { ["diamond"] = { ["uncut_diamond"] = 1}, },
+	[3] = { ["ruby"] = { ["uncut_ruby"] = 1 }, },
+	[4] = { ["sapphire"] = { ["uncut_sapphire"] = 1 }, },
+}
+Crafting.RingCut = {
+	[1] = { ["gold_ring"] = { ["goldbar"] = 1 }, },
+	[2] = { ["diamond_ring"] = { ["gold_ring"] = 1, ["diamond"] = 1 }, },
+	[3] = { ["emerald_ring"] = { ["gold_ring"] = 1, ["emerald"] = 1 }, },
+	[4] = { ["ruby_ring"] = { ["gold_ring"] = 1, ["ruby"] = 1 }, },
+	[5] = { ["sapphire_ring"] = { ["gold_ring"] = 1, ["sapphire"] = 1 }, },
+}
+Crafting.NeckCut = {
+	[1] = { ["goldchain"] = { ["goldbar"]	= 1 } },
+	[2] = { ["10kgoldchain"] = { ["goldbar"] = 1 } },
+	[3] = { ["diamond_necklace"] = { ["goldchain"] = 1, ["emerald"] = 1 }, },
+	[4] = { ["ruby_necklace"] = { ["goldchain"] = 1, ["diamond"] = 1 }, },
+	[5] = { ["sapphire_necklace"] = { ["goldchain"] = 1, ["ruby"] = 1 }, },
+	[6] = { ["emerald_necklace"] = { ["goldchain"] = 1, ["sapphire"] = 1 }, },
+}

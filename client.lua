@@ -124,14 +124,14 @@ function CreateProps()
 	--Quickly add outside lighting
 		if minelight1 == nil then
 			RequestModel(GetHashKey("prop_worklight_03a"))
-			Wait(100)
+			while not HasModelLoaded(GetHashKey("prop_worklight_03a")) do Citizen.Wait(1) end
 			local minelight1 = CreateObject(GetHashKey("prop_worklight_03a"),-593.29, 2093.22, 131.7-1.05,false,false,false)
 			SetEntityHeading(minelight1,GetEntityHeading(minelight1)-80)
 			FreezeEntityPosition(minelight1, true)
 		end		
 		if minelight2 == nil then
 			RequestModel(GetHashKey("prop_worklight_03a"))
-			Wait(100)
+			while not HasModelLoaded(GetHashKey("prop_worklight_03a")) do Citizen.Wait(1) end
 			local minelight2 = CreateObject(GetHashKey("prop_worklight_03a"),-604.55, 2089.74, 131.15-1.05,false,false,false)
 			SetEntityHeading(minelight2,GetEntityHeading(minelight2)-260)
 			FreezeEntityPosition(minelight2, true)
@@ -243,13 +243,10 @@ QBCore.Functions.TriggerCallback("QBCore:HasItem", function(item)
 			QBCore.Functions.Progressbar("open_locker_drill", "Drilling Ore..", math.random(10000,15000), false, true, {
 				disableMovement = true,	disableCarMovement = true, disableMouse = false, disableCombat = true, }, {}, {}, {}, function() -- Done
 				StopAnimTask(GetPlayerPed(-1), "anim@heists@fleeca_bank@drilling", "drill_straight_idle", 1.0)
-				SetEntityAsMissionEntity(DrillObject)--nessesary for gta to even trigger DetachEntity
-				Wait(5)
 				DetachEntity(DrillObject, true, true)
-				Wait(5)
 				DeleteObject(DrillObject)
-				TriggerServerEvent('jim-mining:MineReward')	
-				IsDrilling = false
+					TriggerServerEvent('jim-mining:MineReward')
+					IsDrilling = false
 			end, function() -- Cancel
 				StopAnimTask(GetPlayerPed(-1), "anim@heists@fleeca_bank@drilling", "drill_straight_idle", 1.0)
 				DetachEntity(DrillObject, true, true)
@@ -290,80 +287,109 @@ AddEventHandler('jim-mining:CrackStart', function ()
 	end, "stone")
 end)
 
--- Cut Command / Animations
--- Requires a drill
-RegisterNetEvent('jim-mining:Cutting:Begin')
-AddEventHandler('jim-mining:Cutting:Begin', function (data)
-	QBCore.Functions.TriggerCallback("jim-mining:Cutting:Check:Tools",function(hasTools)
-		if hasTools then
-			QBCore.Functions.TriggerCallback("jim-mining:Cutting:Check:"..data,function(hasReq) 
-				if hasReq then 
-					local pos = GetEntityCoords(GetPlayerPed(-1))
-					loadAnimDict('amb@prop_human_parking_meter@male@idle_a')
-					TaskPlayAnim(GetPlayerPed(-1), 'amb@prop_human_parking_meter@male@idle_a', 'idle_a' , 3.0, 3.0, -1, 1, 0, false, false, false)
-					QBCore.Functions.Progressbar("open_locker_drill", "Cutting..", math.random(10000,15000), false, true, {
-						disableMovement = true, disableCarMovement = true,disableMouse = false,	disableCombat = true, }, {}, {}, {}, function() -- Done
-						StopAnimTask(GetPlayerPed(-1), 'amb@prop_human_parking_meter@male@idle_a', 'idle_a', 1.0)
-							TriggerServerEvent('jim-mining:Cutting:Reward', data)
-							IsDrilling = false
-							if data >= 1 and data <= 4 then TriggerEvent('jim-mining:JewelCut:Gem')
-							elseif data >= 5 and data <= 9 then TriggerEvent('jim-mining:JewelCut:Ring')
-							elseif data >= 10 and data <= 15 then TriggerEvent('jim-mining:JewelCut:Necklace') end
-					end, function() -- Cancel
-						StopAnimTask(GetPlayerPed(-1), 'amb@prop_human_parking_meter@male@idle_a', 'idle_a', 1.0)
-						IsDrilling = false
-						if data >= 1 and data <= 4 then TriggerEvent('jim-mining:JewelCut:Gem')
-						elseif data >= 5 and data <= 9 then TriggerEvent('jim-mining:JewelCut:Ring')
-						elseif data >= 10 and data <= 15 then TriggerEvent('jim-mining:JewelCut:Necklace') end
-					end)
-				else
-					TriggerEvent('QBCore:Notify', "You don't have all ingredients!", 'error')
-					if data >= 1 and data <= 4 then TriggerEvent('jim-mining:JewelCut:Gem')
-					elseif data >= 5 and data <= 9 then TriggerEvent('jim-mining:JewelCut:Ring')
-					elseif data >= 10 and data <= 15 then TriggerEvent('jim-mining:JewelCut:Necklace') end
-				end
-			end)
-		else
-			TriggerEvent('QBCore:Notify', "You don\'t have a Hand Drill or Drill Bit", 'error')
-			if data >= 1 and data <= 4 then TriggerEvent('jim-mining:JewelCut:Gem')
-			elseif data >= 5 and data <= 9 then TriggerEvent('jim-mining:JewelCut:Ring')
-			elseif data >= 10 and data <= 15 then TriggerEvent('jim-mining:JewelCut:Necklace') end
-		end
-	end)
-end)
-
 -- I'm proud of this whole trigger command here
 -- I was worried I'd have to do loads of call backs, back and forths in the this command
 -- I had a theory that (like with notifications) I'd be able to add in a dynamic variable with the trigger being called
 -- IT WORKED, and here we have it calling a item check callback via the ID it recieves from the menu buttons
 
--- Smelt Command / Animations
-RegisterNetEvent('jim-mining:Smelting:Begin')
-AddEventHandler('jim-mining:Smelting:Begin', function (data)
-	QBCore.Functions.TriggerCallback("jim-mining:Smelting:Check:"..data,function(hasReq) 
-		if hasReq then 
-			local pos = GetEntityCoords(GetPlayerPed(-1))
-			loadAnimDict('amb@prop_human_parking_meter@male@idle_a')
-			TaskPlayAnim(GetPlayerPed(-1), 'amb@prop_human_parking_meter@male@idle_a', 'idle_a' , 3.0, 3.0, -1, 1, 0, false, false, false)
-			QBCore.Functions.Progressbar("open_locker_drill", "Smelting..", math.random(5000,8000), false, true, {
-				disableMovement = true, disableCarMovement = true,disableMouse = false,	disableCombat = true, }, {}, {}, {}, function() -- Done
-				StopAnimTask(GetPlayerPed(-1), 'amb@prop_human_parking_meter@male@idle_a', 'idle_a', 1.0)
-	
-					TriggerServerEvent('jim-mining:Smelting:Reward', data) -- When animations finished this is called and does the correct reward command via the ID it received from the menu
-					TriggerEvent('jim-mining:SmeltMenu')
-					IsDrilling = false
-			end, function() -- Cancel
-				StopAnimTask(GetPlayerPed(-1), 'amb@prop_human_parking_meter@male@idle_a', 'idle_a', 1.0)
-				IsDrilling = false
-			end)
+RegisterNetEvent('jim-mining:MakeItem')
+AddEventHandler('jim-mining:MakeItem', function(data)
+	for i = 1, #data.craftable do
+		for k, v in pairs(data.craftable[i]) do
+			if data.item == k then
+				QBCore.Functions.TriggerCallback('jim-mining:get', function(amount) 
+					if not amount then 
+						TriggerEvent('QBCore:Notify', "You don't have the correct ingredients", 'error')
+						TriggerEvent('jim-mining:SmeltMenu')
+					else itemProgress(data.item, data.craftable) end		
+				end, data.item, data.craftable)
+			end
+		end
+	end
+end)
+
+RegisterNetEvent('jim-mining:MakeItem:Cutting')
+AddEventHandler('jim-mining:MakeItem:Cutting', function(data)
+QBCore.Functions.TriggerCallback("jim-mining:Cutting:Check:Tools",function(hasTools)
+		if hasTools then
+			for i = 1, #data.craftable do
+				for k, v in pairs(data.craftable[i]) do
+					if data.item == k then
+						QBCore.Functions.TriggerCallback('jim-mining:get', function(amount) 
+							if not amount then 
+								TriggerEvent('QBCore:Notify', "You don't have the correct ingredients", 'error')
+							else itemProgress(data.item, data.craftable) end		
+						end, data.item, data.craftable)
+					end
+				end
+			end
 		else
-			TriggerEvent('jim-mining:SmeltMenu')
-			TriggerEvent('QBCore:Notify', "You don't have all ingredients!", 'error')
+			TriggerEvent('QBCore:Notify', "You don\'t have a Hand Drill or Drill Bit", 'error')
+			TriggerEvent('jim-mining:JewelCut')
 		end
 	end)
 end)
 
-
+function itemProgress(ItemMake, craftable)
+	if craftable then
+		for i = 1, #Crafting.SmeltMenu do
+			for k, v in pairs(Crafting.SmeltMenu[i]) do
+				if ItemMake == k then
+					bartext = "Smelting "..QBCore.Shared.Items[ItemMake].label
+					bartime = 7000
+					animDictNow = "amb@prop_human_parking_meter@male@idle_a"
+					animNow = "idle_a"
+				end
+			end
+		end
+		for i = 1, #Crafting.GemCut do
+			for k, v in pairs(Crafting.GemCut[i]) do
+				if ItemMake == k then
+					bartext = "Cutting "..QBCore.Shared.Items[ItemMake].label
+					bartime = 7000
+					animDictNow = "amb@prop_human_parking_meter@male@idle_a"
+					animNow = "idle_a"
+				end
+			end
+		end
+		for i = 1, #Crafting.RingCut do
+			for k, v in pairs(Crafting.RingCut[i]) do
+				if ItemMake == k then
+					bartext = "Cutting "..QBCore.Shared.Items[ItemMake].label
+					bartime = 7000
+					animDictNow = "amb@prop_human_parking_meter@male@idle_a"
+					animNow = "idle_a"
+				end
+			end
+		end
+		for i = 1, #Crafting.NeckCut do
+			for k, v in pairs(Crafting.NeckCut[i]) do
+				if ItemMake == k then
+					bartext = "Cutting "..QBCore.Shared.Items[ItemMake].label
+					bartime = 7000
+					animDictNow = "amb@prop_human_parking_meter@male@idle_a"
+					animNow = "idle_a"
+				end
+			end
+		end
+	end
+	QBCore.Functions.Progressbar('making_food', bartext, bartime, false, false, {
+		disableMovement = true,
+		disableCarMovement = true,
+		disableMouse = false,
+		disableCombat = true,
+	}, {
+		animDict = animDictNow,
+		anim = animNow,
+		flags = 8,
+	}, {}, {}, function()  
+		TriggerServerEvent('jim-mining:GetItem', ItemMake, craftable)
+		StopAnimTask(GetPlayerPed(-1), animDictNow, animNow, 1.0)
+	end, function() -- Cancel
+		TriggerEvent('inventory:client:busy:status', false)
+		TriggerEvent('QBCore:Notify', "Cancelled!", 'error')
+	end)
+end
 ------------------------------------------------------------
 --These also lead to the actual selling commands
 
@@ -527,19 +553,24 @@ end)
 
 --Smelting
 RegisterNetEvent('jim-mining:SmeltMenu', function()
-    exports['qb-menu']:openMenu({
-	{ header = "Smelter", txt = "Smelt ores down into usable materials", isMenuHeader = true }, 
-	{ header = "", txt = "✘ Close", params = { event = "jim-mining:SellAnim", args = -2 } },
-	{ header = QBCore.Shared.Items["copper"].label, txt = "1x "..QBCore.Shared.Items["copperore"].label, params = { event = "jim-mining:Smelting:Begin", args = 1 } },
-	{ header = QBCore.Shared.Items["goldbar"].label, txt = "4x "..QBCore.Shared.Items["goldore"].label, params = { event = "jim-mining:Smelting:Begin", args = 2 } },
-	{ header = QBCore.Shared.Items["iron"].label, txt = "1x "..QBCore.Shared.Items["ironore"].label, params = { event = "jim-mining:Smelting:Begin", args = 3 } },
-	{ header = QBCore.Shared.Items["steel"].label, txt = "1x "..QBCore.Shared.Items["ironore"].label.."<br>1x "..QBCore.Shared.Items["carbon"].label, params = { event = "jim-mining:Smelting:Begin", args = 4 } },
-	--{ header = "Melt Bottle", txt = "Melt down a glass bottle", params = { event = "jim-mining:Smelting:Begin", args = 5 } },
-	--{ header = "Melt Can", txt = "Melt down an empty can", params = { event = "jim-mining:Smelting:Begin", args = 6 } },
-	})
+	local SmeltMenu = {}
+	SmeltMenu[#SmeltMenu + 1] = { header = "Smelter", txt = "Smelt ores down into usable materials", isMenuHeader = true }
+	SmeltMenu[#SmeltMenu + 1] = { header = "", txt = "✘ Close", params = { event = "jim-mining:SellAnim", args = -2 } }
+		for i = 1, #Crafting.SmeltMenu do
+			for k, v in pairs(Crafting.SmeltMenu[i]) do
+				local text = ""
+				setheader = QBCore.Shared.Items[k].label
+				for l, b in pairs(Crafting.SmeltMenu[i][tostring(k)]) do
+					if b == 1 then number = "" else number = " x"..b end
+					text = text.."- "..QBCore.Shared.Items[l].label..number.."<br>"
+					settext = text
+				end
+				SmeltMenu[#SmeltMenu + 1] = { header = setheader, txt = settext, params = { event = "jim-mining:MakeItem", args = { item = k, craftable = Crafting.SmeltMenu } } }
+				settext, setheader = nil
+			end
+		end
+	exports['qb-menu']:openMenu(SmeltMenu)
 end)
-
-
 ------------------------
 
 --Cutting Jewels
@@ -552,39 +583,66 @@ RegisterNetEvent('jim-mining:JewelCut', function()
 	{ header = "Make Necklaces", txt = "Go to Necklace Crafting Section", params = { event = "jim-mining:JewelCut:Necklace", } },
 	})
 end)
+
 --Gem Section
 RegisterNetEvent('jim-mining:JewelCut:Gem', function()
-    exports['qb-menu']:openMenu({
-	{ header = "Jewellery Crafting Bench", txt = "Requires Hand Drill & Drill Bit", isMenuHeader = true },
-	{ header = "", txt = "⬅ Return", params = { event = "jim-mining:JewelCut", } },
-	{ header = "Emerald", txt = "Carefully cut to increase value", params = { event = "jim-mining:Cutting:Begin", args = 1 } },
-	{ header = "Ruby", txt = "Carefully cut to increase value", params = { event = "jim-mining:Cutting:Begin", args = 2 } },
-	{ header = "Diamond", txt = "Carefully cut to increase value", params = { event = "jim-mining:Cutting:Begin", args = 3 } },
-	{ header = "Sapphire", txt = "Carefully cut to increase value", params = { event = "jim-mining:Cutting:Begin", args = 4 } },
-	})
+	local GemCut = {}
+	GemCut[#GemCut + 1] = { header = "Jewellery Crafting Bench", txt = "Requires Hand Drill & Drill Bit", isMenuHeader = true }
+	GemCut[#GemCut + 1] = { header = "", txt = "⬅ Return", params = { event = "jim-mining:JewelCut", } }
+		for i = 1, #Crafting.GemCut do
+			for k, v in pairs(Crafting.GemCut[i]) do
+				local text = ""
+				setheader = QBCore.Shared.Items[k].label
+				for l, b in pairs(Crafting.GemCut[i][tostring(k)]) do
+					if b == 1 then number = "" else number = " x"..b end
+					text = text.."- "..QBCore.Shared.Items[l].label..number.."<br>"
+					settext = text
+				end
+				GemCut[#GemCut + 1] = { header = setheader, txt = settext, params = { event = "jim-mining:MakeItem:Cutting", args = { item = k, craftable = Crafting.GemCut } } }
+				settext, setheader = nil
+			end
+		end
+	exports['qb-menu']:openMenu(GemCut)
 end)
+
 -- Ring Section
 RegisterNetEvent('jim-mining:JewelCut:Ring', function()
-    exports['qb-menu']:openMenu({
-	{ header = "Jewellery Crafting Bench", txt = "Requires Hand Drill & Drill Bit", isMenuHeader = true },
-	{ header = "", txt = "⬅ Return", params = { event = "jim-mining:JewelCut", } },
-	{ header = "Gold Ring x3", txt = "Requires 1 Gold Bar", params = { event = "jim-mining:Cutting:Begin", args = 5 } },
-	{ header = "Diamond Ring", txt = "Requires 1 Gold Ring & 1 Diamond", params = { event = "jim-mining:Cutting:Begin", args = 6 } },
-	{ header = "Emerald Ring", txt = "Requires 1 Gold Ring & 1 Emerald", params = { event = "jim-mining:Cutting:Begin", args = 7 } },
-	{ header = "Ruby Ring", txt = "Requires 1 Gold Ring & 1 Ruby", params = { event = "jim-mining:Cutting:Begin", args = 8 } },
-	{ header = "Sapphire Ring", txt = "Requires 1 Gold Ring & 1 Sapphire", params = { event = "jim-mining:Cutting:Begin", args = 9 } },
-	})
+	local RingCut = {}
+	RingCut[#RingCut + 1] = { header = "Jewellery Crafting Bench", txt = "Requires Hand Drill & Drill Bit", isMenuHeader = true }
+	RingCut[#RingCut + 1] = { header = "", txt = "⬅ Return", params = { event = "jim-mining:JewelCut", } }
+		for i = 1, #Crafting.RingCut do
+			for k, v in pairs(Crafting.RingCut[i]) do
+				local text = ""
+				setheader = QBCore.Shared.Items[k].label
+				for l, b in pairs(Crafting.RingCut[i][tostring(k)]) do
+					if b == 1 then number = "" else number = " x"..b end
+					text = text.."- "..QBCore.Shared.Items[l].label..number.."<br>"
+					settext = text
+				end
+				RingCut[#RingCut + 1] = { header = setheader, txt = settext, params = { event = "jim-mining:MakeItem:Cutting", args = { item = k, craftable = Crafting.RingCut } } }
+				settext, setheader = nil
+			end
+		end
+	exports['qb-menu']:openMenu(RingCut)
 end)
+
 --Necklace Section
 RegisterNetEvent('jim-mining:JewelCut:Necklace', function()
-    exports['qb-menu']:openMenu({
-	{ header = "Jewellery Crafting Bench", txt = "Requires Hand Drill & Drill Bit", isMenuHeader = true },
-	{ header = "", txt = "⬅ Return", params = { event = "jim-mining:JewelCut", } },
-	{ header = "Gold Chain x3", txt = "Requires 1 Gold Bar", params = { event = "jim-mining:Cutting:Begin", args = 10 } },
-	{ header = "10k Gold Chain x2", txt = "Requires 1 Gold Bar", params = { event = "jim-mining:Cutting:Begin", args = 11 } },
-	{ header = "Diamond Necklace", txt = "Requires 1 Gold Chain & 1 Diamond", params = { event = "jim-mining:Cutting:Begin", args = 12 } },
-	{ header = "Emerald Necklace", txt = "Requires 1 Gold Chain & 1 Emerald", params = { event = "jim-mining:Cutting:Begin", args = 13 } },
-	{ header = "Ruby Necklace", txt = "Requires 1 Gold Chain & 1 Ruby", params = { event = "jim-mining:Cutting:Begin", args = 14 } },
-	{ header = "Sapphire Necklace", txt = "Requires 1 Gold Chain & 1 Sapphire", params = { event = "jim-mining:Cutting:Begin", args = 15 } }, 
-	})
+	local NeckCut = {}
+	NeckCut[#NeckCut + 1] = { header = "Jewellery Crafting Bench", txt = "Requires Hand Drill & Drill Bit", isMenuHeader = true }
+	NeckCut[#NeckCut + 1] = { header = "", txt = "⬅ Return", params = { event = "jim-mining:JewelCut", } }
+		for i = 1, #Crafting.NeckCut do
+			for k, v in pairs(Crafting.NeckCut[i]) do
+				local text = ""
+				setheader = QBCore.Shared.Items[k].label
+				for l, b in pairs(Crafting.NeckCut[i][tostring(k)]) do
+					if b == 1 then number = "" else number = " x"..b end
+					text = text.."- "..QBCore.Shared.Items[l].label..number.."<br>"
+					settext = text
+				end
+				NeckCut[#NeckCut + 1] = { header = setheader, txt = settext, params = { event = "jim-mining:MakeItem:Cutting", args = { item = k, craftable = Crafting.NeckCut } } }
+				settext, setheader = nil
+			end
+		end
+	exports['qb-menu']:openMenu(NeckCut)
 end)
