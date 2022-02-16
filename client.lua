@@ -243,10 +243,15 @@ QBCore.Functions.TriggerCallback("QBCore:HasItem", function(item)
 			QBCore.Functions.Progressbar("open_locker_drill", "Drilling Ore..", math.random(10000,15000), false, true, {
 				disableMovement = true,	disableCarMovement = true, disableMouse = false, disableCombat = true, }, {}, {}, {}, function() -- Done
 				StopAnimTask(GetPlayerPed(-1), "anim@heists@fleeca_bank@drilling", "drill_straight_idle", 1.0)
+				SetEntityAsMissionEntity(DrillObject)--nessesary for gta to even trigger DetachEntity
+				Wait(5)
 				DetachEntity(DrillObject, true, true)
+				Wait(5)
 				DeleteObject(DrillObject)
-					TriggerServerEvent('jim-mining:MineReward')
-					IsDrilling = false
+				TriggerServerEvent('jim-mining:MineReward')
+				IsDrilling = false
+				TriggerServerEvent('jim-mining:MineReward')	
+				IsDrilling = false
 			end, function() -- Cancel
 				StopAnimTask(GetPlayerPed(-1), "anim@heists@fleeca_bank@drilling", "drill_straight_idle", 1.0)
 				DetachEntity(DrillObject, true, true)
