@@ -558,20 +558,24 @@ end)
 
 --Smelting
 RegisterNetEvent('jim-mining:SmeltMenu', function()
+	TriggerEvent("QBCore:Notify", Crafting.SmeltMenu[1]["amount"], "error")
 	local SmeltMenu = {}
 	SmeltMenu[#SmeltMenu + 1] = { header = "Smelter", txt = "Smelt ores down into usable materials", isMenuHeader = true }
 	SmeltMenu[#SmeltMenu + 1] = { header = "", txt = "✘ Close", params = { event = "jim-mining:SellAnim", args = -2 } }
 		for i = 1, #Crafting.SmeltMenu do
 			for k, v in pairs(Crafting.SmeltMenu[i]) do
-				local text = ""
-				setheader = QBCore.Shared.Items[k].label
-				for l, b in pairs(Crafting.SmeltMenu[i][tostring(k)]) do
-					if b == 1 then number = "" else number = " x"..b end
-					text = text.."- "..QBCore.Shared.Items[l].label..number.."<br>"
-					settext = text
+				if k ~= "amount" then
+					local text = ""
+					if Crafting.SmeltMenu[i]["amount"] then amount = " x"..Crafting.SmeltMenu[i]["amount"] else amount = "" end
+					setheader = QBCore.Shared.Items[k].label..tostring(amount)
+					for l, b in pairs(Crafting.SmeltMenu[i][tostring(k)]) do
+						if b == 1 or b ~= nil then number = "" else number = " x"..b end
+						text = text.."- "..QBCore.Shared.Items[l].label..number.."<br>"
+						settext = text
+					end
+					SmeltMenu[#SmeltMenu + 1] = { header = setheader, txt = settext, params = { event = "jim-mining:MakeItem", args = { item = k, craftable = Crafting.SmeltMenu } } }
+					settext, amount, setheader = nil
 				end
-				SmeltMenu[#SmeltMenu + 1] = { header = setheader, txt = settext, params = { event = "jim-mining:MakeItem", args = { item = k, craftable = Crafting.SmeltMenu } } }
-				settext, setheader = nil
 			end
 		end
 	exports['qb-menu']:openMenu(SmeltMenu)
@@ -596,15 +600,18 @@ RegisterNetEvent('jim-mining:JewelCut:Gem', function()
 	GemCut[#GemCut + 1] = { header = "", txt = "⬅ Return", params = { event = "jim-mining:JewelCut", } }
 		for i = 1, #Crafting.GemCut do
 			for k, v in pairs(Crafting.GemCut[i]) do
-				local text = ""
-				setheader = QBCore.Shared.Items[k].label
-				for l, b in pairs(Crafting.GemCut[i][tostring(k)]) do
-					if b == 1 then number = "" else number = " x"..b end
-					text = text.."- "..QBCore.Shared.Items[l].label..number.."<br>"
-					settext = text
+				if k ~= "amount" then
+					local text = ""
+					if Crafting.GemCut[i]["amount"] then amount = " x"..Crafting.GemCut[i]["amount"] else amount = "" end
+					setheader = QBCore.Shared.Items[k].label..tostring(amount)
+					for l, b in pairs(Crafting.GemCut[i][tostring(k)]) do
+						if b == 1 then number = "" else number = " x"..b end
+						text = text.."- "..QBCore.Shared.Items[l].label..number.."<br>"
+						settext = text
+					end
+					GemCut[#GemCut + 1] = { header = setheader, txt = settext, params = { event = "jim-mining:MakeItem:Cutting", args = { item = k, craftable = Crafting.GemCut } } }
+					settext, setheader = nil
 				end
-				GemCut[#GemCut + 1] = { header = setheader, txt = settext, params = { event = "jim-mining:MakeItem:Cutting", args = { item = k, craftable = Crafting.GemCut } } }
-				settext, setheader = nil
 			end
 		end
 	exports['qb-menu']:openMenu(GemCut)
@@ -617,15 +624,18 @@ RegisterNetEvent('jim-mining:JewelCut:Ring', function()
 	RingCut[#RingCut + 1] = { header = "", txt = "⬅ Return", params = { event = "jim-mining:JewelCut", } }
 		for i = 1, #Crafting.RingCut do
 			for k, v in pairs(Crafting.RingCut[i]) do
-				local text = ""
-				setheader = QBCore.Shared.Items[k].label
-				for l, b in pairs(Crafting.RingCut[i][tostring(k)]) do
-					if b == 1 then number = "" else number = " x"..b end
-					text = text.."- "..QBCore.Shared.Items[l].label..number.."<br>"
-					settext = text
+				if k ~= "amount" then
+					local text = ""
+					if Crafting.RingCut[i]["amount"] then amount = " x"..Crafting.RingCut[i]["amount"] else amount = "" end
+					setheader = QBCore.Shared.Items[k].label..tostring(amount)
+					for l, b in pairs(Crafting.RingCut[i][tostring(k)]) do
+						if b == 1 then number = "" else number = " x"..b end
+						text = text.."- "..QBCore.Shared.Items[l].label..number.."<br>"
+						settext = text
+					end
+					RingCut[#RingCut + 1] = { header = setheader, txt = settext, params = { event = "jim-mining:MakeItem:Cutting", args = { item = k, craftable = Crafting.RingCut } } }
+					settext, setheader = nil
 				end
-				RingCut[#RingCut + 1] = { header = setheader, txt = settext, params = { event = "jim-mining:MakeItem:Cutting", args = { item = k, craftable = Crafting.RingCut } } }
-				settext, setheader = nil
 			end
 		end
 	exports['qb-menu']:openMenu(RingCut)
@@ -638,15 +648,18 @@ RegisterNetEvent('jim-mining:JewelCut:Necklace', function()
 	NeckCut[#NeckCut + 1] = { header = "", txt = "⬅ Return", params = { event = "jim-mining:JewelCut", } }
 		for i = 1, #Crafting.NeckCut do
 			for k, v in pairs(Crafting.NeckCut[i]) do
-				local text = ""
-				setheader = QBCore.Shared.Items[k].label
-				for l, b in pairs(Crafting.NeckCut[i][tostring(k)]) do
-					if b == 1 then number = "" else number = " x"..b end
-					text = text.."- "..QBCore.Shared.Items[l].label..number.."<br>"
-					settext = text
+				if k ~= "amount" then
+					local text = ""
+					if Crafting.NeckCut[i]["amount"] then amount = " x"..Crafting.NeckCut[i]["amount"] else amount = "" end
+					setheader = QBCore.Shared.Items[k].label..tostring(amount)
+					for l, b in pairs(Crafting.NeckCut[i][tostring(k)]) do
+						if b == 1 then number = "" else number = " x"..b end
+						text = text.."- "..QBCore.Shared.Items[l].label..number.."<br>"
+						settext = text
+					end
+					NeckCut[#NeckCut + 1] = { header = setheader, txt = settext, params = { event = "jim-mining:MakeItem:Cutting", args = { item = k, craftable = Crafting.NeckCut } } }
+					settext, setheader = nil
 				end
-				NeckCut[#NeckCut + 1] = { header = setheader, txt = settext, params = { event = "jim-mining:MakeItem:Cutting", args = { item = k, craftable = Crafting.NeckCut } } }
-				settext, setheader = nil
 			end
 		end
 	exports['qb-menu']:openMenu(NeckCut)

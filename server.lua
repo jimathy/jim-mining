@@ -21,11 +21,13 @@ RegisterServerEvent('jim-mining:GetItem')
 AddEventHandler('jim-mining:GetItem', function(ItemMake, craftable)
 	local src = source
     local Player = QBCore.Functions.GetPlayer(src)
+	local amount = 0
 	--This grabs the table from client and removes the item requirements
 	if craftable then
 		for i = 1, #craftable do
 			for k, v in pairs(craftable[i]) do
 				if ItemMake == k then
+				if craftable[i]["amount"] then amount = tonumber(craftable[i]["amount"]) else amount = 1 end
 					for l, b in pairs(craftable[i][k]) do
 						TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[tostring(l)], "remove", b) 
 						Player.Functions.RemoveItem(tostring(l), b)
@@ -36,7 +38,7 @@ AddEventHandler('jim-mining:GetItem', function(ItemMake, craftable)
 	end
 	--Dodgy check for if the table thats been copied through the events
 	--if you are making 4 items copper, goldbar, iron or steel then you are smelting
-	--the rest would be 
+	--the rest would be cutting, which would result in the ability to break drilbits
 	if ItemMake == "copper" or ItemMake == "goldbar" or ItemMake == "iron" or ItemMake == "steel" then
 	else
 		local breackChance = math.random(1,10)
@@ -45,14 +47,8 @@ AddEventHandler('jim-mining:GetItem', function(ItemMake, craftable)
 			TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items['drillbit'], 'remove', 1)
 		end
 	end
-	--This should give the item, while the rest removes the requirements
-	--need to work out how to do this better, but this forcibly changes the amounts given per item
-	if ItemMake == "gold_ring" then amount = 3
-	elseif ItemMake == "goldchain" then amount = 3
-	elseif ItemMake == "10kgoldchain" then amount = 2
-	else amount = 1 end
 	Player.Functions.AddItem(ItemMake, amount, false, {["quality"] = nil})
-	TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[ItemMake], "add", amount) 
+	TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[ItemMake], "add", amount)
 end)
 
 RegisterServerEvent('jim-mining:MineReward')
