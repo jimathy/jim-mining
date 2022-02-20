@@ -216,9 +216,8 @@ end)
 
 -----------------------------------------------------------
 --Mining Store Opening
-RegisterNetEvent('jim-mining:openShop')
-AddEventHandler('jim-mining:openShop', function ()
-	TriggerServerEvent("inventory:server:OpenInventory", "shop", "mine", Config.Items)
+RegisterNetEvent('jim-mining:openShop', function ()
+	TriggerServerEvent("jim-shops:ShopOpen", Config.Items)
 end)
 ------------------------------------------------------------
 -- Mine Ore Command / Animations
@@ -299,17 +298,13 @@ end)
 
 RegisterNetEvent('jim-mining:MakeItem')
 AddEventHandler('jim-mining:MakeItem', function(data)
-	for i = 1, #data.craftable do
-		for k, v in pairs(data.craftable[i]) do
-			if data.item == k then
-				QBCore.Functions.TriggerCallback('jim-mining:get', function(amount) 
-					if not amount then 
-						TriggerEvent('QBCore:Notify', "You don't have the correct ingredients", 'error')
-						TriggerEvent('jim-mining:SmeltMenu')
-					else itemProgress(data.item, data.craftable) end		
-				end, data.item, data.craftable)
-			end
-		end
+	for k, v in pairs(data.craftable[data.tablenumber]) do
+		QBCore.Functions.TriggerCallback('jim-mining:get', function(amount) 
+			if not amount then 
+				TriggerEvent('QBCore:Notify', "You don't have the correct ingredients", 'error')
+				TriggerEvent('jim-mining:SmeltMenu')
+			else itemProgress(data.item, data.tablenumber, data.craftable) end		
+		end, data.item, data.tablenumber, data.craftable)
 	end
 end)
 
@@ -335,7 +330,7 @@ QBCore.Functions.TriggerCallback("jim-mining:Cutting:Check:Tools",function(hasTo
 	end)
 end)
 
-function itemProgress(ItemMake, craftable)
+function itemProgress(ItemMake, tablenumber, craftable)
 	if craftable then
 		for i = 1, #Crafting.SmeltMenu do
 			for k, v in pairs(Crafting.SmeltMenu[i]) do
@@ -388,7 +383,7 @@ function itemProgress(ItemMake, craftable)
 		anim = animNow,
 		flags = 8,
 	}, {}, {}, function()  
-		TriggerServerEvent('jim-mining:GetItem', ItemMake, craftable)
+		TriggerServerEvent('jim-mining:GetItem', ItemMake, tablenumber, craftable)
 		StopAnimTask(GetPlayerPed(-1), animDictNow, animNow, 1.0)
 	end, function() -- Cancel
 		TriggerEvent('inventory:client:busy:status', false)
@@ -558,7 +553,6 @@ end)
 
 --Smelting
 RegisterNetEvent('jim-mining:SmeltMenu', function()
-	TriggerEvent("QBCore:Notify", Crafting.SmeltMenu[1]["amount"], "error")
 	local SmeltMenu = {}
 	SmeltMenu[#SmeltMenu + 1] = { header = "Smelter", txt = "Smelt ores down into usable materials", isMenuHeader = true }
 	SmeltMenu[#SmeltMenu + 1] = { header = "", txt = "✘ Close", params = { event = "jim-mining:SellAnim", args = -2 } }
@@ -569,11 +563,11 @@ RegisterNetEvent('jim-mining:SmeltMenu', function()
 					if Crafting.SmeltMenu[i]["amount"] then amount = " x"..Crafting.SmeltMenu[i]["amount"] else amount = "" end
 					setheader = QBCore.Shared.Items[k].label..tostring(amount)
 					for l, b in pairs(Crafting.SmeltMenu[i][tostring(k)]) do
-						if b == 1 or b ~= nil then number = "" else number = " x"..b end
-						text = text.."- "..QBCore.Shared.Items[l].label..number.."<br>"
+						if b == 1 then number = "" else number = " x"..b end
+						text = "- "..QBCore.Shared.Items[l].label..number.."<br>"
 						settext = text
 					end
-					SmeltMenu[#SmeltMenu + 1] = { header = setheader, txt = settext, params = { event = "jim-mining:MakeItem", args = { item = k, craftable = Crafting.SmeltMenu } } }
+					SmeltMenu[#SmeltMenu + 1] = { header = setheader, txt = settext, params = { event = "jim-mining:MakeItem", args = { item = k, tablenumber = i, craftable = Crafting.SmeltMenu } } }
 					settext, amount, setheader = nil
 				end
 			end
@@ -609,7 +603,7 @@ RegisterNetEvent('jim-mining:JewelCut:Gem', function()
 						text = text.."- "..QBCore.Shared.Items[l].label..number.."<br>"
 						settext = text
 					end
-					GemCut[#GemCut + 1] = { header = setheader, txt = settext, params = { event = "jim-mining:MakeItem:Cutting", args = { item = k, craftable = Crafting.GemCut } } }
+					GemCut[#GemCut + 1] = { header = setheader, txt = settext, params = { event = "jim-mining:MakeItem:Cutting", args = { item = k, tablenumber = i, craftable = Crafting.GemCut } } }
 					settext, setheader = nil
 				end
 			end
@@ -633,7 +627,7 @@ RegisterNetEvent('jim-mining:JewelCut:Ring', function()
 						text = text.."- "..QBCore.Shared.Items[l].label..number.."<br>"
 						settext = text
 					end
-					RingCut[#RingCut + 1] = { header = setheader, txt = settext, params = { event = "jim-mining:MakeItem:Cutting", args = { item = k, craftable = Crafting.RingCut } } }
+					RingCut[#RingCut + 1] = { header = setheader, txt = settext, params = { event = "jim-mining:MakeItem:Cutting", args = { item = k, tablenumber = i, craftable = Crafting.RingCut } } }
 					settext, setheader = nil
 				end
 			end
@@ -657,7 +651,7 @@ RegisterNetEvent('jim-mining:JewelCut:Necklace', function()
 						text = text.."- "..QBCore.Shared.Items[l].label..number.."<br>"
 						settext = text
 					end
-					NeckCut[#NeckCut + 1] = { header = setheader, txt = settext, params = { event = "jim-mining:MakeItem:Cutting", args = { item = k, craftable = Crafting.NeckCut } } }
+					NeckCut[#NeckCut + 1] = { header = setheader, txt = settext, params = { event = "jim-mining:MakeItem:Cutting", args = { item = k, tablenumber = i, craftable = Crafting.NeckCut } } }
 					settext, setheader = nil
 				end
 			end

@@ -141,10 +141,13 @@ Crafting = {}
 Crafting.SmeltMenu = {
 	[1] = { ["copper"] = { ["copperore"] = 1 }, ['amount'] = 4 },
 	[2] = { ["goldbar"] = { ["goldore"] = 1 } },
-	[3] = { ["iron"] = { ["ironore"] = 1 } },
-	[4] = { ["steel"] = { ["ironore"] = 1, ["carbon"] = 1 } },
-	--[5] = { ["aluminum"] = { ["can"] = 1, } },
-	--[6] = { ["glass"] = { ["bottle"] = 1, } },
+	[3] = { ["goldbar"] = { ["goldchain"] = 2 } },
+	[4] = { ["goldbar"] = { ["10kgoldchain"] = 1 } },
+	[5] = { ["goldbar"] = { ["gold_ring"] = 4 } },
+	[6] = { ["iron"] = { ["ironore"] = 1 } },
+	[7] = { ["steel"] = { ["ironore"] = 1, ["carbon"] = 1 } },
+	--[8] = { ["aluminum"] = { ["can"] = 2, }, ['amount'] = 3 },
+	--[9] = { ["glass"] = { ["bottle"] = 3, }, ['amount'] = 2 },
 }
 Crafting.GemCut = {
 	[1] = { ["emerald"] = { ["uncut_emerald"] = 1, } },
@@ -162,8 +165,8 @@ Crafting.RingCut = {
 Crafting.NeckCut = {
 	[1] = { ["goldchain"] = { ["goldbar"] = 1 }, ['amount'] = 3  },
 	[2] = { ["10kgoldchain"] = { ["goldbar"] = 1 }, ['amount'] = 2 },
-	[3] = { ["diamond_necklace"] = { ["goldchain"] = 1, ["diamond"] = 1 }, },
-	[4] = { ["ruby_necklace"] = { ["goldchain"] = 1, ["ruby"] = 1 }, },
-	[5] = { ["sapphire_necklace"] = { ["goldchain"] = 1, ["sapphire"] = 1 }, },
-	[6] = { ["emerald_necklace"] = { ["goldchain"] = 1, ["emerald"] = 1 }, },
+	[3] = { ["diamond_necklace"] = { ["goldchain"] = 1, ["emerald"] = 1 }, },
+	[4] = { ["ruby_necklace"] = { ["goldchain"] = 1, ["diamond"] = 1 }, },
+	[5] = { ["sapphire_necklace"] = { ["goldchain"] = 1, ["ruby"] = 1 }, },
+	[6] = { ["emerald_necklace"] = { ["goldchain"] = 1, ["sapphire"] = 1 }, },
 }
