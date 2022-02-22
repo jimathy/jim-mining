@@ -310,18 +310,14 @@ end)
 
 RegisterNetEvent('jim-mining:MakeItem:Cutting')
 AddEventHandler('jim-mining:MakeItem:Cutting', function(data)
-QBCore.Functions.TriggerCallback("jim-mining:Cutting:Check:Tools",function(hasTools)
+	QBCore.Functions.TriggerCallback("jim-mining:Cutting:Check:Tools",function(hasTools)
 		if hasTools then
-			for i = 1, #data.craftable do
-				for k, v in pairs(data.craftable[i]) do
-					if data.item == k then
-						QBCore.Functions.TriggerCallback('jim-mining:get', function(amount) 
-							if not amount then 
-								TriggerEvent('QBCore:Notify', "You don't have the correct ingredients", 'error')
-							else itemProgress(data.item, data.craftable) end		
-						end, data.item, data.craftable)
-					end
-				end
+			for k, v in pairs(data.craftable[data.tablenumber]) do
+				QBCore.Functions.TriggerCallback('jim-mining:get', function(amount) 
+					if not amount then 
+						TriggerEvent('QBCore:Notify', "You don't have the correct ingredients", 'error')
+					else itemProgress(data.item, data.tablenumber, data.craftable) end		
+				end, data.item, data.tablenumber, data.craftable)
 			end
 		else
 			TriggerEvent('QBCore:Notify', "You don\'t have a Hand Drill or Drill Bit", 'error')
