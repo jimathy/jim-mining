@@ -217,7 +217,7 @@ end)
 -----------------------------------------------------------
 --Mining Store Opening
 RegisterNetEvent('jim-mining:openShop', function ()
-	TriggerServerEvent("jim-shops:ShopOpen", Config.Items)
+	TriggerServerEvent("inventory:server:OpenInventory", "shop", "mine", Config.Items)
 end)
 ------------------------------------------------------------
 -- Mine Ore Command / Animations
