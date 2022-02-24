@@ -3,11 +3,9 @@ local QBCore = exports['qb-core']:GetCoreObject()
 QBCore.Functions.CreateCallback('jim-mining:get', function(source, cb, item, tablenumber, craftable)
 	local hasitem = false
 	local hasanyitem = nil
-	for k, v in pairs(craftable[tablenumber]) do
-		for l, b in pairs(craftable[tablenumber][k]) do
+		for l, b in pairs(craftable[tablenumber][item]) do
 			if QBCore.Functions.GetPlayer(source).Functions.GetItemByName(l) and QBCore.Functions.GetPlayer(source).Functions.GetItemByName(l).amount >= b then hasitem = true
 			else hasanyitem = false
-			end
 		end
 	end
 	if hasanyitem ~= nil then hasitem = false end
@@ -19,13 +17,11 @@ RegisterServerEvent('jim-mining:GetItem', function(ItemMake, tablenumber, crafta
 	local amount = 0
 	--This grabs the table from client and removes the item requirements
 	if craftable then
-		for k, v in pairs(craftable[tablenumber]) do
 			if craftable[tablenumber]["amount"] then amount = tonumber(craftable[tablenumber]["amount"]) else amount = 1 end
-			for l, b in pairs(craftable[tablenumber][k]) do
+			for l, b in pairs(craftable[tablenumber][ItemMake]) do
 				TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[tostring(l)], "remove", b) 
 				Player.Functions.RemoveItem(tostring(l), b)
 			end
-		end
 	end
 	--Dodgy check for if the table thats been copied through the events
 	--if you are making 4 items copper, goldbar, iron or steel then you are smelting
