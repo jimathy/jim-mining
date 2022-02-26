@@ -328,36 +328,44 @@ end)
 
 function itemProgress(ItemMake, tablenumber, craftable)
 	if craftable then
-		for k, v in pairs(Crafting.SmeltMenu[tablenumber]) do
-			if ItemMake == k then
-				bartext = "Smelting "..QBCore.Shared.Items[ItemMake].label
-				bartime = 7000
-				animDictNow = "amb@prop_human_parking_meter@male@idle_a"
-				animNow = "idle_a"
+		for i = 1, #Crafting.SmeltMenu do
+			for k, v in pairs(Crafting.SmeltMenu[i]) do
+				if ItemMake == k then
+					bartext = "Smelting "..QBCore.Shared.Items[ItemMake].label
+					bartime = 7000
+					animDictNow = "amb@prop_human_parking_meter@male@idle_a"
+					animNow = "idle_a"
+				end
 			end
 		end
-		for k, v in pairs(Crafting.GemCut[tablenumber]) do
-			if ItemMake == k then
-				bartext = "Cutting "..QBCore.Shared.Items[ItemMake].label
-				bartime = 7000
-				animDictNow = "amb@prop_human_parking_meter@male@idle_a"
-				animNow = "idle_a"
+		for i = 1, #Crafting.GemCut do
+			for k, v in pairs(Crafting.GemCut[i]) do
+				if ItemMake == k then
+					bartext = "Cutting "..QBCore.Shared.Items[ItemMake].label
+					bartime = 7000
+					animDictNow = "amb@prop_human_parking_meter@male@idle_a"
+					animNow = "idle_a"
+				end
 			end
 		end
-		for k, v in pairs(Crafting.RingCut[tablenumber]) do
-			if ItemMake == k then
-				bartext = "Cutting "..QBCore.Shared.Items[ItemMake].label
-				bartime = 7000
-				animDictNow = "amb@prop_human_parking_meter@male@idle_a"
-				animNow = "idle_a"
+		for i = 1, #Crafting.RingCut do	
+			for k, v in pairs(Crafting.RingCut[i]) do
+				if ItemMake == k then
+					bartext = "Cutting "..QBCore.Shared.Items[ItemMake].label
+					bartime = 7000
+					animDictNow = "amb@prop_human_parking_meter@male@idle_a"
+					animNow = "idle_a"
+				end
 			end
 		end
-		for k, v in pairs(Crafting.NeckCut[tablenumber]) do
-			if ItemMake == k then
-				bartext = "Cutting "..QBCore.Shared.Items[ItemMake].label
-				bartime = 7000
-				animDictNow = "amb@prop_human_parking_meter@male@idle_a"
-				animNow = "idle_a"
+		for i = 1, #Crafting.NeckCut do
+			for k, v in pairs(Crafting.NeckCut[i]) do
+				if ItemMake == k then
+					bartext = "Cutting "..QBCore.Shared.Items[ItemMake].label
+					bartime = 7000
+					animDictNow = "amb@prop_human_parking_meter@male@idle_a"
+					animNow = "idle_a"
+				end
 			end
 		end
 	end
