@@ -560,7 +560,7 @@ RegisterNetEvent('jim-mining:SmeltMenu', function()
 					setheader = QBCore.Shared.Items[k].label..tostring(amount)
 					for l, b in pairs(Crafting.SmeltMenu[i][tostring(k)]) do
 						if b == 1 then number = "" else number = " x"..b end
-						text = "- "..QBCore.Shared.Items[l].label..number.."<br>"
+						text = text.."- "..QBCore.Shared.Items[l].label..number.."<br>"
 						settext = text
 					end
 					SmeltMenu[#SmeltMenu + 1] = { header = setheader, txt = settext, params = { event = "jim-mining:MakeItem", args = { item = k, tablenumber = i, craftable = Crafting.SmeltMenu } } }
