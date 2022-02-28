@@ -14,6 +14,8 @@ Config = {
 	Distance = 40.0, --The distance you want peds to spawn at
 }
 
+Config.ImageLink = "qb-inventory/html/images/" --Set this to the image directory of your inventory script
+
 --Blips and Locations
 -- Each one has individual blip enablers
 -- Mine and Mine Leave have headings for the player locations
