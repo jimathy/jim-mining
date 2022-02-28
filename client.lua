@@ -563,7 +563,7 @@ RegisterNetEvent('jim-mining:SmeltMenu', function()
 						text = text.."- "..QBCore.Shared.Items[l].label..number.."<br>"
 						settext = text
 					end
-					SmeltMenu[#SmeltMenu + 1] = { header = setheader, txt = settext, params = { event = "jim-mining:MakeItem", args = { item = k, tablenumber = i, craftable = Crafting.SmeltMenu } } }
+					SmeltMenu[#SmeltMenu + 1] = { header = "<img src=nui://"..Config.ImageLink..QBCore.Shared.Items[k].image.." width=35px> "..setheader, txt = settext, params = { event = "jim-mining:MakeItem", args = { item = k, tablenumber = i, craftable = Crafting.SmeltMenu } } }
 					settext, amount, setheader = nil
 				end
 			end
@@ -599,7 +599,7 @@ RegisterNetEvent('jim-mining:JewelCut:Gem', function()
 						text = text.."- "..QBCore.Shared.Items[l].label..number.."<br>"
 						settext = text
 					end
-					GemCut[#GemCut + 1] = { header = setheader, txt = settext, params = { event = "jim-mining:MakeItem:Cutting", args = { item = k, tablenumber = i, craftable = Crafting.GemCut } } }
+					GemCut[#GemCut + 1] = { header = "<img src=nui://"..Config.ImageLink..QBCore.Shared.Items[k].image.." width=35px> "..setheader, txt = settext, params = { event = "jim-mining:MakeItem:Cutting", args = { item = k, tablenumber = i, craftable = Crafting.GemCut } } }
 					settext, setheader = nil
 				end
 			end
@@ -623,7 +623,7 @@ RegisterNetEvent('jim-mining:JewelCut:Ring', function()
 						text = text.."- "..QBCore.Shared.Items[l].label..number.."<br>"
 						settext = text
 					end
-					RingCut[#RingCut + 1] = { header = setheader, txt = settext, params = { event = "jim-mining:MakeItem:Cutting", args = { item = k, tablenumber = i, craftable = Crafting.RingCut } } }
+					RingCut[#RingCut + 1] = { header = "<img src=nui://"..Config.ImageLink..QBCore.Shared.Items[k].image.." width=35px>"..setheader, txt = settext, params = { event = "jim-mining:MakeItem:Cutting", args = { item = k, tablenumber = i, craftable = Crafting.RingCut } } }
 					settext, setheader = nil
 				end
 			end
@@ -647,7 +647,7 @@ RegisterNetEvent('jim-mining:JewelCut:Necklace', function()
 						text = text.."- "..QBCore.Shared.Items[l].label..number.."<br>"
 						settext = text
 					end
-					NeckCut[#NeckCut + 1] = { header = setheader, txt = settext, params = { event = "jim-mining:MakeItem:Cutting", args = { item = k, tablenumber = i, craftable = Crafting.NeckCut } } }
+					NeckCut[#NeckCut + 1] = { header = "<img src=nui://"..Config.ImageLink..QBCore.Shared.Items[k].image.." width=35px>"..setheader, txt = settext, params = { event = "jim-mining:MakeItem:Cutting", args = { item = k, tablenumber = i, craftable = Crafting.NeckCut } } }
 					settext, setheader = nil
 				end
 			end
