@@ -13,7 +13,7 @@ function CreateBlips()
 			if Config.BlipNamer then
 				AddTextComponentString(Config.Locations[k].name)
 			else
-				AddTextComponentString("Mining")
+				AddTextComponentString(Lang:t("info.blip_mining"))
 			end
 			EndTextCommandSetBlipName(blip)
 		end
@@ -77,7 +77,7 @@ function nearPed(model, coords, heading, gender, animDict, animName, scenario)
 	elseif gender == 'female' then 
 		genderNum = 5
 	else
-		print("No gender provided! Check your configuration!")
+		print(Lang:t("warning.print_no_gender"))
 	end
 	if Config.MinusOne then 
 		local x, y, z = table.unpack(coords)
@@ -172,43 +172,43 @@ end
 
 Citizen.CreateThread(function()
 	exports['qb-target']:AddCircleZone("MineShaft", Config.Locations['Mine'].location, 2.0, { name="MineShaft", debugPoly=false, useZ=true, }, 
-	{ options = { { event = "jim-mining:openShop", icon = "fas fa-certificate", label = "Browse Store", }, },
+	{ options = { { event = "jim-mining:openShop", icon = "fas fa-certificate", label = Lang:t("info.browse_store"), }, }, 
 		distance = 2.0
 	})
 	exports['qb-target']:AddCircleZone("Quarry", Config.Locations['Quarry'].location, 2.0, { name="Quarry", debugPoly=false, useZ=true, }, 
-	{ options = { { event = "jim-mining:openShop", icon = "fas fa-certificate", label = "Browse Store", }, },
+	{ options = { { event = "jim-mining:openShop", icon = "fas fa-certificate", label = Lang:t("info.browse_store"), }, },
 		distance = 2.0
 	})
 	--Smelter to turn stone into ore
 	exports['qb-target']:AddCircleZone("Smelter", Config.Locations['Smelter'].location, 3.0, { name="Smelter", debugPoly=false, useZ=true, }, 
-	{ options = { { event = "jim-mining:SmeltMenu", icon = "fas fa-certificate", label = "Use Smelter", }, },
+	{ options = { { event = "jim-mining:SmeltMenu", icon = "fas fa-certificate", label = Lang:t("info.use_smelter"), }, },
 		distance = 10.0
 	})
 	--Ore Buyer
 	exports['qb-target']:AddCircleZone("Buyer", Config.Locations['Buyer'].location, 2.0, { name="Buyer", debugPoly=false, useZ=true, }, 
-	{ options = { { event = "jim-mining:SellOre", icon = "fas fa-certificate", label = "Sell Ores", },	},
+	{ options = { { event = "jim-mining:SellOre", icon = "fas fa-certificate", label = Lang:t("info.sell_ores"), },	},
 		distance = 2.0
 	})
 	--Jewel Cutting Bench
 	exports['qb-target']:AddCircleZone("JewelCut", Config.Locations['JewelCut'].location, 2.0, { name="JewelCut", debugPoly=false, useZ=true, }, 
-	{ options = { { event = "jim-mining:JewelCut", icon = "fas fa-certificate", label = "Use Jewel Cutting Bench", },	},
+	{ options = { { event = "jim-mining:JewelCut", icon = "fas fa-certificate", label = Lang:t("info.jewelcut"), },	},
 		distance = 2.0
 	})
 	--Jewel Buyer
 	exports['qb-target']:AddCircleZone("JewelBuyer", Config.Locations['Buyer2'].location, 2.0, { name="JewelBuyer", debugPoly=false, useZ=true, }, 
-	{ options = { { event = "jim-mining:JewelSell", icon = "fas fa-certificate", label = "Talk To Jewel Buyer", },	},
+	{ options = { { event = "jim-mining:JewelSell", icon = "fas fa-certificate", label = Lang:t("info.jewelbuyer"), },	},
 		distance = 2.0
 	})
 	--Cracking Bench
 	exports['qb-target']:AddCircleZone("CrackingBench", Config.Locations['Cracking'].location, 2.0, { name="CrackingBench", debugPoly=false, useZ=true, }, 
-	{ options = { { event = "jim-mining:CrackStart", icon = "fas fa-certificate", label = "Use Cracking Bench", },	},
+	{ options = { { event = "jim-mining:CrackStart", icon = "fas fa-certificate", label = Lang:t("info.crackingbench"), },	},
 		distance = 2.0
 	})
 	local ore = 0
 	for k,v in pairs(Config.OrePositions) do
 		ore = ore+1
 		exports['qb-target']:AddCircleZone(ore, v.coords, 2.0, { name=ore, debugPoly=false, useZ=true, }, 
-		{ options = { { event = "jim-mining:MineOre", icon = "fas fa-certificate", label = "Mine ore", },	},
+		{ options = { { event = "jim-mining:MineOre", icon = "fas fa-certificate", label = Lang:t("info.mine_ore"), },	},
 			distance = 2.5
 		})
 	end
@@ -239,7 +239,7 @@ QBCore.Functions.TriggerCallback("QBCore:HasItem", function(item)
 			local pos = GetEntityCoords(GetPlayerPed(-1), true)
 			local DrillObject = CreateObject(GetHashKey("hei_prop_heist_drill"), pos.x, pos.y, pos.z, true, true, true)
 			AttachEntityToEntity(DrillObject, GetPlayerPed(-1), GetPedBoneIndex(GetPlayerPed(-1), 57005), 0.14, 0, -0.01, 90.0, -90.0, 180.0, true, true, false, true, 1, true)
-			QBCore.Functions.Progressbar("open_locker_drill", "Drilling Ore..", math.random(10000,15000), false, true, {
+			QBCore.Functions.Progressbar("open_locker_drill", Lang:t("info.drilling_ore"), math.random(10000,15000), false, true, {
 				disableMovement = true,	disableCarMovement = true, disableMouse = false, disableCombat = true, }, {}, {}, {}, function() -- Done
 				StopAnimTask(GetPlayerPed(-1), "anim@heists@fleeca_bank@drilling", "drill_straight_idle", 1.0)
 				SetEntityAsMissionEntity(DrillObject)--nessesary for gta to even trigger DetachEntity
@@ -258,7 +258,7 @@ QBCore.Functions.TriggerCallback("QBCore:HasItem", function(item)
 				IsDrilling = false
 			end)
 		else
-			TriggerEvent('QBCore:Notify', "You dont have a drill", 'error')
+			TriggerEvent('QBCore:Notify', Lang:t("error.no_drill"), 'error')
 		end 
 	end, "drill")
 end)
@@ -276,7 +276,7 @@ AddEventHandler('jim-mining:CrackStart', function ()
 			local pos = GetEntityCoords(GetPlayerPed(-1))
 			loadAnimDict('amb@prop_human_parking_meter@male@idle_a')
 			TaskPlayAnim(GetPlayerPed(-1), 'amb@prop_human_parking_meter@male@idle_a', 'idle_a' , 3.0, 3.0, -1, 1, 0, false, false, false)
-			QBCore.Functions.Progressbar("open_locker_drill", "Cracking Stone..", math.random(10000,15000), false, true, {
+			QBCore.Functions.Progressbar("open_locker_drill", Lang:t("info.cracking_stone"), math.random(10000,15000), false, true, {
 				disableMovement = true,	disableCarMovement = true, disableMouse = false, disableCombat = true, }, {}, {}, {}, function() -- Done
 				StopAnimTask(GetPlayerPed(-1), 'amb@prop_human_parking_meter@male@idle_a', 'idle_a', 1.0)
 				TriggerServerEvent('jim-mining:CrackReward')
@@ -286,7 +286,7 @@ AddEventHandler('jim-mining:CrackStart', function ()
 				IsDrilling = false
 			end)
 		else 
-			TriggerEvent('QBCore:Notify', "You don't have any Stone", 'error')
+			TriggerEvent('QBCore:Notify', Lang:t("error.no_stone"), 'error')
 		end 
 	end, "stone")
 end)
@@ -301,7 +301,7 @@ AddEventHandler('jim-mining:MakeItem', function(data)
 	for k, v in pairs(data.craftable[data.tablenumber]) do
 		QBCore.Functions.TriggerCallback('jim-mining:get', function(amount) 
 			if not amount then 
-				TriggerEvent('QBCore:Notify', "You don't have the correct ingredients", 'error')
+				TriggerEvent('QBCore:Notify', Lang:t("error.no_ingredients"), 'error')
 				TriggerEvent('jim-mining:SmeltMenu')
 			else itemProgress(data.item, data.tablenumber, data.craftable) end		
 		end, data.item, data.tablenumber, data.craftable)
@@ -315,12 +315,12 @@ AddEventHandler('jim-mining:MakeItem:Cutting', function(data)
 			for k, v in pairs(data.craftable[data.tablenumber]) do
 				QBCore.Functions.TriggerCallback('jim-mining:get', function(amount) 
 					if not amount then 
-						TriggerEvent('QBCore:Notify', "You don't have the correct ingredients", 'error')
+						TriggerEvent('QBCore:Notify', Lang:t("error.no_ingredients"), 'error')
 					else itemProgress(data.item, data.tablenumber, data.craftable) end		
 				end, data.item, data.tablenumber, data.craftable)
 			end
 		else
-			TriggerEvent('QBCore:Notify', "You don\'t have a Hand Drill or Drill Bit", 'error')
+			TriggerEvent('QBCore:Notify', Lang:t("error.no_drill_bit"), 'error')
 			TriggerEvent('jim-mining:JewelCut')
 		end
 	end)
@@ -331,7 +331,7 @@ function itemProgress(ItemMake, tablenumber, craftable)
 		for i = 1, #Crafting.SmeltMenu do
 			for k, v in pairs(Crafting.SmeltMenu[i]) do
 				if ItemMake == k then
-					bartext = "Smelting "..QBCore.Shared.Items[ItemMake].label
+					bartext = Lang:t("info.smelting")..QBCore.Shared.Items[ItemMake].label
 					bartime = 7000
 					animDictNow = "amb@prop_human_parking_meter@male@idle_a"
 					animNow = "idle_a"
@@ -341,7 +341,7 @@ function itemProgress(ItemMake, tablenumber, craftable)
 		for i = 1, #Crafting.GemCut do
 			for k, v in pairs(Crafting.GemCut[i]) do
 				if ItemMake == k then
-					bartext = "Cutting "..QBCore.Shared.Items[ItemMake].label
+					bartext = Lang:t("info.cutting")..QBCore.Shared.Items[ItemMake].label
 					bartime = 7000
 					animDictNow = "amb@prop_human_parking_meter@male@idle_a"
 					animNow = "idle_a"
@@ -351,7 +351,7 @@ function itemProgress(ItemMake, tablenumber, craftable)
 		for i = 1, #Crafting.RingCut do	
 			for k, v in pairs(Crafting.RingCut[i]) do
 				if ItemMake == k then
-					bartext = "Cutting "..QBCore.Shared.Items[ItemMake].label
+					bartext = Lang:t("info.cutting")..QBCore.Shared.Items[ItemMake].label
 					bartime = 7000
 					animDictNow = "amb@prop_human_parking_meter@male@idle_a"
 					animNow = "idle_a"
@@ -361,7 +361,7 @@ function itemProgress(ItemMake, tablenumber, craftable)
 		for i = 1, #Crafting.NeckCut do
 			for k, v in pairs(Crafting.NeckCut[i]) do
 				if ItemMake == k then
-					bartext = "Cutting "..QBCore.Shared.Items[ItemMake].label
+					bartext = Lang:t("info.cutting")..QBCore.Shared.Items[ItemMake].label
 					bartime = 7000
 					animDictNow = "amb@prop_human_parking_meter@male@idle_a"
 					animNow = "idle_a"
@@ -383,7 +383,7 @@ function itemProgress(ItemMake, tablenumber, craftable)
 		StopAnimTask(GetPlayerPed(-1), animDictNow, animNow, 1.0)
 	end, function() -- Cancel
 		TriggerEvent('inventory:client:busy:status', false)
-		TriggerEvent('QBCore:Notify', "Cancelled!", 'error')
+		TriggerEvent('QBCore:Notify', Lang:t("error.cancelled"), 'error')
 	end)
 end
 ------------------------------------------------------------
@@ -461,88 +461,88 @@ end)
 --Selling Ore
 RegisterNetEvent('jim-mining:SellOre', function()
 	exports['qb-menu']:openMenu({
-		{ header = "Ore Selling", txt = "Sell Batches of Ore for cash", isMenuHeader = true },
-		{ header = "", txt = "✘ Close", params = { event = "jim-mining:SellAnim", args = -2 } },
-		{ header = "Copper Ore", txt = "Sell ALL at $"..Config.SellItems['copperore'].." each", params = { event = "jim-mining:SellAnim", args = 'copperore' } },
-		{ header = "Iron Ore", txt = "Sell ALL at $"..Config.SellItems['ironore'].." each", params = { event = "jim-mining:SellAnim", args = 'ironore' } },
-		{ header = "Gold Ore", txt = "Sell ALL at $"..Config.SellItems['goldore'].." each", params = { event = "jim-mining:SellAnim", args = 'goldore' } },
-		{ header = "Carbon", txt = "Sell ALL at $"..Config.SellItems['carbon'].." each", params = { event = "jim-mining:SellAnim", args = 'carbon' } }, 
+		{ header = Lang:t("info.header_oresell"), txt = Lang:t("info.oresell_txt"), isMenuHeader = true },
+		{ header = "", txt = Lang:t("info.close"), params = { event = "jim-mining:SellAnim", args = -2 } },
+		{ header = Lang:t("info.copper_ore"), txt = Lang:t("info.sell_all", {value = Config.SellItems['copperore']}), params = { event = "jim-mining:SellAnim", args = 'copperore' } },
+		{ header = Lang:t("info.iron_ore"), txt = Lang:t("info.sell_all", {value = Config.SellItems['ironore']}), params = { event = "jim-mining:SellAnim", args = 'ironore' } },
+		{ header = Lang:t("info.gold_ore"), txt = Lang:t("info.sell_all", {value = Config.SellItems['goldore']}), params = { event = "jim-mining:SellAnim", args = 'goldore' } },
+		{ header = Lang:t("info.carbon"), txt = Lang:t("info.sell_all", {value = Config.SellItems['carbon']}), params = { event = "jim-mining:SellAnim", args = 'carbon' } }, 
 	})
 end)
 ------------------------
 --Jewel Selling Main Menu
 RegisterNetEvent('jim-mining:JewelSell', function()
     exports['qb-menu']:openMenu({
-		{ header = "Jewellery Buyer", txt = "Sell your jewellery here", isMenuHeader = true }, 
-		{ header = "", txt = "✘ Close", params = { event = "jim-mining:SellAnim:Jewel", args = -2 } },
-		{ header = "Emeralds", txt = "See all Emerald selling options", params = { event = "jim-mining:JewelSell:Emerald", } },
-		{ header = "Rubys", txt = "See all Ruby selling options", params = { event = "jim-mining:JewelSell:Ruby", } },
-		{ header = "Diamonds", txt = "See all Diamond selling options", params = { event = "jim-mining:JewelSell:Diamond", } },
-		{ header = "Sapphires", txt = "See all Sapphire selling options", params = { event = "jim-mining:JewelSell:Sapphire", } },
-		{ header = "Rings", txt = "See all Ring Options", params = { event = "jim-mining:JewelSell:Rings", } },
-		{ header = "Necklaces", txt = "See all Necklace Options", params = { event = "jim-mining:JewelSell:Necklace", } },
+		{ header = Lang:t("info.jewel_buyer"), txt = Lang:t("info.sell_jewel"), isMenuHeader = true }, 
+		{ header = "", txt = Lang:t("info.close"), params = { event = "jim-mining:SellAnim:Jewel", args = -2 } },
+		{ header = Lang:t("info.emeralds"), txt = Lang:t("info.see_options"), params = { event = "jim-mining:JewelSell:Emerald", } },
+		{ header = Lang:t("info.rubys"), txt = Lang:t("info.see_options"), params = { event = "jim-mining:JewelSell:Ruby", } },
+		{ header = Lang:t("info.diamonds"), txt = Lang:t("info.see_options"), params = { event = "jim-mining:JewelSell:Diamond", } },
+		{ header = Lang:t("info.sapphires"), txt = Lang:t("info.see_options"), params = { event = "jim-mining:JewelSell:Sapphire", } },
+		{ header = Lang:t("info.rings"), txt = Lang:t("info.see_options"), params = { event = "jim-mining:JewelSell:Rings", } },
+		{ header = Lang:t("info.necklaces"), txt = Lang:t("info.see_options"), params = { event = "jim-mining:JewelSell:Necklace", } },
 	})
 end)
 --Jewel Selling - Emerald Menu
 RegisterNetEvent('jim-mining:JewelSell:Emerald', function()
     exports['qb-menu']:openMenu({
-		{ header = "Jewellery Buyer", txt = "Sell your jewellery here", isMenuHeader = true }, 
-		{ header = "", txt = "⬅ Return", params = { event = "jim-mining:JewelSell", } },
-		{ header = "Emeralds", txt = "Sell ALL at $"..Config.SellItems['emerald'].." each", params = { event = "jim-mining:SellAnim:Jewel", args = 'emerald' } },
-		{ header = "Uncut Emeralds", txt = "Sell ALL at $"..Config.SellItems['uncut_emerald'].." each", params = { event = "jim-mining:SellAnim:Jewel", args = 'uncut_emerald' } }, 
+		{ header = Lang:t("info.jewel_buyer"), txt = Lang:t("info.sell_jewel"), isMenuHeader = true }, 
+		{ header = "", txt = Lang:t("info.return"), params = { event = "jim-mining:JewelSell", } },
+		{ header = Lang:t("info.emeralds"), txt = Lang:t("info.sell_all", {value = Config.SellItems['emerald']}), params = { event = "jim-mining:SellAnim:Jewel", args = 'emerald' } },
+		{ header = Lang:t("info.uncut_emeralds"), txt = Lang:t("info.sell_all", {value = Config.SellItems['uncut_emerald']}), params = { event = "jim-mining:SellAnim:Jewel", args = 'uncut_emerald' } }, 
 	})
 end)
 --Jewel Selling - Ruby Menu
 RegisterNetEvent('jim-mining:JewelSell:Ruby', function()
     exports['qb-menu']:openMenu({
-		{ header = "Jewellery Buyer", txt = "Sell your jewellery here", isMenuHeader = true }, 
-		{ header = "", txt = "⬅ Return", params = { event = "jim-mining:JewelSell", } },
-		{ header = "Rubys", txt = "Sell ALL at $"..Config.SellItems['ruby'].." each", params = { event = "jim-mining:SellAnim:Jewel", args = 'ruby' } },
-		{ header = "Uncut Rubys", txt = "Sell ALL at $"..Config.SellItems['uncut_ruby'].." each", params = { event = "jim-mining:SellAnim:Jewel", args = 'uncut_ruby' } },
+		{ header = Lang:t("info.jewel_buyer"), txt = Lang:t("info.sell_jewel"), isMenuHeader = true }, 
+		{ header = "", txt = Lang:t("info.return"), params = { event = "jim-mining:JewelSell", } },
+		{ header = Lang:t("info.rubys"), txt = Lang:t("info.sell_all", {value = Config.SellItems['ruby']}), params = { event = "jim-mining:SellAnim:Jewel", args = 'ruby' } },
+		{ header = Lang:t("info.uncut_ruby"), txt = Lang:t("info.sell_all", {value = Config.SellItems['uncut_ruby']}), params = { event = "jim-mining:SellAnim:Jewel", args = 'uncut_ruby' } },
 	})
 end)
 --Jewel Selling - Diamonds Menu
 RegisterNetEvent('jim-mining:JewelSell:Diamond', function()
     exports['qb-menu']:openMenu({
-		{ header = "Jewellery Buyer", txt = "Sell your jewellery here", isMenuHeader = true }, 
-		{ header = "", txt = "⬅ Return", params = { event = "jim-mining:JewelSell", } },
-		{ header = "Diamonds", txt = "Sell ALL at $"..Config.SellItems['diamond'].." each", params = { event = "jim-mining:SellAnim:Jewel", args = 'diamond' } },
-		{ header = "Uncut Diamonds", txt = "Sell ALL at $"..Config.SellItems['uncut_diamond'].." each", params = { event = "jim-mining:SellAnim:Jewel", args = 'uncut_diamond' } },
+		{ header = Lang:t("info.jewel_buyer"), txt = Lang:t("info.sell_jewel"), isMenuHeader = true }, 
+		{ header = "", txt = Lang:t("info.return"), params = { event = "jim-mining:JewelSell", } },
+		{ header = Lang:t("info.diamonds"), txt = Lang:t("info.sell_all", {value = Config.SellItems['diamond']}), params = { event = "jim-mining:SellAnim:Jewel", args = 'diamond' } },
+		{ header = Lang:t("info.uncut_diamond"), txt = Lang:t("info.sell_all", {value = Config.SellItems['uncut_diamond']}), params = { event = "jim-mining:SellAnim:Jewel", args = 'uncut_diamond' } },
 	})
 end)
 --Jewel Selling - Sapphire Menu
 RegisterNetEvent('jim-mining:JewelSell:Sapphire', function()
     exports['qb-menu']:openMenu({
-		{ header = "Jewellery Buyer", txt = "Sell your jewellery here", isMenuHeader = true }, 
-		{ header = "", txt = "⬅ Return", params = { event = "jim-mining:JewelSell", } },
-		{ header = "Sapphires", txt = "Sell ALL at $"..Config.SellItems['sapphire'].." each", params = { event = "jim-mining:SellAnim:Jewel", args = 'sapphire' } },
-		{ header = "Uncut Sapphires", txt = "Sell ALL at $"..Config.SellItems['uncut_sapphire'].." each", params = { event = "jim-mining:SellAnim:Jewel", args = 'uncut_sapphire' } },
+		{ header = Lang:t("info.jewel_buyer"), txt = Lang:t("info.sell_jewel"), isMenuHeader = true }, 
+		{ header = "", txt = Lang:t("info.return"), params = { event = "jim-mining:JewelSell", } },
+		{ header = Lang:t("info.sapphires"), txt = Lang:t("info.sell_all", {value = Config.SellItems['sapphire']}), params = { event = "jim-mining:SellAnim:Jewel", args = 'sapphire' } },
+		{ header = Lang:t("info.uncut_sapphires"), txt = Lang:t("info.sell_all", {value = Config.SellItems['uncut_sapphire']}), params = { event = "jim-mining:SellAnim:Jewel", args = 'uncut_sapphire' } },
 	})
 end)
 
 --Jewel Selling - Jewellry Menu
 RegisterNetEvent('jim-mining:JewelSell:Rings', function()
     exports['qb-menu']:openMenu({
-		{ header = "Jewellery Buyer", txt = "Sell your jewellery here", isMenuHeader = true }, 
-		{ header = "", txt = "⬅ Return", params = { event = "jim-mining:JewelSell", } },
-		{ header = "Gold Rings", txt = "Sell ALL at $"..Config.SellItems['gold_ring'].." each", params = { event = "jim-mining:SellAnim:Jewel", args = 'gold_ring' } },
-		{ header = "Diamond Rings", txt = "Sell ALL at $"..Config.SellItems['diamond_ring'].." each", params = { event = "jim-mining:SellAnim:Jewel", args = 'diamond_ring'} },
-		{ header = "Emerald Rings", txt = "Sell ALL at $"..Config.SellItems['emerald_ring'].." each", params = { event = "jim-mining:SellAnim:Jewel", args = 'emerald_ring' } },
-		{ header = "Ruby Rings", txt = "Sell ALL at $"..Config.SellItems['ruby_ring'].." each", params = { event = "jim-mining:SellAnim:Jewel", args = 'ruby_ring' } },	
-		{ header = "Sapphire Rings", txt = "Sell ALL at $"..Config.SellItems['sapphire_ring'].." each", params = { event = "jim-mining:SellAnim:Jewel", args = 'sapphire_ring' } },
+		{ header = Lang:t("info.jewel_buyer"), txt = Lang:t("info.sell_jewel"), isMenuHeader = true }, 
+		{ header = "", txt = Lang:t("info.return"), params = { event = "jim-mining:JewelSell", } },
+		{ header = Lang:t("info.gold_rings"), txt = Lang:t("info.sell_all", {value = Config.SellItems['gold_ring']}), params = { event = "jim-mining:SellAnim:Jewel", args = 'gold_ring' } },
+		{ header = Lang:t("info.diamond_rings"), txt = Lang:t("info.sell_all", {value = Config.SellItems['diamond_ring']}), params = { event = "jim-mining:SellAnim:Jewel", args = 'diamond_ring'} },
+		{ header = Lang:t("info.emerald_rings"), txt = Lang:t("info.sell_all", {value = Config.SellItems['emerald_ring']}), params = { event = "jim-mining:SellAnim:Jewel", args = 'emerald_ring' } },
+		{ header = Lang:t("info.ruby_rings"), txt = Lang:t("info.sell_all", {value = Config.SellItems['ruby_ring']}), params = { event = "jim-mining:SellAnim:Jewel", args = 'ruby_ring' } },	
+		{ header = Lang:t("info.sapphire_rings"), txt = Lang:t("info.sell_all", {value = Config.SellItems['sapphire_ring']}), params = { event = "jim-mining:SellAnim:Jewel", args = 'sapphire_ring' } },
 	})
 end)
 --Jewel Selling - Jewellery Menu
 RegisterNetEvent('jim-mining:JewelSell:Necklace', function()
     exports['qb-menu']:openMenu({
-		{ header = "Jewellery Buyer", txt = "Sell your jewellery here", isMenuHeader = true }, 
-		{ header = "", txt = "⬅ Return", params = { event = "jim-mining:JewelSell", } },
-		{ header = "Gold Chains",	txt = "Sell ALL at $"..Config.SellItems['goldchain'].." each", params = { event = "jim-mining:SellAnim:Jewel", args = 'goldchain' } },
-		{ header = "Gold Chains", txt = "Sell ALL at $"..Config.SellItems['10kgoldchain'].." each", params = { event = "jim-mining:SellAnim:Jewel", args = '10kgoldchain' } },
-		{ header = "Diamond Necklace", txt = "Sell ALL at $"..Config.SellItems['diamond_necklace'].." each", params = { event = "jim-mining:SellAnim:Jewel", args = 'diamond_necklace' } },
-		{ header = "Emerald Necklace", txt = "Sell ALL at $"..Config.SellItems['emerald_necklace'].." each", params = { event = "jim-mining:SellAnim:Jewel", args = 'emerald_necklace' } },
-		{ header = "Ruby Necklace", txt = "Sell ALL at $"..Config.SellItems['ruby_necklace'].." each", params = { event = "jim-mining:SellAnim:Jewel", args = 'ruby_necklace' } },	
-		{ header = "Sapphire Necklace", txt = "Sell ALL at $"..Config.SellItems['sapphire_necklace'].." each", params = { event = "jim-mining:SellAnim:Jewel", args = 'sapphire_necklace' } },
+		{ header = Lang:t("info.jewel_buyer"), txt = Lang:t("info.sell_jewel"), isMenuHeader = true }, 
+		{ header = "", txt = Lang:t("info.return"), params = { event = "jim-mining:JewelSell", } },
+		{ header = Lang:t("info.gold_chains"),	txt = Lang:t("info.sell_all", {value = Config.SellItems['goldchain']}), params = { event = "jim-mining:SellAnim:Jewel", args = 'goldchain' } },
+		{ header = Lang:t("info.10kgold_chain"), txt = Lang:t("info.sell_all", {value = Config.SellItems['10kgoldchain']}), params = { event = "jim-mining:SellAnim:Jewel", args = '10kgoldchain' } },
+		{ header = Lang:t("info.diamond_neck"), txt = Lang:t("info.sell_all", {value = Config.SellItems['diamond_necklace']}), params = { event = "jim-mining:SellAnim:Jewel", args = 'diamond_necklace' } },
+		{ header = Lang:t("info.emerald_neck"), txt = Lang:t("info.sell_all", {value = Config.SellItems['emerald_necklace']}), params = { event = "jim-mining:SellAnim:Jewel", args = 'emerald_necklace' } },
+		{ header = Lang:t("info.ruby_neck"), txt = Lang:t("info.sell_all", {value = Config.SellItems['ruby_necklace']}), params = { event = "jim-mining:SellAnim:Jewel", args = 'ruby_necklace' } },	
+		{ header = Lang:t("info.sapphire_neck"), txt = Lang:t("info.sell_all", {value = Config.SellItems['sapphire_necklace']}), params = { event = "jim-mining:SellAnim:Jewel", args = 'sapphire_necklace' } },
 	})
 end)
 ------------------------
@@ -550,8 +550,8 @@ end)
 --Smelting
 RegisterNetEvent('jim-mining:SmeltMenu', function()
 	local SmeltMenu = {}
-	SmeltMenu[#SmeltMenu + 1] = { header = "Smelter", txt = "Smelt ores down into usable materials", isMenuHeader = true }
-	SmeltMenu[#SmeltMenu + 1] = { header = "", txt = "✘ Close", params = { event = "jim-mining:SellAnim", args = -2 } }
+	SmeltMenu[#SmeltMenu + 1] = { header = Lang:t("info.smelter"), txt = Lang:t("info.smelt_ores"), isMenuHeader = true }
+	SmeltMenu[#SmeltMenu + 1] = { header = "", txt = Lang:t("info.close"), params = { event = "jim-mining:SellAnim", args = -2 } }
 		for i = 1, #Crafting.SmeltMenu do
 			for k, v in pairs(Crafting.SmeltMenu[i]) do
 				if k ~= "amount" then
@@ -575,19 +575,19 @@ end)
 --Cutting Jewels
 RegisterNetEvent('jim-mining:JewelCut', function()
     exports['qb-menu']:openMenu({
-	{ header = "Jewellery Crafting Bench", txt = "Requires Hand Drill & Drill Bit", isMenuHeader = true },
-	{ header = "", txt = "✘ Close", params = { event = "jim-mining:SellAnim", args = -2 } },
-	{ header = "Gem Cutting",	txt = "Go to Gem Cutting Section", params = { event = "jim-mining:JewelCut:Gem", } },
-	{ header = "Make Rings", txt = "Go to Ring Crafting Section", params = { event = "jim-mining:JewelCut:Ring", } },
-	{ header = "Make Necklaces", txt = "Go to Necklace Crafting Section", params = { event = "jim-mining:JewelCut:Necklace", } },
+	{ header = Lang:t("info.craft_bench"), txt = Lang:t("info.req_drill_bit"), isMenuHeader = true },
+	{ header = "", txt = Lang:t("info.close"), params = { event = "jim-mining:SellAnim", args = -2 } },
+	{ header = Lang:t("info.gem_cut"),	txt = Lang:t("info.gem_cut_section"), params = { event = "jim-mining:JewelCut:Gem", } },
+	{ header = Lang:t("info.make_ring"), txt = Lang:t("info.ring_craft_section"), params = { event = "jim-mining:JewelCut:Ring", } },
+	{ header = Lang:t("info.make_neck"), txt = Lang:t("info.neck_craft_section"), params = { event = "jim-mining:JewelCut:Necklace", } },
 	})
 end)
 
 --Gem Section
 RegisterNetEvent('jim-mining:JewelCut:Gem', function()
 	local GemCut = {}
-	GemCut[#GemCut + 1] = { header = "Jewellery Crafting Bench", txt = "Requires Hand Drill & Drill Bit", isMenuHeader = true }
-	GemCut[#GemCut + 1] = { header = "", txt = "⬅ Return", params = { event = "jim-mining:JewelCut", } }
+	GemCut[#GemCut + 1] = { header = Lang:t("info.craft_bench"), txt = Lang:t("info.req_drill_bit"), isMenuHeader = true }
+	GemCut[#GemCut + 1] = { header = "", txt = Lang:t("info.return"), params = { event = "jim-mining:JewelCut", } }
 		for i = 1, #Crafting.GemCut do
 			for k, v in pairs(Crafting.GemCut[i]) do
 				if k ~= "amount" then
@@ -610,8 +610,8 @@ end)
 -- Ring Section
 RegisterNetEvent('jim-mining:JewelCut:Ring', function()
 	local RingCut = {}
-	RingCut[#RingCut + 1] = { header = "Jewellery Crafting Bench", txt = "Requires Hand Drill & Drill Bit", isMenuHeader = true }
-	RingCut[#RingCut + 1] = { header = "", txt = "⬅ Return", params = { event = "jim-mining:JewelCut", } }
+	RingCut[#RingCut + 1] = { header = Lang:t("info.craft_bench"), txt = Lang:t("info.req_drill_bit"), isMenuHeader = true }
+	RingCut[#RingCut + 1] = { header = "", txt = Lang:t("info.return"), params = { event = "jim-mining:JewelCut", } }
 		for i = 1, #Crafting.RingCut do
 			for k, v in pairs(Crafting.RingCut[i]) do
 				if k ~= "amount" then
@@ -634,8 +634,8 @@ end)
 --Necklace Section
 RegisterNetEvent('jim-mining:JewelCut:Necklace', function()
 	local NeckCut = {}
-	NeckCut[#NeckCut + 1] = { header = "Jewellery Crafting Bench", txt = "Requires Hand Drill & Drill Bit", isMenuHeader = true }
-	NeckCut[#NeckCut + 1] = { header = "", txt = "⬅ Return", params = { event = "jim-mining:JewelCut", } }
+	NeckCut[#NeckCut + 1] = { header = Lang:t("info.craft_bench"), txt = Lang:t("info.req_drill_bit"), isMenuHeader = true }
+	NeckCut[#NeckCut + 1] = { header = "", txt = Lang:t("info.return"), params = { event = "jim-mining:JewelCut", } }
 		for i = 1, #Crafting.NeckCut do
 			for k, v in pairs(Crafting.NeckCut[i]) do
 				if k ~= "amount" then
