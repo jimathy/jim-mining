@@ -1,11 +1,11 @@
-local Translations = {
+Loc["en"] = {
     error = {
         ["cancelled"] = "Cancelled!",
         ["no_drill"] = "You dont have a drill",
         ["no_drill_bit"] = "You don't have a Hand Drill or Drill Bit",
         ["no_stone"] = "You don't have any Stone",
         ["no_ingredients"] = "You don't have the correct ingredients",
-        ["dont_have"] = "You don't have any %{value}",
+        ["dont_have"] = "You don't have any ",
     },
     success = {},
     info = {
@@ -55,7 +55,8 @@ local Translations = {
         ["sell_jewel"] = "Sell your jewellery here",
         ["see_options"] = "See all selling options",
         ["jewel_buyer"] = "Jewellery Buyer",
-        ["sell_all"] = "Sell ALL at $%{value} each",
+        ["sell_all"] = "Sell ALL at $",
+		["sell_each"] = "each",
         ["craft_bench"] = "Jewellery Crafting Bench",
         ["req_drill_bit"] = "Requires Hand Drill & Drill Bit",
         ["gem_cut"] = "Gem Cutting",
@@ -67,7 +68,3 @@ local Translations = {
     },
     warning = {},
 }
-Lang = Locale:new({
-    phrases = Translations,
-    warnOnMissing = true
-}) 

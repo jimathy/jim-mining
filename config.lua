@@ -1,5 +1,6 @@
 print("Jim-Mining - Mining Script by Jimathy")
 
+Loc = {}
 Config = {}
 
 Config = {
@@ -13,6 +14,7 @@ Config = {
 	Fade = true, -- Do you want the peds to fade into/out of existence? It looks better than just *POP* its there.
 	Distance = 40.0, --The distance you want peds to spawn at
 }
+Config.Lan = "en" -- Pick your language here
 
 Config.ImageLink = "qb-inventory/html/images/" --Set this to the image directory of your inventory script
 

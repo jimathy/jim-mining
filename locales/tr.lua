@@ -1,11 +1,11 @@
-local Translations = {
+Loc["tr"] = {
     error = {
         ["cancelled"] = "İptal edildi!",
         ["no_drill"] = "Matkabın yok",
         ["no_drill_bit"] = "Matkabınız veya Matkap Ucunuz yok",
         ["no_stone"] = "Hiç Taşınız yok",
         ["no_ingredients"] = "Doğru malzemelere sahip değilsin",
-        ["dont_have"] = "Sende hiç %{value} yok",
+        ["dont_have"] = "Sende hiç yok ",
     },
     success = {},
     info = {
@@ -55,7 +55,8 @@ local Translations = {
         ["sell_jewel"] = "Mücevherlerini burada sat",
         ["see_options"] = "Tüm satış seçeneklerini görün",
         ["jewel_buyer"] = "Mücevher Alıcısı",
-        ["sell_all"] = "TÜMÜNÜ her biri $%{value} değerinden sat",
+        ["sell_all"] = "TÜMÜNÜ her biri $",
+        ["sell_each"] = "değerinden sat",
         ["craft_bench"] = "Mücevherat Tezgahı",
         ["req_drill_bit"] = "Matkap ve Matkap Ucu gerektirir",
         ["gem_cut"] = "Mücevher Kesme",
@@ -67,7 +68,3 @@ local Translations = {
     },
     warning = {},
 }
-Lang = Locale:new({
-    phrases = Translations,
-    warnOnMissing = true
-}) 

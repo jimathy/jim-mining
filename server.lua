@@ -73,7 +73,7 @@ AddEventHandler("jim-mining:Selling", function(data)
         Player.Functions.AddMoney('cash', pay)
         TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[data], 'remove', amount)
     else
-        TriggerClientEvent("QBCore:Notify", src, Lang:t("error.dont_have", {value = QBCore.Shared.Items[data].label}), "error")
+        TriggerClientEvent("QBCore:Notify", src, Loc[Config.Lan].error["dont_have"].." "..QBCore.Shared.Items[data].label, "error")
     end
     Citizen.Wait(1000)
 end)
@@ -90,7 +90,7 @@ AddEventHandler("jim-mining:SellJewel", function(data)
         Player.Functions.AddMoney('cash', pay)
         TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[data], 'remove', amount)
     else
-        TriggerClientEvent("QBCore:Notify", src, Lang:t("error.dont_have", {value = QBCore.Shared.Items[data].label}), "error")
+        TriggerClientEvent("QBCore:Notify", src, Loc[Config.Lan].error["dont_have"].." "..QBCore.Shared.Items[data].label, "error")
     end
     Citizen.Wait(1000)
 end)

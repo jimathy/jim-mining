@@ -1,11 +1,11 @@
-local Translations = {
+Loc["nl"] = {
     error = {
         ["cancelled"] = "Geannuleerd!",
         ["no_drill"] = "Je hebt geen boor",
         ["no_drill_bit"] = "Je hebt geen boor of boorkop",
         ["no_stone"] = "Je hebt geen steen",
         ["no_ingredients"] = "Je hebt niet de juiste ingrediënten",
-        ["dont_have"] = "Je hebt geen %{value}",
+        ["dont_have"] = "Je hebt geen ",
     },
     success = {},
     info = {
@@ -55,7 +55,8 @@ local Translations = {
         ["sell_jewel"] = "Verkoop hier je sieraden",
         ["see_options"] = "Bekijk alle verkoopopties",
         ["jewel_buyer"] = "Sieraden Koper",
-        ["sell_all"] = "Verkoop ALLES voor $%{value} per stuk",
+        ["sell_all"] = "Verkoop ALLES voor $",
+        ["sell_each"] = "per stuk",
         ["craft_bench"] = "Sieraden Craft Bank",
         ["req_drill_bit"] = "Vereist handboor en boorkop",
         ["gem_cut"] = "Edelsteen Snijden",
@@ -67,7 +68,3 @@ local Translations = {
     },
     warning = {},
 }
-Lang = Locale:new({
-    phrases = Translations,
-    warnOnMissing = true
-}) 

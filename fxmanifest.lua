@@ -10,14 +10,10 @@ dependencies {
 }
 
 shared_scripts {
-    '@qb-core/shared/locale.lua',
-	'locales/en.lua',
-	'config.lua'
-}
-client_scripts {
-    'client.lua'
+	'config.lua',
+	'locales/*.lua'
 }
 
-server_script {
-    'server.lua'
-}
+client_scripts { 'client.lua' }
+
+server_script { 'server.lua' }
