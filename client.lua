@@ -278,16 +278,16 @@ end)
 RegisterNetEvent('jim-mining:CrackStart', function ()
 	QBCore.Functions.TriggerCallback("QBCore:HasItem", function(item) 
 		if item then 
-			local pos = GetEntityCoords(GetPlayerPed(-1))
+			local pos = GetEntityCoords(PlayerPedId())
 			loadAnimDict('amb@prop_human_parking_meter@male@idle_a')
-			TaskPlayAnim(GetPlayerPed(-1), 'amb@prop_human_parking_meter@male@idle_a', 'idle_a' , 3.0, 3.0, -1, 1, 0, false, false, false)
+			TaskPlayAnim(PlayerPedId(), 'amb@prop_human_parking_meter@male@idle_a', 'idle_a' , 3.0, 3.0, -1, 1, 0, false, false, false)
 			QBCore.Functions.Progressbar("open_locker_drill", Loc[Config.Lan].info["cracking_stone"], math.random(10000,15000), false, true, {
 				disableMovement = true,	disableCarMovement = true, disableMouse = false, disableCombat = true, }, {}, {}, {}, function() -- Done
-				StopAnimTask(GetPlayerPed(-1), 'amb@prop_human_parking_meter@male@idle_a', 'idle_a', 1.0)
+				StopAnimTask(PlayerPedId(), 'amb@prop_human_parking_meter@male@idle_a', 'idle_a', 1.0)
 				TriggerServerEvent('jim-mining:CrackReward')
 				IsDrilling = false
 			end, function() -- Cancel
-				StopAnimTask(GetPlayerPed(-1), 'amb@prop_human_parking_meter@male@idle_a', 'idle_a', 1.0)
+				StopAnimTask(PlayerPedId(), 'amb@prop_human_parking_meter@male@idle_a', 'idle_a', 1.0)
 				IsDrilling = false
 			end)
 		else 
@@ -383,7 +383,7 @@ function itemProgress(ItemMake, tablenumber, craftable)
 		flags = 8,
 	}, {}, {}, function()  
 		TriggerServerEvent('jim-mining:GetItem', ItemMake, tablenumber, craftable)
-		StopAnimTask(GetPlayerPed(-1), animDictNow, animNow, 1.0)
+		StopAnimTask(PlayerPedId(), animDictNow, animNow, 1.0)
 	end, function() -- Cancel
 		TriggerEvent('inventory:client:busy:status', false)
 		TriggerEvent('QBCore:Notify', Loc[Config.Lan].error["error.cancelled"], 'error')
