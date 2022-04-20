@@ -1,4 +1,4 @@
-name "Mining"
+name "Jim-Mining"
 author "Jimathy"
 description "Mining Script By Jimathy"
 fx_version "cerulean"

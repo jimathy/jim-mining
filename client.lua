@@ -23,8 +23,7 @@ end
 Citizen.CreateThread(function()
 	--Hide the mineshaft doors
 	CreateModelHide(vector3(-596.04, 2089.01, 131.41), 10.5, -1241212535, true)
-
-    if Config.Blips == true then
+	if Config.Blips == true then
 		CreateBlips()
 	end
 end)
@@ -68,8 +67,8 @@ function CreatePeds()
 end
 
 function nearPed(model, coords, heading, gender, animDict, animName, scenario)
-	RequestModel(GetHashKey(model))
-	while not HasModelLoaded(GetHashKey(model)) do
+	RequestModel(model)
+	while not HasModelLoaded(model) do
 		Citizen.Wait(1)
 	end
 	if gender == 'male' then
@@ -81,10 +80,10 @@ function nearPed(model, coords, heading, gender, animDict, animName, scenario)
 	end
 	if Config.MinusOne then 
 		local x, y, z = table.unpack(coords)
-		ped = CreatePed(genderNum, GetHashKey(model), x, y, z - 1, heading, false, true)
+		ped = CreatePed(genderNum, model, x, y, z - 1, heading, false, true)
 		table.insert(shopPeds, ped)
 	else
-		ped = CreatePed(genderNum, GetHashKey(v.model), coords, heading, false, true)
+		ped = CreatePed(genderNum, v.model, coords, heading, false, true)
 		table.insert(shopPeds, ped)
 	end
 	SetEntityAlpha(ped, 0, false)
@@ -118,96 +117,87 @@ function nearPed(model, coords, heading, gender, animDict, animName, scenario)
 end
 
 -----------------------------------------------------------
-
+local props = {}
 function CreateProps()
-
 	--Quickly add outside lighting
-		if minelight1 == nil then
-			RequestModel(GetHashKey("prop_worklight_03a"))
-			while not HasModelLoaded(GetHashKey("prop_worklight_03a")) do Citizen.Wait(1) end
-			local minelight1 = CreateObject(GetHashKey("prop_worklight_03a"),-593.29, 2093.22, 131.7-1.05,false,false,false)
-			SetEntityHeading(minelight1,GetEntityHeading(minelight1)-80)
-			FreezeEntityPosition(minelight1, true)
-		end		
-		if minelight2 == nil then
-			RequestModel(GetHashKey("prop_worklight_03a"))
-			while not HasModelLoaded(GetHashKey("prop_worklight_03a")) do Citizen.Wait(1) end
-			local minelight2 = CreateObject(GetHashKey("prop_worklight_03a"),-604.55, 2089.74, 131.15-1.05,false,false,false)
-			SetEntityHeading(minelight2,GetEntityHeading(minelight2)-260)
-			FreezeEntityPosition(minelight2, true)
-		end
+	RequestModel(`prop_worklight_03a`)
+	while not HasModelLoaded(`prop_worklight_03a`) do Citizen.Wait(1) end
+	props[#props+1] = CreateObject(`prop_worklight_03a`,-593.29, 2093.22, 131.7-1.05,false,false,false)
+	SetEntityHeading(props[#props],260.0)
+	FreezeEntityPosition(props[#props], true)
+	
+	props[#props+1] = CreateObject(`prop_worklight_03a`,-604.55, 2089.74, 131.15-1.05,false,false,false)
+	SetEntityHeading(props[#props],80.0)
+	FreezeEntityPosition(props[#props], true)
 
-	local prop = 0
 	for k,v in pairs(Config.OrePositions) do
-		prop = prop+1
-		local prop = CreateObject(GetHashKey("cs_x_rubweec"),v.coords.x, v.coords.y, v.coords.z+1.03,false,false,false)
-		SetEntityHeading(prop,GetEntityHeading(prop)-90)
-		FreezeEntityPosition(prop, true)           
+		props[#props+1] = CreateObject(`cs_x_rubweec`,v.coords.x, v.coords.y, v.coords.z+1.03,false,false,false)
+		SetEntityHeading(props[#props],90.0)
+		FreezeEntityPosition(props[#props], true)           
     end
 	for k,v in pairs(Config.MineLights) do
-		prop = prop+1
-		local prop = CreateObject(GetHashKey("xs_prop_arena_lights_ceiling_l_c"),v.coords.x, v.coords.y, v.coords.z+1.03,false,false,false)
+		props[#props+1] = CreateObject(`xs_prop_arena_lights_ceiling_l_c`,v.coords.x, v.coords.y, v.coords.z+1.03,false,false,false)
 		--SetEntityHeading(prop,GetEntityHeading(prop)-90)
-		FreezeEntityPosition(prop, true)           
+		FreezeEntityPosition(props[#props], true)           
     end
 	--Jewel Cutting Bench
-	local bench = CreateObject(GetHashKey("gr_prop_gr_bench_04b"),Config.Locations['JewelCut'].location,false,false,false)
-	SetEntityHeading(bench,GetEntityHeading(bench)-Config.Locations['JewelCut'].heading)
-	FreezeEntityPosition(bench, true)
+	props[#props+1] =  CreateObject(`gr_prop_gr_bench_04b`,Config.Locations['JewelCut'].location,false,false,false)
+	SetEntityHeading(props[#props], Config.Locations['JewelCut'].heading)
+	FreezeEntityPosition(props[#props], true)
 
 	--Stone Cracking Bench
-	local bench2 = CreateObject(GetHashKey("prop_tool_bench02"),Config.Locations['Cracking'].location,false,false,false)
-	SetEntityHeading(bench2,GetEntityHeading(bench2)-Config.Locations['Cracking'].heading)
-	FreezeEntityPosition(bench2, true)
+	props[#props+1] = CreateObject(`prop_tool_bench02`,Config.Locations['Cracking'].location,false,false,false)
+	SetEntityHeading(props[#props], Config.Locations['Cracking'].heading)
+	FreezeEntityPosition(props[#props], true)
 	--Stone Prop for bench
-	local bench2prop = CreateObject(GetHashKey("cs_x_rubweec"),Config.Locations['Cracking'].location.x, Config.Locations['Cracking'].location.y, Config.Locations['Cracking'].location.z+0.83,false,false,false)
-	SetEntityHeading(bench2prop,GetEntityHeading(bench2prop)-Config.Locations['Cracking'].heading+90)
-	FreezeEntityPosition(bench2prop, true)
-	local bench2prop2 = CreateObject(GetHashKey("prop_worklight_03a"),Config.Locations['Cracking'].location.x-1.4, Config.Locations['Cracking'].location.y+1.08, Config.Locations['Cracking'].location.z,false,false,false)
-	SetEntityHeading(bench2prop2,GetEntityHeading(bench2prop2)-Config.Locations['Cracking'].heading+180)
-	FreezeEntityPosition(bench2prop2, true)
+	props[#props+1] = CreateObject(`cs_x_rubweec`,Config.Locations['Cracking'].location.x, Config.Locations['Cracking'].location.y, Config.Locations['Cracking'].location.z+0.83,false,false,false)
+	SetEntityHeading(props[#props], Config.Locations['Cracking'].heading+90.0)
+	FreezeEntityPosition(props[#props], true)
+	props[#props+1] = CreateObject(`prop_worklight_03a`,Config.Locations['Cracking'].location.x-1.4, Config.Locations['Cracking'].location.y+1.08, Config.Locations['Cracking'].location.z,false,false,false)
+	SetEntityHeading(props[#props], Config.Locations['Cracking'].heading+180.0)
+	FreezeEntityPosition(props[#props], true)
 end
 
 -----------------------------------------------------------
 
 Citizen.CreateThread(function()
-	exports['qb-target']:AddCircleZone("MineShaft", Config.Locations['Mine'].location, 2.0, { name="MineShaft", debugPoly=false, useZ=true, }, 
+	exports['qb-target']:AddCircleZone("MineShaft", Config.Locations['Mine'].location, 2.0, { name="MineShaft", debugPoly=Config.Debug, useZ=true, }, 
 	{ options = { { event = "jim-mining:openShop", icon = "fas fa-certificate", label = Loc[Config.Lan].info["browse_store"], }, }, 
 		distance = 2.0
 	})
-	exports['qb-target']:AddCircleZone("Quarry", Config.Locations['Quarry'].location, 2.0, { name="Quarry", debugPoly=false, useZ=true, }, 
+	exports['qb-target']:AddCircleZone("Quarry", Config.Locations['Quarry'].location, 2.0, { name="Quarry", debugPoly=Config.Debug, useZ=true, }, 
 	{ options = { { event = "jim-mining:openShop", icon = "fas fa-certificate", label = Loc[Config.Lan].info["browse_store"], }, },
 		distance = 2.0
 	})
 	--Smelter to turn stone into ore
-	exports['qb-target']:AddCircleZone("Smelter", Config.Locations['Smelter'].location, 3.0, { name="Smelter", debugPoly=false, useZ=true, }, 
+	exports['qb-target']:AddCircleZone("Smelter", Config.Locations['Smelter'].location, 3.0, { name="Smelter", debugPoly=Config.Debug, useZ=true, }, 
 	{ options = { { event = "jim-mining:SmeltMenu", icon = "fas fa-certificate", label = Loc[Config.Lan].info["use_smelter"], }, },
 		distance = 10.0
 	})
 	--Ore Buyer
-	exports['qb-target']:AddCircleZone("Buyer", Config.Locations['Buyer'].location, 2.0, { name="Buyer", debugPoly=false, useZ=true, }, 
+	exports['qb-target']:AddCircleZone("Buyer", Config.Locations['Buyer'].location, 2.0, { name="Buyer", debugPoly=Config.Debug, useZ=true, }, 
 	{ options = { { event = "jim-mining:SellOre", icon = "fas fa-certificate", label = Loc[Config.Lan].info["sell_ores"], },	},
 		distance = 2.0
 	})
 	--Jewel Cutting Bench
-	exports['qb-target']:AddCircleZone("JewelCut", Config.Locations['JewelCut'].location, 2.0, { name="JewelCut", debugPoly=false, useZ=true, }, 
+	exports['qb-target']:AddCircleZone("JewelCut", Config.Locations['JewelCut'].location, 2.0, { name="JewelCut", debugPoly=Config.Debug, useZ=true, }, 
 	{ options = { { event = "jim-mining:JewelCut", icon = "fas fa-certificate", label = Loc[Config.Lan].info["jewelcut"], },	},
 		distance = 2.0
 	})
 	--Jewel Buyer
-	exports['qb-target']:AddCircleZone("JewelBuyer", Config.Locations['Buyer2'].location, 2.0, { name="JewelBuyer", debugPoly=false, useZ=true, }, 
+	exports['qb-target']:AddCircleZone("JewelBuyer", Config.Locations['Buyer2'].location, 2.0, { name="JewelBuyer", debugPoly=Config.Debug, useZ=true, }, 
 	{ options = { { event = "jim-mining:JewelSell", icon = "fas fa-certificate", label = Loc[Config.Lan].info["jewelbuyer"], },	},
 		distance = 2.0
 	})
 	--Cracking Bench
-	exports['qb-target']:AddCircleZone("CrackingBench", Config.Locations['Cracking'].location, 2.0, { name="CrackingBench", debugPoly=false, useZ=true, }, 
+	exports['qb-target']:AddCircleZone("CrackingBench", Config.Locations['Cracking'].location, 2.0, { name="CrackingBench", debugPoly=Config.Debug, useZ=true, }, 
 	{ options = { { event = "jim-mining:CrackStart", icon = "fas fa-certificate", label = Loc[Config.Lan].info["crackingbench"], },	},
 		distance = 2.0
 	})
 	local ore = 0
 	for k,v in pairs(Config.OrePositions) do
 		ore = ore+1
-		exports['qb-target']:AddCircleZone(ore, v.coords, 2.0, { name=ore, debugPoly=false, useZ=true, }, 
+		exports['qb-target']:AddCircleZone(ore, v.coords, 2.0, { name=ore, debugPoly=Config.Debug, useZ=true, }, 
 		{ options = { { event = "jim-mining:MineOre", icon = "fas fa-certificate", label = Loc[Config.Lan].info["mine_ore"], },	},
 			distance = 2.5
 		})
@@ -217,7 +207,7 @@ end)
 -----------------------------------------------------------
 --Mining Store Opening
 RegisterNetEvent('jim-mining:openShop', function ()
-	TriggerServerEvent("inventory:server:OpenInventory", "shop", "mine", Config.Items)
+	TriggerServerEvent("jim-shops:ShopOpen", "shop", "mine", Config.Items)
 end)
 ------------------------------------------------------------
 -- Mine Ore Command / Animations
@@ -654,4 +644,12 @@ RegisterNetEvent('jim-mining:JewelCut:Necklace', function()
 			end
 		end
 	exports['qb-menu']:openMenu(NeckCut)
+end)
+
+AddEventHandler('onResourceStop', function(resource) 
+	if resource == GetCurrentResourceName() then 
+		--for k, v in pairs(Targets) do exports['qb-target']:RemoveZone(k) end		
+		--for k, v in pairs(Peds) do DeletePed(Peds[k]) end
+		for i = 1, #props do DeleteObject(props[i]) end
+	end
 end)
