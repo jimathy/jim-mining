@@ -3,8 +3,6 @@ print("Jim-Mining - Mining Script by Jimathy")
 Loc = {}
 Config = {}
 
-Config.Debug = false
-
 Config = {
 	Blips = true, -- Enable Blips?
 	BlipNamer = false, -- Enable to Name Blips different things, disable if you already have too many blips as this will group them together
@@ -17,6 +15,8 @@ Config = {
 	Distance = 40.0, --The distance you want peds to spawn at
 }
 Config.Lan = "en" -- Pick your language here
+
+Config.Debug = true
 
 Config.ImageLink = "qb-inventory/html/images/" --Set this to the image directory of your inventory script
 
