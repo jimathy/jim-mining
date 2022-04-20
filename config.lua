@@ -16,7 +16,7 @@ Config = {
 }
 Config.Lan = "en" -- Pick your language here
 
-Config.Debug = true
+Config.Debug = false
 
 Config.ImageLink = "qb-inventory/html/images/" --Set this to the image directory of your inventory script
 
@@ -24,13 +24,13 @@ Config.ImageLink = "qb-inventory/html/images/" --Set this to the image directory
 -- Each one has individual blip enablers
 -- Mine and Mine Leave have headings for the player locations
 Config.Locations =  {
-	['Mine'] = { name = "Mine", location = vector3(-595.15,2091.23,131.46-1.03), heading = 61.59, blipTrue = true }, -- The location where you enter the mine 
-	['Quarry'] = { name = "Quarry", location = vector3(2961.02, 2754.14, 43.71-1.03), heading = 200.0, blipTrue = true }, -- The location where you enter the mine 
+	['Mine'] = { name = "Mine", location = vector4(-594.96, 2091.3, 131.47-1.03, 67.65), blipTrue = true }, -- The location where you enter the mine 
+	['Quarry'] = { name = "Quarry", location = vector4(2960.9, 2754.14, 43.71-1.03, 204.58), blipTrue = true }, -- The location where you enter the mine 
 	['Smelter'] = {	name = "Smelter", location = vector3(1112.29, -2009.9, 31.46), blipTrue = true }, -- The location of the smelter
-	['Cracking'] = { name = "Stone Cracking", location = vector3(1109.27,-1992.68,30.99-1.03), heading = 305.0-180.0, blipTrue = false }, -- The location of the smelter
-	['Buyer'] = { name = "Ore Buyer", location = vector3(1085.7,-2001.04,31.41-1.03), heading = 323.73, blipTrue = false }, -- The Location of the ore buyer
-	['JewelCut'] = { name = "Jewel Cutting", location = vector3(1077.24, -1984.22, 31.0-0.97), heading = 300.0, blipTrue = false }, -- The Location of the jewel cutting bench. Couldn't decide so left in smeltery
-	['Buyer2'] = { name = "Jewel Buyer", location = vector3(-629.85, -240.31, 38.16-1.03), heading = 105.74, blipTrue = false }, -- The Location of the jewel buyer, I left this as Vangelico, others will proabably change to pawn shops
+	['Cracking'] = { name = "Stone Cracking", location = vector4(1109.19, -1992.8, 30.98-1.03, 56.88), blipTrue = false }, -- The location of the smelter
+	['Buyer'] = { name = "Ore Buyer", location = vector4(1085.57, -2001.11, 31.4-1.03, 317.12), blipTrue = false }, -- The Location of the ore buyer
+	['JewelCut'] = { name = "Jewel Cutting", location = vector4(1077.11, -1984.22, 31.02-1.03, 55.8), blipTrue = false }, -- The Location of the jewel cutting bench. Couldn't decide so left in smeltery
+	['Buyer2'] = { name = "Jewel Buyer", location = vector4(-629.86, -240.35, 38.16-1.03, 110.05), blipTrue = false }, -- The Location of the jewel buyer, I left this as Vangelico, others will proabably change to pawn shops
 }
 
 ------------------------------------------------------------

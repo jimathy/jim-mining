@@ -1,32 +1,37 @@
 local QBCore = exports['qb-core']:GetCoreObject()
 
-QBCore.Functions.CreateCallback('jim-mining:get', function(source, cb, item, tablenumber, craftable)
+QBCore.Functions.CreateCallback('jim-mining:Check', function(source, cb, item, tablenumber, table)
 	local hasitem = false
 	local hasanyitem = nil
-		for l, b in pairs(craftable[tablenumber][item]) do
-			if QBCore.Functions.GetPlayer(source).Functions.GetItemByName(l) and QBCore.Functions.GetPlayer(source).Functions.GetItemByName(l).amount >= b then hasitem = true
-			else hasanyitem = false
+	for k, v in pairs(table[tablenumber]) do
+		if k == "amount" then else
+			for l, b in pairs(v) do
+				if QBCore.Functions.GetPlayer(source).Functions.GetItemByName(l) and QBCore.Functions.GetPlayer(source).Functions.GetItemByName(l).amount >= b then hasitem = true
+				else hasanyitem = false
+				end
+			end
 		end
 	end
 	if hasanyitem ~= nil then hasitem = false end
-if hasitem then cb(true) else cb(false) end end)
+	if hasitem then cb(true) else cb(false) end 
+end)
 
-RegisterServerEvent('jim-mining:GetItem', function(ItemMake, tablenumber, craftable)
+RegisterServerEvent('jim-mining:GetItem', function(data)
 	local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-	local amount = 0
+	local amount = 1
 	--This grabs the table from client and removes the item requirements
-	if craftable then
-			if craftable[tablenumber]["amount"] then amount = tonumber(craftable[tablenumber]["amount"]) else amount = 1 end
-			for l, b in pairs(craftable[tablenumber][ItemMake]) do
-				TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[tostring(l)], "remove", b) 
-				Player.Functions.RemoveItem(tostring(l), b)
-			end
+	if data.craftable then
+		if data.craftable[data.tablenumber]["amount"] then amount = tonumber(data.craftable[data.tablenumber]["amount"]) else amount = 1 end
+		for l, b in pairs(data.craftable[data.tablenumber][data.item]) do
+			TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[tostring(l)], "remove", b) 
+			Player.Functions.RemoveItem(tostring(l), b)
+		end
 	end
 	--Dodgy check for if the table thats been copied through the events
 	--if you are making 4 items copper, goldbar, iron or steel then you are smelting
 	--the rest would be cutting, which would result in the ability to break drilbits
-	if ItemMake == "copper" or ItemMake == "goldbar" or ItemMake == "iron" or ItemMake == "steel" then
+	if data.item == "copper" or data.item == "goldbar" or data.item == "iron" or data.item == "steel" then
 	else
 		local breackChance = math.random(1,10)
 		if breackChance >= 8 then
@@ -34,8 +39,9 @@ RegisterServerEvent('jim-mining:GetItem', function(ItemMake, tablenumber, crafta
 			TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items['drillbit'], 'remove', 1)
 		end
 	end
-	Player.Functions.AddItem(ItemMake, amount, false, {["quality"] = nil})
-	TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[ItemMake], "add", amount)
+	Player.Functions.AddItem(data.item, amount, false, {["quality"] = nil})
+	TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[data.item], "add", amount)
+	TriggerClientEvent("jim-mining:CraftMenu", src, data)
 end)
 
 RegisterServerEvent('jim-mining:MineReward')
@@ -99,9 +105,5 @@ end)
 
 QBCore.Functions.CreateCallback('jim-mining:Cutting:Check:Tools', function(source, cb)
     local Player = QBCore.Functions.GetPlayer(source)
-	if Player.Functions.GetItemByName('handdrill') ~= nil and Player.Functions.GetItemByName('drillbit') ~= nil then
-		cb(true)
-	else 
-		cb(false)
-	end
+	if Player.Functions.GetItemByName('handdrill') ~= nil and Player.Functions.GetItemByName('drillbit') ~= nil then cb(true) else cb(false) end
 end)
