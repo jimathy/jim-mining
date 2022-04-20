@@ -3,6 +3,8 @@ print("Jim-Mining - Mining Script by Jimathy")
 Loc = {}
 Config = {}
 
+Config.Debug = false
+
 Config = {
 	Blips = true, -- Enable Blips?
 	BlipNamer = false, -- Enable to Name Blips different things, disable if you already have too many blips as this will group them together
@@ -101,10 +103,10 @@ Config.SellItems = { -- Selling Prices
 ------------------------------------------------------------
 
 Config.PedList = { -- APPARENTLY You can call config locations IN the config, learn't that one today
-	{ model = "S_M_Y_Construct_01", coords = Config.Locations['Mine'].location, heading = Config.Locations['Mine'].heading, gender = "male", scenario = "WORLD_HUMAN_CLIPBOARD", }, -- Outside Mine
-	{ model = "S_M_Y_Construct_01", coords = Config.Locations['Quarry'].location, heading = Config.Locations['Quarry'].heading, gender = "male", scenario = "WORLD_HUMAN_CLIPBOARD", }, -- Outside Mine
-	{ model = "S_M_Y_Construct_01", coords = Config.Locations['Buyer'].location, heading = Config.Locations['Buyer'].heading, gender = "male", scenario = "WORLD_HUMAN_CLIPBOARD", }, -- Ore Buyer
-	{ model = "S_M_M_HighSec_03", coords = Config.Locations['Buyer2'].location, heading = Config.Locations['Buyer2'].heading, gender = "male", scenario = "WORLD_HUMAN_CLIPBOARD", }, -- Jewel Buyer
+	{ model = `S_M_Y_Construct_01`, coords = Config.Locations['Mine'].location, heading = Config.Locations['Mine'].heading, gender = "male", scenario = "WORLD_HUMAN_CLIPBOARD", }, -- Outside Mine
+	{ model = `S_M_Y_Construct_01`, coords = Config.Locations['Quarry'].location, heading = Config.Locations['Quarry'].heading, gender = "male", scenario = "WORLD_HUMAN_CLIPBOARD", }, -- Outside Mine
+	{ model = `S_M_Y_Construct_01`, coords = Config.Locations['Buyer'].location, heading = Config.Locations['Buyer'].heading, gender = "male", scenario = "WORLD_HUMAN_CLIPBOARD", }, -- Ore Buyer
+	{ model = `S_M_M_HighSec_03`, coords = Config.Locations['Buyer2'].location, heading = Config.Locations['Buyer2'].heading, gender = "male", scenario = "WORLD_HUMAN_CLIPBOARD", }, -- Jewel Buyer
 }
 
 ------------------------------------------------------------
