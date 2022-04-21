@@ -301,36 +301,23 @@ end)
 
 function itemProgress(data)
 	if data.craftable then
-		for k, v in pairs(Crafting.SmeltMenu[data.tablenumber]) do
-			if data.item == k then
-				bartext = Loc[Config.Lan].info["smelting"]..QBCore.Shared.Items[data.item].label
-				bartime = 7000
-				animDictNow = "amb@prop_human_parking_meter@male@idle_a"
-				animNow = "idle_a"
+		if not data.ret then
+			for k, v in pairs(Crafting.SmeltMenu[data.tablenumber]) do
+				if data.item == k then
+					bartext = Loc[Config.Lan].info["smelting"]..QBCore.Shared.Items[data.item].label
+					bartime = 7000
+					animDictNow = "amb@prop_human_parking_meter@male@idle_a"
+					animNow = "idle_a"
+				end
 			end
-		end
-		for k, v in pairs(Crafting.GemCut[data.tablenumber]) do
-			if data.item == k then
-				bartext = Loc[Config.Lan].info["cutting"]..QBCore.Shared.Items[data.item].label
-				bartime = 7000
-				animDictNow = "amb@prop_human_parking_meter@male@idle_a"
-				animNow = "idle_a"
-			end
-		end
-		for k, v in pairs(Crafting.RingCut[data.tablenumber]) do
-			if data.item == k then
-				bartext = Loc[Config.Lan].info["cutting"]..QBCore.Shared.Items[data.item].label
-				bartime = 7000
-				animDictNow = "amb@prop_human_parking_meter@male@idle_a"
-				animNow = "idle_a"
-			end
-		end
-		for k, v in pairs(Crafting.NeckCut[data.tablenumber]) do
-			if data.item == k then
-				bartext = Loc[Config.Lan].info["cutting"]..QBCore.Shared.Items[data.item].label
-				bartime = 7000
-				animDictNow = "amb@prop_human_parking_meter@male@idle_a"
-				animNow = "idle_a"
+		else
+			for k, v in pairs(Crafting.GemCut[data.tablenumber]) do
+				if data.item == k then
+					bartext = Loc[Config.Lan].info["cutting"]..QBCore.Shared.Items[data.item].label
+					bartime = 7000
+					animDictNow = "amb@prop_human_parking_meter@male@idle_a"
+					animNow = "idle_a"
+				end
 			end
 		end
 	end
