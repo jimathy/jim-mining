@@ -162,8 +162,8 @@ Crafting.RingCut = {
 Crafting.NeckCut = {
 	[1] = { ["goldchain"] = { ["goldbar"] = 1 }, ['amount'] = 3  },
 	[2] = { ["10kgoldchain"] = { ["goldbar"] = 1 }, ['amount'] = 2 },
-	[3] = { ["diamond_necklace"] = { ["goldchain"] = 1, ["emerald"] = 1 }, },
-	[4] = { ["ruby_necklace"] = { ["goldchain"] = 1, ["diamond"] = 1 }, },
-	[5] = { ["sapphire_necklace"] = { ["goldchain"] = 1, ["ruby"] = 1 }, },
-	[6] = { ["emerald_necklace"] = { ["goldchain"] = 1, ["sapphire"] = 1 }, },
+	[3] = { ["diamond_necklace"] = { ["goldchain"] = 1, ["diamond"] = 1 }, },
+	[4] = { ["ruby_necklace"] = { ["goldchain"] = 1, ["ruby"] = 1 }, },
+	[5] = { ["sapphire_necklace"] = { ["goldchain"] = 1, ["sapphire"] = 1 }, },
+	[6] = { ["emerald_necklace"] = { ["goldchain"] = 1, ["emerald"] = 1 }, },
 }
