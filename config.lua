@@ -4,25 +4,16 @@ Loc = {}
 Config = {}
 
 Config = {
+	Debug = false, -- enable debug mode
 	Blips = true, -- Enable Blips?
 	BlipNamer = false, -- Enable to Name Blips different things, disable if you already have too many blips as this will group them together
 	PropSpawn = true, -- Enable Ore Props
 	Pedspawn = true, -- Do you want to spawn peds for main locations?
-	Invincible = true, --Do you want the peds to be invincible?
-	Frozen = true, --Do you want the peds to be unable to move? It's probably a yes, so leave true in there.
-	Stoic = true, --Do you want the peds to react to what is happening in their surroundings?
-	Fade = true, -- Do you want the peds to fade into/out of existence? It looks better than just *POP* its there.
-	Distance = 40.0, --The distance you want peds to spawn at
+	img = "qb-inventory/html/images/", --Set this to the image directory of your inventory script
+	Lan = "en", -- Pick your language here
 }
-Config.Lan = "en" -- Pick your language here
 
-Config.Debug = false
-
-Config.ImageLink = "qb-inventory/html/images/" --Set this to the image directory of your inventory script
-
---Blips and Locations
 -- Each one has individual blip enablers
--- Mine and Mine Leave have headings for the player locations
 Config.Locations =  {
 	['Mine'] = { name = "Mine", location = vector4(-594.96, 2091.3, 131.47-1.03, 67.65), blipTrue = true }, -- The location where you enter the mine 
 	['Quarry'] = { name = "Quarry", location = vector4(2960.9, 2754.14, 43.71-1.03, 204.58), blipTrue = true }, -- The location where you enter the mine 
@@ -54,15 +45,15 @@ Config.OrePositions = {
 -----------------------------------------------------------
 
 Config.RewardPool = {
-	'carbon', 'carbon', 'carbon', 'carbon', --4x
-	'copperore', 'copperore', 'copperore', 'copperore', 'copperore', 'copperore', -- 6x
-	'goldore', 'goldore', 'goldore', --'goldore', -- 3x
-	'ironore', 'ironore', 'ironore', 'ironore', -- 'ironore', 'ironore', -- 6x
-    'metalscrap',
-	'uncut_ruby',
-	'uncut_emerald',
-	'uncut_diamond',
-	'uncut_sapphire',
+	[1] = "carbon",
+	[2] = "copperore",
+	[3] = "goldore",
+	[4] = "ironore",
+	[5] = "metalscrap",
+	[6] = 'uncut_ruby',
+	[7] = 'uncut_emerald',
+	[8] = 'uncut_diamond',
+	[9] = 'uncut_sapphire',
 }
 
 ------------------------------------------------------------
@@ -103,10 +94,10 @@ Config.SellItems = { -- Selling Prices
 ------------------------------------------------------------
 
 Config.PedList = { -- APPARENTLY You can call config locations IN the config, learn't that one today
-	{ model = `S_M_Y_Construct_01`, coords = Config.Locations['Mine'].location, heading = Config.Locations['Mine'].heading, gender = "male", scenario = "WORLD_HUMAN_CLIPBOARD", }, -- Outside Mine
-	{ model = `S_M_Y_Construct_01`, coords = Config.Locations['Quarry'].location, heading = Config.Locations['Quarry'].heading, gender = "male", scenario = "WORLD_HUMAN_CLIPBOARD", }, -- Outside Mine
-	{ model = `S_M_Y_Construct_01`, coords = Config.Locations['Buyer'].location, heading = Config.Locations['Buyer'].heading, gender = "male", scenario = "WORLD_HUMAN_CLIPBOARD", }, -- Ore Buyer
-	{ model = `S_M_M_HighSec_03`, coords = Config.Locations['Buyer2'].location, heading = Config.Locations['Buyer2'].heading, gender = "male", scenario = "WORLD_HUMAN_CLIPBOARD", }, -- Jewel Buyer
+	{ model = `S_M_Y_Construct_01`, coords = Config.Locations['Mine'].location, gender = "male", scenario = "WORLD_HUMAN_CLIPBOARD", }, -- Outside Mine
+	{ model = `S_M_Y_Construct_01`, coords = Config.Locations['Quarry'].location, gender = "male", scenario = "WORLD_HUMAN_CLIPBOARD", }, -- Outside Mine
+	{ model = `S_M_Y_Construct_01`, coords = Config.Locations['Buyer'].location, gender = "male", scenario = "WORLD_HUMAN_CLIPBOARD", }, -- Ore Buyer
+	{ model = `S_M_M_HighSec_03`, coords = Config.Locations['Buyer2'].location, gender = "male", scenario = "WORLD_HUMAN_CLIPBOARD", }, -- Jewel Buyer
 }
 
 ------------------------------------------------------------

@@ -1,5 +1,12 @@
 local QBCore = exports['qb-core']:GetCoreObject()
 
+AddEventHandler('onResourceStart', function(resource)
+    if GetCurrentResourceName() == resource then 
+		for k, v in pairs(Config.SellItems) do if not QBCore.Shared.Items[k] then print("Missing Item from QBCore.Shared.Items: '"..k.."'") end end		
+		for i = 1, #Config.RewardPool do if not QBCore.Shared.Items[Config.RewardPool[i]] then print("Missing Item from QBCore.Shared.Items: '"..Config.RewardPool[i].."'") end end
+	end
+end)
+
 QBCore.Functions.CreateCallback('jim-mining:Check', function(source, cb, item, tablenumber, table)
 	local hasitem = false
 	local hasanyitem = nil
@@ -28,11 +35,7 @@ RegisterServerEvent('jim-mining:GetItem', function(data)
 			Player.Functions.RemoveItem(tostring(l), b)
 		end
 	end
-	--Dodgy check for if the table thats been copied through the events
-	--if you are making 4 items copper, goldbar, iron or steel then you are smelting
-	--the rest would be cutting, which would result in the ability to break drilbits
-	if data.item == "copper" or data.item == "goldbar" or data.item == "iron" or data.item == "steel" then
-	else
+	if data.ret then
 		local breackChance = math.random(1,10)
 		if breackChance >= 8 then
 			Player.Functions.RemoveItem('drillbit', 1)
@@ -44,8 +47,7 @@ RegisterServerEvent('jim-mining:GetItem', function(data)
 	TriggerClientEvent("jim-mining:CraftMenu", src, data)
 end)
 
-RegisterServerEvent('jim-mining:MineReward')
-AddEventHandler('jim-mining:MineReward', function()
+RegisterServerEvent('jim-mining:MineReward', function()
     local Player = QBCore.Functions.GetPlayer(source)
     local randomChance = math.random(1, 3)
     Player.Functions.AddItem('stone', randomChance, false, {["quality"] = nil})
@@ -54,21 +56,20 @@ end)
 
 --Stone Cracking Checking Triggers
 --Command here to check if any stone is in inventory
-
-RegisterServerEvent('jim-mining:CrackReward')
-AddEventHandler('jim-mining:CrackReward', function()
-    local Player = QBCore.Functions.GetPlayer(source)
+RegisterServerEvent('jim-mining:CrackReward', function()
+	local src = source
+    local Player = QBCore.Functions.GetPlayer(src)
     Player.Functions.RemoveItem('stone', 1)
-    TriggerClientEvent("inventory:client:ItemBox", source, QBCore.Shared.Items["stone"], "remove", 1)
-    local oreToGive = nil
-    oreToGive = math.random(1,#Config.RewardPool)
-    local amount = math.random(1, 2)
-    Player.Functions.AddItem(Config.RewardPool[oreToGive], amount, false, {["quality"] = nil})
-    TriggerClientEvent("inventory:client:ItemBox", source, QBCore.Shared.Items[Config.RewardPool[oreToGive]], "add", amount)
+    TriggerClientEvent("inventory:client:ItemBox", src, QBCore.Shared.Items["stone"], "remove", 1)
+	for i = 1, math.random(1,3) do
+		local randItem = Config.RewardPool[math.random(1, #Config.RewardPool)]
+		amount = math.random(1, 2)
+		Player.Functions.AddItem(randItem, amount)
+		TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[randItem], 'add', amount)
+	end
 end)
 
-RegisterNetEvent("jim-mining:Selling")
-AddEventHandler("jim-mining:Selling", function(data)
+RegisterNetEvent("jim-mining:Selling", function(data)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     local currentitem = data
@@ -81,11 +82,9 @@ AddEventHandler("jim-mining:Selling", function(data)
     else
         TriggerClientEvent("QBCore:Notify", src, Loc[Config.Lan].error["dont_have"].." "..QBCore.Shared.Items[data].label, "error")
     end
-    Citizen.Wait(1000)
 end)
 
-RegisterNetEvent("jim-mining:SellJewel")
-AddEventHandler("jim-mining:SellJewel", function(data)
+RegisterNetEvent("jim-mining:SellJewel", function(data)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     local currentitem = data
@@ -98,7 +97,6 @@ AddEventHandler("jim-mining:SellJewel", function(data)
     else
         TriggerClientEvent("QBCore:Notify", src, Loc[Config.Lan].error["dont_have"].." "..QBCore.Shared.Items[data].label, "error")
     end
-    Citizen.Wait(1000)
 end)
 
 ----------------------------------------------

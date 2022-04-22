@@ -1,167 +1,79 @@
 local QBCore = exports['qb-core']:GetCoreObject()
-function CreateBlips()
-	for k, v in pairs(Config.Locations) do
-		if Config.Locations[k].blipTrue then
-			local blip = AddBlipForCoord(v.location)
-			SetBlipAsShortRange(blip, true)
-			SetBlipSprite(blip, 527)
-			SetBlipColour(blip, 81)
-			SetBlipScale(blip, 0.7)
-			SetBlipDisplay(blip, 6)
 
-			BeginTextCommandSetBlipName('STRING')
-			if Config.BlipNamer then
-				AddTextComponentString(Config.Locations[k].name)
-			else
-				AddTextComponentString(tostring(Loc[Config.Lan].info["blip_mining"]))
-			end
-			EndTextCommandSetBlipName(blip)
-		end
-	end
-end
+props = {}
+Targets = {}
+peds = {}
 
-Citizen.CreateThread(function()
+CreateThread(function()
 	--Hide the mineshaft doors
 	CreateModelHide(vector3(-596.04, 2089.01, 131.41), 10.5, -1241212535, true)
-	if Config.Blips == true then
-		CreateBlips()
-	end
-end)
-Citizen.CreateThread(function()
-	if Config.PropSpawn == true then
-		CreateProps()
-	end
-end)
-Citizen.CreateThread(function()
-	if Config.Pedspawn == true then
-		CreatePeds()
-	end
-end)
------------------------------------------------------------
-
-local peds = {}
-local shopPeds = {}
-function CreatePeds()
-	while true do
-		Citizen.Wait(500)
-		for k = 1, #Config.PedList, 1 do
-			v = Config.PedList[k]
-			local playerCoords = GetEntityCoords(PlayerPedId())
-			local dist = #(playerCoords - vector3(v.coords.x, v.coords.y, v.coords.z))
-			if dist < Config.Distance and not peds[k] then
-				local ped = nearPed(v.model, vector3(v.coords.x, v.coords.y, v.coords.z), v.coords[4], v.gender, v.animDict, v.animName, v.scenario)
-				peds[k] = {ped = ped}
-			end
-			if dist >= Config.Distance and peds[k] then
-				if Config.Fade then
-					for i = 255, 0, -51 do
-						Citizen.Wait(50)
-						SetEntityAlpha(peds[k].ped, i, false)
-					end
-				end
-				DeletePed(peds[k].ped)
-				peds[k] = nil
+	-- Add Map Blips
+	if Config.Blips then
+		for k, v in pairs(Config.Locations) do
+			if Config.Locations[k].blipTrue then
+				local blip = AddBlipForCoord(v.location)
+				SetBlipAsShortRange(blip, true)
+				SetBlipSprite(blip, 527)
+				SetBlipColour(blip, 81)
+				SetBlipScale(blip, 0.7)
+				SetBlipDisplay(blip, 6)
+				BeginTextCommandSetBlipName('STRING')
+				if Config.BlipNamer then AddTextComponentString(Config.Locations[k].name)
+				else AddTextComponentString(tostring(Loc[Config.Lan].info["blip_mining"])) end
+				EndTextCommandSetBlipName(blip)
 			end
 		end
 	end
-end
+	if Config.PropSpawn then
+		--Quickly add outside lighting
+		RequestModel(`prop_worklight_03a`)
+		while not HasModelLoaded(`prop_worklight_03a`) do Citizen.Wait(1) end
+		props[#props+1] = CreateObject(`prop_worklight_03a`,-593.29, 2093.22, 131.7-1.05,false,false,false)
+		SetEntityHeading(props[#props],260.0)
+		FreezeEntityPosition(props[#props], true)
+		
+		props[#props+1] = CreateObject(`prop_worklight_03a`,-604.55, 2089.74, 131.15-1.05,false,false,false)
+		SetEntityHeading(props[#props],80.0)
+		FreezeEntityPosition(props[#props], true)
 
-function nearPed(model, coords, heading, gender, animDict, animName, scenario)
-	RequestModel(model)
-	while not HasModelLoaded(model) do
-		Citizen.Wait(1)
-	end
-	if gender == 'male' then
-		genderNum = 4
-	elseif gender == 'female' then 
-		genderNum = 5
-	end
-	if Config.MinusOne then 
-		local x, y, z, a = table.unpack(coords)
-		ped = CreatePed(genderNum, model, x, y, z - 1, heading, false, true)
-		shopPeds[#shopPeds+1] = ped
-		--table.insert(shopPeds, ped)
-	else
-		ped = CreatePed(genderNum, v.model, coords, heading, false, true)
-		shopPeds[#shopPeds+1] = ped
-		--table.insert(shopPeds, ped)
-	end
-	SetEntityAlpha(ped, 0, false)
-	if Config.Frozen then
-		FreezeEntityPosition(ped, true) --Don't let the ped move.
-	end
-	if Config.Invincible then
-		SetEntityInvincible(ped, true) --Don't let the ped die.
-	end
-	if Config.Stoic then
-		SetBlockingOfNonTemporaryEvents(ped, true) --Don't let the ped react to his surroundings.
-	end
-	--Add an animation to the ped, if one exists.
-	if animDict and animName then
-		RequestAnimDict(animDict)
-		while not HasAnimDictLoaded(animDict) do
-			Citizen.Wait(1)
+		for k,v in pairs(Config.OrePositions) do
+			props[#props+1] = CreateObject(`cs_x_rubweec`,v.coords.x, v.coords.y, v.coords.z+1.03,false,false,false)
+			SetEntityHeading(props[#props],90.0)
+			FreezeEntityPosition(props[#props], true)           
 		end
-		TaskPlayAnim(ped, animDict, animName, 8.0, 0, -1, 1, 0, 0, 0)
+		for k,v in pairs(Config.MineLights) do
+			props[#props+1] = CreateObject(`xs_prop_arena_lights_ceiling_l_c`,v.coords.x, v.coords.y, v.coords.z+1.03,false,false,false)
+			FreezeEntityPosition(props[#props], true)           
+		end
+		--Jewel Cutting Bench
+		props[#props+1] =  CreateObject(`gr_prop_gr_bench_04b`,Config.Locations['JewelCut'].location,false,false,false)
+		SetEntityHeading(props[#props], Config.Locations['JewelCut'].location[4])
+		FreezeEntityPosition(props[#props], true)
+
+		--Stone Cracking Bench
+		props[#props+1] = CreateObject(`prop_tool_bench02`, Config.Locations['Cracking'].location, false, false, false)
+		SetEntityHeading(props[#props], Config.Locations['Cracking'].location[4])
+		FreezeEntityPosition(props[#props], true)
+		--Stone Prop for bench
+		props[#props+1] = CreateObject(`cs_x_rubweec`,Config.Locations['Cracking'].location.x, Config.Locations['Cracking'].location.y, Config.Locations['Cracking'].location.z+0.83, false, false, false)
+		SetEntityHeading(props[#props], Config.Locations['Cracking'].location[4]+90.0)
+		FreezeEntityPosition(props[#props], true)
+		
+		props[#props+1] = CreateObject(`prop_worklight_03a`,Config.Locations['Cracking'].location.x-1.4, Config.Locations['Cracking'].location.y+1.08, Config.Locations['Cracking'].location.z, false, false, false)
+		SetEntityHeading(props[#props], Config.Locations['Cracking'].location[4]-40)
+		FreezeEntityPosition(props[#props], true)
 	end
-	if scenario then
-		TaskStartScenarioInPlace(ped, scenario, 0, true) -- begins peds animation
-	end
-	if Config.Fade then
-		for i = 0, 255, 51 do
-			Citizen.Wait(50)
-			SetEntityAlpha(ped, i, false)
+	if Config.Pedspawn then
+		for k, v in pairs(Config.PedList) do
+			RequestModel(v.model) while not HasModelLoaded(v.model) do Wait(0) end
+			peds[#peds+1] = CreatePed(0, v.model, v.coords.x, v.coords.y, v.coords.z, v.coords[4], false, false)
+			SetEntityInvincible(peds[#peds], true)
+			SetBlockingOfNonTemporaryEvents(peds[#peds], true)
+			FreezeEntityPosition(peds[#peds], true)
+			TaskStartScenarioInPlace(peds[#peds], v.scenario, 0, true)
+			if Config.Debug then print("Ped Created") end
 		end
 	end
-	return ped
-end
-
------------------------------------------------------------
-local props = {}
-function CreateProps()
-	--Quickly add outside lighting
-	RequestModel(`prop_worklight_03a`)
-	while not HasModelLoaded(`prop_worklight_03a`) do Citizen.Wait(1) end
-	props[#props+1] = CreateObject(`prop_worklight_03a`,-593.29, 2093.22, 131.7-1.05,false,false,false)
-	SetEntityHeading(props[#props],260.0)
-	FreezeEntityPosition(props[#props], true)
-	
-	props[#props+1] = CreateObject(`prop_worklight_03a`,-604.55, 2089.74, 131.15-1.05,false,false,false)
-	SetEntityHeading(props[#props],80.0)
-	FreezeEntityPosition(props[#props], true)
-
-	for k,v in pairs(Config.OrePositions) do
-		props[#props+1] = CreateObject(`cs_x_rubweec`,v.coords.x, v.coords.y, v.coords.z+1.03,false,false,false)
-		SetEntityHeading(props[#props],90.0)
-		FreezeEntityPosition(props[#props], true)           
-    end
-	for k,v in pairs(Config.MineLights) do
-		props[#props+1] = CreateObject(`xs_prop_arena_lights_ceiling_l_c`,v.coords.x, v.coords.y, v.coords.z+1.03,false,false,false)
-		--SetEntityHeading(prop,GetEntityHeading(prop)-90)
-		FreezeEntityPosition(props[#props], true)           
-    end
-	--Jewel Cutting Bench
-	props[#props+1] =  CreateObject(`gr_prop_gr_bench_04b`,Config.Locations['JewelCut'].location,false,false,false)
-	SetEntityHeading(props[#props], Config.Locations['JewelCut'].location[4])
-	FreezeEntityPosition(props[#props], true)
-
-	--Stone Cracking Bench
-	props[#props+1] = CreateObject(`prop_tool_bench02`, Config.Locations['Cracking'].location, false, false, false)
-	SetEntityHeading(props[#props], Config.Locations['Cracking'].location[4])
-	FreezeEntityPosition(props[#props], true)
-	--Stone Prop for bench
-	props[#props+1] = CreateObject(`cs_x_rubweec`,Config.Locations['Cracking'].location.x, Config.Locations['Cracking'].location.y, Config.Locations['Cracking'].location.z+0.83, false, false, false)
-	SetEntityHeading(props[#props], Config.Locations['Cracking'].location[4]+90.0)
-	FreezeEntityPosition(props[#props], true)
-	
-	props[#props+1] = CreateObject(`prop_worklight_03a`,Config.Locations['Cracking'].location.x-1.4, Config.Locations['Cracking'].location.y+1.08, Config.Locations['Cracking'].location.z, false, false, false)
-	SetEntityHeading(props[#props], Config.Locations['Cracking'].location[4]-40)
-	FreezeEntityPosition(props[#props], true)
-end
-
------------------------------------------------------------
-local Targets = {}
-Citizen.CreateThread(function()
 	Targets["MineShaft"] =
 	exports['qb-target']:AddCircleZone("MineShaft", vector3(Config.Locations['Mine'].location.x, Config.Locations['Mine'].location.y, Config.Locations['Mine'].location.z), 2.0, { name="MineShaft", debugPoly=Config.Debug, useZ=true, }, 
 	{ options = { { event = "jim-mining:openShop", icon = "fas fa-certificate", label = Loc[Config.Lan].info["browse_store"], }, }, 
@@ -201,7 +113,6 @@ Citizen.CreateThread(function()
 	{ options = { { event = "jim-mining:CrackStart", icon = "fas fa-certificate", label = Loc[Config.Lan].info["crackingbench"], },	},
 		distance = 2.0
 	})
-	local ore = 0
 	for k,v in pairs(Config.OrePositions) do
 		Targets["ore"..k] =
 		exports['qb-target']:AddCircleZone("ore"..k, v.coords, 2.0, { name="ore"..k, debugPoly=Config.Debug, useZ=true, }, 
@@ -211,7 +122,7 @@ Citizen.CreateThread(function()
 	end
 end)
 
------------------------------------------------------------
+--------------------------------------------------------
 --Mining Store Opening
 RegisterNetEvent('jim-mining:openShop', function() TriggerServerEvent("inventory:server:OpenInventory", "shop", "mine", Config.Items) end)
 ------------------------------------------------------------
@@ -261,7 +172,6 @@ end)
 
 -- Cracking Command / Animations
 -- Command Starts here where it calls to being the stone inv checking
-
 RegisterNetEvent('jim-mining:CrackStart', function ()
 	local p = promise.new()	QBCore.Functions.TriggerCallback("QBCore:HasItem", function(cb) p:resolve(cb) end, "stone")
 	if Citizen.Await(p) then 
@@ -335,12 +245,11 @@ end
 
 --Selling animations are simply a pass item to seller animation
 --Sell Ore Animation
---Sell Anim small Test
 RegisterNetEvent('jim-mining:SellAnim', function(data)
 	local pid = PlayerPedId()
 	loadAnimDict("mp_common")
 	TriggerServerEvent('jim-mining:Selling', data) -- Had to slip in the sell command during the animation command
-	for k,v in pairs (shopPeds) do
+	for k,v in pairs (peds) do
         pCoords = GetEntityCoords(PlayerPedId())
         ppCoords = GetEntityCoords(v)
 		ppRot = GetEntityRotation(v)
@@ -359,13 +268,12 @@ RegisterNetEvent('jim-mining:SellAnim', function(data)
 	TriggerEvent('jim-mining:SellOre')
 end)
 
-
 --Sell Anim small Test
 RegisterNetEvent('jim-mining:SellAnim:Jewel', function(data)
 	local pid = PlayerPedId()
 	loadAnimDict("mp_common")
 	TriggerServerEvent('jim-mining:SellJewel', data) -- Had to slip in the sell command during the animation command
-	for k,v in pairs (shopPeds) do
+	for k,v in pairs (peds) do
         pCoords = GetEntityCoords(PlayerPedId())
         ppCoords = GetEntityCoords(v)
 		ppRot = GetEntityRotation(v)
@@ -390,18 +298,17 @@ RegisterNetEvent('jim-mining:SellAnim:Jewel', function(data)
 	else TriggerEvent('jim-mining:JewelSell') end
 end)
 
-
 ------------------------------------------------------------
 --Context Menus
 --Selling Ore
 RegisterNetEvent('jim-mining:SellOre', function()
 	exports['qb-menu']:openMenu({
 		{ header = Loc[Config.Lan].info["header_oresell"], txt = Loc[Config.Lan].info["oresell_txt"], isMenuHeader = true },
-		{ header = "", txt = Loc[Config.Lan].info["close"], params = { event = "jim-mining:SellAnim", args = -2 } },
-		{ header = Loc[Config.Lan].info["copper_ore"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['copperore'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim", args = 'copperore' } },
-		{ header = Loc[Config.Lan].info["iron_ore"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['ironore'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim", args = 'ironore' } },
-		{ header = Loc[Config.Lan].info["gold_ore"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['goldore'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim", args = 'goldore' } },
-		{ header = Loc[Config.Lan].info["carbon"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['carbon'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim", args = 'carbon' } }, 
+		{ header = "", txt = Loc[Config.Lan].info["close"], params = { event = "jim-mining:CraftMenu:Close" } },
+		{ header = "<img src=nui://"..Config.img..QBCore.Shared.Items["copperore"].image.." width=30px>"..Loc[Config.Lan].info["copper_ore"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['copperore'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim", args = 'copperore' } },
+		{ header = "<img src=nui://"..Config.img..QBCore.Shared.Items["ironore"].image.." width=30px>"..Loc[Config.Lan].info["iron_ore"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['ironore'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim", args = 'ironore' } },
+		{ header = "<img src=nui://"..Config.img..QBCore.Shared.Items["goldore"].image.." width=30px>"..Loc[Config.Lan].info["gold_ore"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['goldore'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim", args = 'goldore' } },
+		{ header = "<img src=nui://"..Config.img..QBCore.Shared.Items["carbon"].image.." width=30px>"..Loc[Config.Lan].info["carbon"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['carbon'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim", args = 'carbon' } }, 
 	})
 end)
 ------------------------
@@ -409,7 +316,7 @@ end)
 RegisterNetEvent('jim-mining:JewelSell', function()
     exports['qb-menu']:openMenu({
 		{ header = Loc[Config.Lan].info["jewel_buyer"], txt = Loc[Config.Lan].info["sell_jewel"], isMenuHeader = true }, 
-		{ header = "", txt = Loc[Config.Lan].info["close"], params = { event = "jim-mining:SellAnim:Jewel", args = -2 } },
+		{ header = "", txt = Loc[Config.Lan].info["close"], params = { event = "jim-mining:CraftMenu:Close" } },
 		{ header = Loc[Config.Lan].info["emeralds"], txt = Loc[Config.Lan].info["see_options"], params = { event = "jim-mining:JewelSell:Emerald", } },
 		{ header = Loc[Config.Lan].info["rubys"], txt = Loc[Config.Lan].info["see_options"], params = { event = "jim-mining:JewelSell:Ruby", } },
 		{ header = Loc[Config.Lan].info["diamonds"], txt = Loc[Config.Lan].info["see_options"], params = { event = "jim-mining:JewelSell:Diamond", } },
@@ -423,8 +330,8 @@ RegisterNetEvent('jim-mining:JewelSell:Emerald', function()
     exports['qb-menu']:openMenu({
 		{ header = Loc[Config.Lan].info["jewel_buyer"], txt = Loc[Config.Lan].info["sell_jewel"], isMenuHeader = true }, 
 		{ header = "", txt = Loc[Config.Lan].info["return"], params = { event = "jim-mining:JewelSell", } },
-		{ header = Loc[Config.Lan].info["emeralds"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['emerald'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'emerald' } },
-		{ header = Loc[Config.Lan].info["uncut_emerald"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['uncut_emerald'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'uncut_emerald' } }, 
+		{ header = "<img src=nui://"..Config.img..QBCore.Shared.Items["emerald"].image.." width=30px>"..Loc[Config.Lan].info["emeralds"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['emerald'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'emerald' } },
+		{ header = "<img src=nui://"..Config.img..QBCore.Shared.Items["uncut_emerald"].image.." width=30px>"..Loc[Config.Lan].info["uncut_emerald"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['uncut_emerald'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'uncut_emerald' } }, 
 	})
 end)
 --Jewel Selling - Ruby Menu
@@ -432,8 +339,8 @@ RegisterNetEvent('jim-mining:JewelSell:Ruby', function()
     exports['qb-menu']:openMenu({
 		{ header = Loc[Config.Lan].info["jewel_buyer"], txt = Loc[Config.Lan].info["sell_jewel"], isMenuHeader = true }, 
 		{ header = "", txt = Loc[Config.Lan].info["return"], params = { event = "jim-mining:JewelSell", } },
-		{ header = Loc[Config.Lan].info["rubys"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['ruby'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'ruby' } },
-		{ header = Loc[Config.Lan].info["uncut_ruby"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['uncut_ruby'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'uncut_ruby' } },
+		{ header = "<img src=nui://"..Config.img..QBCore.Shared.Items["ruby"].image.." width=30px>"..Loc[Config.Lan].info["rubys"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['ruby'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'ruby' } },
+		{ header = "<img src=nui://"..Config.img..QBCore.Shared.Items["uncut_ruby"].image.." width=30px>"..Loc[Config.Lan].info["uncut_ruby"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['uncut_ruby'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'uncut_ruby' } },
 	})
 end)
 --Jewel Selling - Diamonds Menu
@@ -441,8 +348,8 @@ RegisterNetEvent('jim-mining:JewelSell:Diamond', function()
     exports['qb-menu']:openMenu({
 		{ header = Loc[Config.Lan].info["jewel_buyer"], txt = Loc[Config.Lan].info["sell_jewel"], isMenuHeader = true }, 
 		{ header = "", txt = Loc[Config.Lan].info["return"], params = { event = "jim-mining:JewelSell", } },
-		{ header = Loc[Config.Lan].info["diamonds"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['diamond'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'diamond' } },
-		{ header = Loc[Config.Lan].info["uncut_diamond"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['uncut_diamond'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'uncut_diamond' } },
+		{ header = "<img src=nui://"..Config.img..QBCore.Shared.Items["diamond"].image.." width=30px>"..Loc[Config.Lan].info["diamonds"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['diamond'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'diamond' } },
+		{ header = "<img src=nui://"..Config.img..QBCore.Shared.Items["uncut_diamond"].image.." width=30px>"..Loc[Config.Lan].info["uncut_diamond"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['uncut_diamond'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'uncut_diamond' } },
 	})
 end)
 --Jewel Selling - Sapphire Menu
@@ -450,8 +357,8 @@ RegisterNetEvent('jim-mining:JewelSell:Sapphire', function()
     exports['qb-menu']:openMenu({
 		{ header = Loc[Config.Lan].info["jewel_buyer"], txt = Loc[Config.Lan].info["sell_jewel"], isMenuHeader = true }, 
 		{ header = "", txt = Loc[Config.Lan].info["return"], params = { event = "jim-mining:JewelSell", } },
-		{ header = Loc[Config.Lan].info["sapphires"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['sapphire'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'sapphire' } },
-		{ header = Loc[Config.Lan].info["uncut_sapphire"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['uncut_sapphire'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'uncut_sapphire' } },
+		{ header = "<img src=nui://"..Config.img..QBCore.Shared.Items["sapphire"].image.." width=30px>"..Loc[Config.Lan].info["sapphires"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['sapphire'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'sapphire' } },
+		{ header = "<img src=nui://"..Config.img..QBCore.Shared.Items["uncut_sapphire"].image.." width=30px>"..Loc[Config.Lan].info["uncut_sapphire"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['uncut_sapphire'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'uncut_sapphire' } },
 	})
 end)
 
@@ -460,11 +367,11 @@ RegisterNetEvent('jim-mining:JewelSell:Rings', function()
     exports['qb-menu']:openMenu({
 		{ header = Loc[Config.Lan].info["jewel_buyer"], txt = Loc[Config.Lan].info["sell_jewel"], isMenuHeader = true }, 
 		{ header = "", txt = Loc[Config.Lan].info["return"], params = { event = "jim-mining:JewelSell", } },
-		{ header = Loc[Config.Lan].info["gold_rings"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['gold_ring'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'gold_ring' } },
-		{ header = Loc[Config.Lan].info["diamond_rings"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['diamond_ring'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'diamond_ring'} },
-		{ header = Loc[Config.Lan].info["emerald_rings"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['emerald_ring'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'emerald_ring' } },
-		{ header = Loc[Config.Lan].info["ruby_rings"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['ruby_ring'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'ruby_ring' } },	
-		{ header = Loc[Config.Lan].info["sapphire_rings"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['sapphire_ring'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'sapphire_ring' } },
+		{ header = "<img src=nui://"..Config.img..QBCore.Shared.Items["gold_ring"].image.." width=30px>"..Loc[Config.Lan].info["gold_rings"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['gold_ring'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'gold_ring' } },
+		{ header = "<img src=nui://"..Config.img..QBCore.Shared.Items["diamond_ring"].image.." width=30px>"..Loc[Config.Lan].info["diamond_rings"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['diamond_ring'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'diamond_ring'} },
+		{ header = "<img src=nui://"..Config.img..QBCore.Shared.Items["emerald_ring"].image.." width=30px>"..Loc[Config.Lan].info["emerald_rings"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['emerald_ring'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'emerald_ring' } },
+		{ header = "<img src=nui://"..Config.img..QBCore.Shared.Items["ruby_ring"].image.." width=30px>"..Loc[Config.Lan].info["ruby_rings"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['ruby_ring'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'ruby_ring' } },	
+		{ header = "<img src=nui://"..Config.img..QBCore.Shared.Items["sapphire_ring"].image.." width=30px>"..Loc[Config.Lan].info["sapphire_rings"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['sapphire_ring'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'sapphire_ring' } },
 	})
 end)
 --Jewel Selling - Jewellery Menu
@@ -472,12 +379,12 @@ RegisterNetEvent('jim-mining:JewelSell:Necklace', function()
     exports['qb-menu']:openMenu({
 		{ header = Loc[Config.Lan].info["jewel_buyer"], txt = Loc[Config.Lan].info["sell_jewel"], isMenuHeader = true }, 
 		{ header = "", txt = Loc[Config.Lan].info["return"], params = { event = "jim-mining:JewelSell", } },
-		{ header = Loc[Config.Lan].info["gold_chains"],	txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['goldchain'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'goldchain' } },
-		{ header = Loc[Config.Lan].info["10kgold_chain"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['10kgoldchain'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = '10kgoldchain' } },
-		{ header = Loc[Config.Lan].info["diamond_neck"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['diamond_necklace'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'diamond_necklace' } },
-		{ header = Loc[Config.Lan].info["emerald_neck"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['emerald_necklace'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'emerald_necklace' } },
-		{ header = Loc[Config.Lan].info["ruby_neck"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['ruby_necklace'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'ruby_necklace' } },	
-		{ header = Loc[Config.Lan].info["sapphire_neck"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['sapphire_necklace'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'sapphire_necklace' } },
+		{ header = "<img src=nui://"..Config.img..QBCore.Shared.Items["goldchain"].image.." width=30px>"..Loc[Config.Lan].info["gold_chains"],	txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['goldchain'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'goldchain' } },
+		{ header = "<img src=nui://"..Config.img..QBCore.Shared.Items["10kgoldchain"].image.." width=30px>"..Loc[Config.Lan].info["10kgold_chain"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['10kgoldchain'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = '10kgoldchain' } },
+		{ header = "<img src=nui://"..Config.img..QBCore.Shared.Items["diamond_necklace"].image.." width=30px>"..Loc[Config.Lan].info["diamond_neck"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['diamond_necklace'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'diamond_necklace' } },
+		{ header = "<img src=nui://"..Config.img..QBCore.Shared.Items["emerald_necklace"].image.." width=30px>"..Loc[Config.Lan].info["emerald_neck"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['emerald_necklace'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'emerald_necklace' } },
+		{ header = "<img src=nui://"..Config.img..QBCore.Shared.Items["ruby_necklace"].image.." width=30px>"..Loc[Config.Lan].info["ruby_neck"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['ruby_necklace'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'ruby_necklace' } },	
+		{ header = "<img src=nui://"..Config.img..QBCore.Shared.Items["sapphire_necklace"].image.." width=30px>"..Loc[Config.Lan].info["sapphire_neck"], txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['sapphire_necklace'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'sapphire_necklace' } },
 	})
 end)
 ------------------------
@@ -510,18 +417,15 @@ RegisterNetEvent('jim-mining:CraftMenu', function(data)
 					local text = ""
 					if data.craftable[i]["amount"] then amount = " x"..data.craftable[i]["amount"] else amount = "" end
 					setheader = QBCore.Shared.Items[k].label..tostring(amount)
-					
-					--CheckMark feature test
 					Wait(0) local p = promise.new()
 					QBCore.Functions.TriggerCallback('jim-mining:Check', function(cb) p:resolve(cb) end, tostring(k), i, data.craftable) --check = Citizen.Await(p)
 					if Citizen.Await(p) then setheader = setheader.." ✅" end p = nil check = nil
-					
 					for l, b in pairs(data.craftable[i][tostring(k)]) do
 						if b == 1 then number = "" else number = " x"..b end
 						text = text.."- "..QBCore.Shared.Items[l].label..number.."<br>"
 						settext = text
 					end
-					CraftMenu[#CraftMenu + 1] = { header = "<img src=nui://"..Config.ImageLink..QBCore.Shared.Items[k].image.." width=35px> "..setheader, txt = settext, params = { event = "jim-mining:MakeItem", args = { item = k, tablenumber = i, craftable = data.craftable, ret = data.ret } } }
+					CraftMenu[#CraftMenu + 1] = { header = "<img src=nui://"..Config.img..QBCore.Shared.Items[k].image.." width=35px> "..setheader, txt = settext, params = { event = "jim-mining:MakeItem", args = { item = k, tablenumber = i, craftable = data.craftable, ret = data.ret } } }
 					settext, amount, setheader = nil
 				end
 			end
@@ -532,7 +436,7 @@ end)
 AddEventHandler('onResourceStop', function(resource) 
 	if resource == GetCurrentResourceName() then 
 		for k, v in pairs(Targets) do exports['qb-target']:RemoveZone(k) end		
-		--for k, v in pairs(Peds) do DeletePed(Peds[k]) end
+		for k, v in pairs(peds) do DeletePed(peds[k]) end
 		for i = 1, #props do DeleteObject(props[i]) end
 	end
 end)
