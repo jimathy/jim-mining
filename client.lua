@@ -211,25 +211,11 @@ end)
 
 function itemProgress(data)
 	if data.craftable then
-		if not data.ret then
-			for k, v in pairs(Crafting.SmeltMenu[data.tablenumber]) do
-				if data.item == k then
-					bartext = Loc[Config.Lan].info["smelting"]..QBCore.Shared.Items[data.item].label
-					bartime = 7000
-					animDictNow = "amb@prop_human_parking_meter@male@idle_a"
-					animNow = "idle_a"
-				end
-			end
-		else
-			for k, v in pairs(Crafting.GemCut[data.tablenumber]) do
-				if data.item == k then
-					bartext = Loc[Config.Lan].info["cutting"]..QBCore.Shared.Items[data.item].label
-					bartime = 7000
-					animDictNow = "amb@prop_human_parking_meter@male@idle_a"
-					animNow = "idle_a"
-				end
-			end
-		end
+		if not data.ret then bartext = Loc[Config.Lan].info["smelting"]..QBCore.Shared.Items[data.item].label
+		else bartext = Loc[Config.Lan].info["cutting"]..QBCore.Shared.Items[data.item].label end
+		bartime = 7000
+		animDictNow = "amb@prop_human_parking_meter@male@idle_a"
+		animNow = "idle_a"
 	end
 	QBCore.Functions.Progressbar('making_food', bartext, bartime, false, false, { disableMovement = true, disableCarMovement = true, disableMouse = false, disableCombat = true, }, 
 	{ animDict = animDictNow, anim = animNow, flags = 8, }, {}, {}, function()  
