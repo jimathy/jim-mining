@@ -13,8 +13,8 @@ CreateThread(function()
 			if Config.Locations[k].blipTrue then
 				local blip = AddBlipForCoord(v.location)
 				SetBlipAsShortRange(blip, true)
-				SetBlipSprite(blip, 527)
-				SetBlipColour(blip, 81)
+				SetBlipSprite(blip, v.spr)
+				SetBlipColour(blip, v.col)
 				SetBlipScale(blip, 0.7)
 				SetBlipDisplay(blip, 6)
 				BeginTextCommandSetBlipName('STRING')
@@ -162,7 +162,7 @@ RegisterNetEvent('jim-mining:MineOre', function ()
 			Wait(5)
 			DeleteObject(DrillObject)
 			IsDrilling = false
-		end)
+		end, "drill")
 	else
 		TriggerEvent('QBCore:Notify', Loc[Config.Lan].error["no_drill"], 'error')
 	end
@@ -211,11 +211,25 @@ end)
 
 function itemProgress(data)
 	if data.craftable then
-		if not data.ret then bartext = Loc[Config.Lan].info["smelting"]..QBCore.Shared.Items[data.item].label
-		else bartext = Loc[Config.Lan].info["cutting"]..QBCore.Shared.Items[data.item].label end
-		bartime = 7000
-		animDictNow = "amb@prop_human_parking_meter@male@idle_a"
-		animNow = "idle_a"
+		if not data.ret then
+			for k, v in pairs(Crafting.SmeltMenu[data.tablenumber]) do
+				if data.item == k then
+					bartext = Loc[Config.Lan].info["smelting"]..QBCore.Shared.Items[data.item].label
+					bartime = 7000
+					animDictNow = "amb@prop_human_parking_meter@male@idle_a"
+					animNow = "idle_a"
+				end
+			end
+		else
+			for k, v in pairs(Crafting.GemCut[data.tablenumber]) do
+				if data.item == k then
+					bartext = Loc[Config.Lan].info["cutting"]..QBCore.Shared.Items[data.item].label
+					bartime = 7000
+					animDictNow = "amb@prop_human_parking_meter@male@idle_a"
+					animNow = "idle_a"
+				end
+			end
+		end
 	end
 	QBCore.Functions.Progressbar('making_food', bartext, bartime, false, false, { disableMovement = true, disableCarMovement = true, disableMouse = false, disableCombat = true, }, 
 	{ animDict = animDictNow, anim = animNow, flags = 8, }, {}, {}, function()  
@@ -224,7 +238,7 @@ function itemProgress(data)
 	end, function() -- Cancel
 		TriggerEvent('inventory:client:busy:status', false)
 		TriggerEvent('QBCore:Notify', Loc[Config.Lan].error["error.cancelled"], 'error')
-	end)
+	end, data.item)
 end
 ------------------------------------------------------------
 --These also lead to the actual selling commands
@@ -419,10 +433,8 @@ RegisterNetEvent('jim-mining:CraftMenu', function(data)
 	exports['qb-menu']:openMenu(CraftMenu)
 end)
 
-AddEventHandler('onResourceStop', function(resource) 
-	if resource == GetCurrentResourceName() then 
-		for k, v in pairs(Targets) do exports['qb-target']:RemoveZone(k) end		
-		for k, v in pairs(peds) do DeletePed(peds[k]) end
-		for i = 1, #props do DeleteObject(props[i]) end
-	end
+AddEventHandler('onResourceStop', function(resource) if resource ~= GetCurrentResourceName() then return end
+	for k, v in pairs(Targets) do exports['qb-target']:RemoveZone(k) end		
+	for k, v in pairs(peds) do DeletePed(peds[k]) end
+	for i = 1, #props do DeleteObject(props[i]) end
 end)
