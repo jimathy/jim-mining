@@ -1,9 +1,13 @@
 local QBCore = exports['qb-core']:GetCoreObject()
 
-AddEventHandler('onResourceStart', function(resource)
-    if GetCurrentResourceName() == resource then 
-		for k, v in pairs(Config.SellItems) do if not QBCore.Shared.Items[k] then print("Missing Item from QBCore.Shared.Items: '"..k.."'") end end		
-		for i = 1, #Config.RewardPool do if not QBCore.Shared.Items[Config.RewardPool[i]] then print("Missing Item from QBCore.Shared.Items: '"..Config.RewardPool[i].."'") end end
+AddEventHandler('onResourceStart', function(resource) if GetCurrentResourceName() ~= resource then return end
+	for k, v in pairs(Config.SellItems) do if not QBCore.Shared.Items[k] then print("Selling: Missing Item from QBCore.Shared.Items: '"..k.."'") end end		
+	for i = 1, #Config.RewardPool do if not QBCore.Shared.Items[Config.RewardPool[i]] then print("Reward Pool: Missing Item from QBCore.Shared.Items: '"..Config.RewardPool[i].."'") end end
+	for i = 1, #Config.Items.items do if not QBCore.Shared.Items[Config.Items.items[i].name] then print("Shop: Missing Item from QBCore.Shared.Items: '"..Config.Items.items[i].name.."'") end end
+	local itemcheck = {}
+	for _, v in pairs(Crafting) do for _, b in pairs(v) do for k, l in pairs(b) do if k ~= "amount" then itemcheck[k] = {} for j in pairs(l) do itemcheck[j] = {} end end end end end
+	for k in pairs(itemcheck) do
+		if not QBCore.Shared.Items[k] then print("Crafting recipe couldn't find item '"..k.."' in the shared") end
 	end
 end)
 
