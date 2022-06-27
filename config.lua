@@ -1,7 +1,6 @@
 print("Jim-Mining - Mining Script by Jimathy")
 
 Loc = {}
-Config = {}
 
 Config = {
 	Debug = false, -- enable debug mode
@@ -11,6 +10,7 @@ Config = {
 	Pedspawn = true, -- Do you want to spawn peds for main locations?
 	img = "qb-inventory/html/images/", --Set this to the image directory of your inventory script
 	Lan = "en", -- Pick your language here
+	JimShops = false, -- Set this to true if using jim-shops
 }
 
 -- Each one has individual blip enablers
