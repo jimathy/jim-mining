@@ -8,10 +8,12 @@ Config = {
 	BlipNamer = false, -- Enable to Name Blips different things, disable if you already have too many blips as this will group them together
 	PropSpawn = true, -- Enable Ore Props
 	Pedspawn = true, -- Do you want to spawn peds for main locations?
-	img = "qb-inventory/html/images/", --Set this to the image directory of your inventory script
+	img = "qb-inventory/html/images/", --Set this to the image directory of your inventory script or "nil" if using newer qb-menu
 	Lan = "en", -- Pick your language here
 	JimShops = false, -- Set this to true if using jim-shops
+	Job = nil, -- set this to a job role eg "miner" or nil for no job
 }
+
 
 -- Each one has individual blip enablers
 Config.Locations =  {

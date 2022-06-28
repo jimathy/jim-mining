@@ -76,47 +76,47 @@ CreateThread(function()
 	end
 	Targets["MineShaft"] =
 	exports['qb-target']:AddCircleZone("MineShaft", vector3(Config.Locations['Mine'].location.x, Config.Locations['Mine'].location.y, Config.Locations['Mine'].location.z), 2.0, { name="MineShaft", debugPoly=Config.Debug, useZ=true, }, 
-	{ options = { { event = "jim-mining:openShop", icon = "fas fa-certificate", label = Loc[Config.Lan].info["browse_store"], }, }, 
+	{ options = { { event = "jim-mining:openShop", icon = "fas fa-certificate", label = Loc[Config.Lan].info["browse_store"], job = Config.Job }, }, 
 		distance = 2.0 })
 	Targets["Quarry"] =
 	exports['qb-target']:AddCircleZone("Quarry", vector3(Config.Locations['Quarry'].location.x, Config.Locations['Quarry'].location.y, Config.Locations['Quarry'].location.z), 2.0, { name="Quarry", debugPoly=Config.Debug, useZ=true, }, 
-	{ options = { { event = "jim-mining:openShop", icon = "fas fa-certificate", label = Loc[Config.Lan].info["browse_store"], }, },
+	{ options = { { event = "jim-mining:openShop", icon = "fas fa-certificate", label = Loc[Config.Lan].info["browse_store"], job = Config.Job }, },
 		distance = 2.0
 	})
 	--Smelter to turn stone into ore
 	Targets["Smelter"] =
 	exports['qb-target']:AddCircleZone("Smelter", vector3(Config.Locations['Smelter'].location.x, Config.Locations['Smelter'].location.y, Config.Locations['Smelter'].location.z), 3.0, { name="Smelter", debugPoly=Config.Debug, useZ=true, }, 
-	{ options = { { event = "jim-mining:CraftMenu", icon = "fas fa-certificate", label = Loc[Config.Lan].info["use_smelter"], craftable = Crafting.SmeltMenu }, },
+	{ options = { { event = "jim-mining:CraftMenu", icon = "fas fa-certificate", label = Loc[Config.Lan].info["use_smelter"], craftable = Crafting.SmeltMenu, job = Config.Job }, },
 		distance = 10.0
 	})
 	--Ore Buyer
 	Targets["Buyer"] =
 	exports['qb-target']:AddCircleZone("Buyer", vector3(Config.Locations['Buyer'].location.x, Config.Locations['Buyer'].location.y, Config.Locations['Buyer'].location.z), 2.0, { name="Buyer", debugPoly=Config.Debug, useZ=true, }, 
-	{ options = { { event = "jim-mining:SellOre", icon = "fas fa-certificate", label = Loc[Config.Lan].info["sell_ores"], }, },
+	{ options = { { event = "jim-mining:SellOre", icon = "fas fa-certificate", label = Loc[Config.Lan].info["sell_ores"], job = Config.Job }, },
 		distance = 2.0
 	})
 	--Jewel Cutting Bench
 	Targets["JewelCut"] =
 	exports['qb-target']:AddCircleZone("JewelCut", vector3(Config.Locations['JewelCut'].location.x, Config.Locations['JewelCut'].location.y, Config.Locations['JewelCut'].location.z), 2.0,{ name="JewelCut", debugPoly=Config.Debug, useZ=true, }, 
-	{ options = { { event = "jim-mining:JewelCut", icon = "fas fa-certificate", label = Loc[Config.Lan].info["jewelcut"], }, },
+	{ options = { { event = "jim-mining:JewelCut", icon = "fas fa-certificate", label = Loc[Config.Lan].info["jewelcut"], job = Config.Job }, },
 		distance = 2.0
 	})
 	--Jewel Buyer
 	Targets["JewelBuyer"] =
 	exports['qb-target']:AddCircleZone("JewelBuyer",vector3(Config.Locations['Buyer2'].location.x, Config.Locations['Buyer2'].location.y, Config.Locations['Buyer2'].location.z), 2.0, { name="JewelBuyer", debugPoly=Config.Debug, useZ=true, }, 
-	{ options = { { event = "jim-mining:JewelSell", icon = "fas fa-certificate", label = Loc[Config.Lan].info["jewelbuyer"], },	},
+	{ options = { { event = "jim-mining:JewelSell", icon = "fas fa-certificate", label = Loc[Config.Lan].info["jewelbuyer"], job = Config.Job }, },
 		distance = 2.0
 	})
 	--Cracking Bench
 	Targets["CrackingBench"] =
 	exports['qb-target']:AddCircleZone("CrackingBench", vector3(Config.Locations['Cracking'].location.x, Config.Locations['Cracking'].location.y, Config.Locations['Cracking'].location.z), 2.0, { name="CrackingBench", debugPoly=Config.Debug, useZ=true, }, 
-	{ options = { { event = "jim-mining:CrackStart", icon = "fas fa-certificate", label = Loc[Config.Lan].info["crackingbench"], },	},
+	{ options = { { event = "jim-mining:CrackStart", icon = "fas fa-certificate", label = Loc[Config.Lan].info["crackingbench"], job = Config.Job }, },
 		distance = 2.0
 	})
 	for k,v in pairs(Config.OrePositions) do
 		Targets["ore"..k] =
 		exports['qb-target']:AddCircleZone("ore"..k, v.coords, 2.0, { name="ore"..k, debugPoly=Config.Debug, useZ=true, }, 
-		{ options = { { event = "jim-mining:MineOre", icon = "fas fa-certificate", label = Loc[Config.Lan].info["mine_ore"], },	},
+		{ options = { { event = "jim-mining:MineOre", icon = "fas fa-certificate", label = Loc[Config.Lan].info["mine_ore"], job = Config.Job }, },
 			distance = 2.5
 		})
 	end
