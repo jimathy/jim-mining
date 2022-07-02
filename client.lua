@@ -761,7 +761,7 @@ RegisterNetEvent('jim-mining:CraftMenu', function(data)
 				if k ~= "amount" then
 					local text = ""
 					if data.craftable[i]["amount"] then amount = " x"..data.craftable[i]["amount"] else amount = "" end
-					setheader = "<img src=nui://"..Config.img..QBCore.Shared.Items[v].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items[k].label..tostring(amount)
+					setheader = "<img src=nui://"..Config.img..QBCore.Shared.Items[k].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items[k].label..tostring(amount)
 					if Config.CheckMarks then
 						Wait(0)
 						local p = promise.new()
