@@ -6,20 +6,6 @@ local Targets = {}
 local Peds = {}
 local Blip = {}
 
-RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
-	QBCore.Functions.GetPlayerData(function(PlayerData)	PlayerJob = PlayerData.job end)
-	if Config.Job then if PlayerJob.name == Config.Job then makeJob() else removeJob() end else makeJob() end
-end)
-RegisterNetEvent('QBCore:Client:OnJobUpdate', function(JobInfo)
-	PlayerJob = JobInfo
-	if Config.Job then if PlayerJob.name == Config.Job then makeJob() else removeJob() end else makeJob() end
-end)
-
-AddEventHandler('onResourceStart', function(resource) if GetCurrentResourceName() ~= resource then return end
-	QBCore.Functions.GetPlayerData(function(PlayerData) PlayerJob = PlayerData.job end)
-	if Config.Job then if PlayerJob.name == Config.Job then makeJob() else removeJob() end else makeJob() end
-end)
-
 function makePed(data, name)
 	RequestModel(data.model) 
 	while not HasModelLoaded(data.model) do Wait(0) end
@@ -167,7 +153,6 @@ function makeJob()
 		if Config.Blips and v.blipTrue then makeBlip(v) end
 	end
 	
-	
 	for k, v in pairs(Config.Locations["JewelBuyer"]) do
 		local name = "JewelBuyer"..k
 		Targets[name] = 
@@ -183,12 +168,26 @@ function makeJob()
 		Targets[name] =
 		exports['qb-target']:AddCircleZone(name, vector3(v.coords.x, v.coords.y, v.coords.z-1.03), 1.2, { name=name, debugPoly=Config.Debug, useZ=true, }, 
 		{ options = { { event = "jim-mining:MineOre", icon = "fas fa-certificate", label = Loc[Config.Lan].info["mine_ore"], job = Config.Job, name = name , coords = v.coords }, },
-			distance = 1.0
+			distance = 1.3
 		})
 		if Config.propSpawn then makeProp({coords = v.coords, prop = `cs_x_rubweec`}, "Ore"..k)
 								 makeProp({coords = v.coords, prop = `prop_rock_5_a`}, "OreDead"..k) end
 	end
 end
+
+RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
+	QBCore.Functions.GetPlayerData(function(PlayerData)	PlayerJob = PlayerData.job end)
+	if Config.Job then if PlayerJob.name == Config.Job then makeJob() else removeJob() end else makeJob() end
+end)
+RegisterNetEvent('QBCore:Client:OnJobUpdate', function(JobInfo)
+	PlayerJob = JobInfo
+	if Config.Job then if PlayerJob.name == Config.Job then makeJob() else removeJob() end else makeJob() end
+end)
+
+AddEventHandler('onResourceStart', function(resource) if GetCurrentResourceName() ~= resource then return end
+	QBCore.Functions.GetPlayerData(function(PlayerData) PlayerJob = PlayerData.job end)
+	if Config.Job then if PlayerJob.name == Config.Job then makeJob() else removeJob() end else makeJob() end
+end)
 
 --------------------------------------------------------
 --Mining Store Opening
