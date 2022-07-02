@@ -34,9 +34,9 @@ FiveM Custom QBCORE mining script by me from scratch
 - Stone Cracking: https://streamable.com/e6j8h0
 - Stone Washing: https://streamable.com/rafnzt
 - Smelting Menu: https://streamable.com/sejgfp
-- Selling Ore: https://streamable.com/sejgfp
+- Selling Ore: https://streamable.com/sjbmbo
 - Gem Cutting & Jewellery Crafting: https://streamable.com/nmdntz
-- Gem and Jewellery Seller: https://streamable.com/f1lsrm
+- Gem and Jewellery Buyer: https://streamable.com/t2jfzc
 
 ## Custom Items & Images
   ![General](https://i.imgur.com/g8nqbvN.jpeg)
@@ -130,8 +130,6 @@ If you want to use my items then:
 	
 	["goldpan"] 					 = {["name"] = "goldpan", 			  	  		["label"] = "Gold Panning Tray", 		["weight"] = 10, 		["type"] = "item", 		["image"] = "goldpan.png", 				["unique"] = false, 	["useable"] = false, 	["shouldClose"] = false, ["combinable"] = nil,   ["description"] = "" },
 	
-	-- jim-recycle stuff
-	["recyclablematerial"] 			 = {["name"] = "recyclablematerial", 			["label"] = "Recycle Box", 				["weight"] = 100, 		["type"] = "item", 		["image"] = "recyclablematerial.png", 	["unique"] = false, 	["useable"] = false, 	["shouldClose"] = false, ["combinable"] = nil,   ["description"] = "A box of Recyclable Materials"},
 	["bottle"] 						 = {["name"] = "bottle", 			  	  		["label"] = "Empty Bottle", 			["weight"] = 10, 		["type"] = "item", 		["image"] = "bottle.png", 				["unique"] = false, 	["useable"] = false, 	["shouldClose"] = false, ["combinable"] = nil,   ["description"] = "A glass bottle"},
 	["can"] 						 = {["name"] = "can", 			  	  			["label"] = "Empty Can", 				["weight"] = 10, 		["type"] = "item", 		["image"] = "can.png", 					["unique"] = false, 	["useable"] = false, 	["shouldClose"] = false, ["combinable"] = nil,   ["description"] = "An empty can, good for recycling"},
 ```
