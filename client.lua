@@ -685,7 +685,7 @@ RegisterNetEvent('jim-mining:CraftMenu', function(data)
 						if Citizen.Await(p) then setheader = setheader.." ✅" end
 					end
 					--p = nil check = nil
-					for _, b in pairs(data.craftable[i][tostring(k)]) do
+					for l, b in pairs(data.craftable[i][tostring(k)]) do
 						if b == 1 then number = "" else number = " x"..b end
 						text = text.."- "..QBCore.Shared.Items[l].label..number.."<br>"
 						settext = text
