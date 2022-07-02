@@ -9,6 +9,7 @@ Config = {
 	propSpawn = true, -- Enable Ore Props
 	pedSpawn = true, -- Do you want to spawn peds for main locations?
 	img = "qb-inventory/html/images/", --Set this to the image directory of your inventory script or "nil" if using newer qb-menu
+	CheckMarks = true, -- shows checkmarks if user has the materials to craft an item, set false if causing lag.
 	Lan = "en", -- Pick your language here
 	JimMenu = true, -- Set this to true if using update qb-menu with icons
 	JimShops = true, -- Set this to true if using jim-shops
