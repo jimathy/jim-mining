@@ -12,9 +12,8 @@ Config = {
 	CheckMarks = true, -- shows checkmarks if user has the materials to craft an item, set false if causing lag.
 	Lan = "en", -- Pick your language here
 	JimMenu = true, -- Set this to true if using update qb-menu with icons
-	JimShops = true, -- Set this to true if using jim-shops
+	JimShops = false, -- Set this to true if using jim-shops
 	Job = nil, -- set this to a job role eg "miner" or nil for no job
-	
 	--Lighting for mines
 	HangingLights = false, -- if false, will spawn work lights. if true will spawn hanging lights
 	
@@ -283,8 +282,9 @@ Config = {
 			{ name = "bandage", price = 0, amount = 100, info = {}, type = "item", slot = 3, },
 			{ name = "weapon_flashlight", price = 0, amount = 100, info = {}, type = "item", slot = 4, }, 
 			{ name = "miningdrill",	price = 0, amount = 100, info = {}, type = "item",	slot = 5, },
-			{ name = "drillbit", price = 0, amount = 100, info = {}, type = "item", slot = 6, },
-			{ name = "goldpan", price = 0, amount = 100, info = {}, type = "item", slot = 7, },
+			{ name = "mininglaser",	price = 10000, amount = 5, info = {}, type = "item",	slot = 6, },
+			{ name = "drillbit", price = 0, amount = 100, info = {}, type = "item", slot = 7, },
+			{ name = "goldpan", price = 0, amount = 100, info = {}, type = "item", slot = 8, },
 		},
 	},
 }

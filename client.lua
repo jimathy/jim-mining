@@ -42,7 +42,7 @@ end
 
 CreateModelHide(vector3(-596.04, 2089.01, 131.41), 10.5, -1241212535, true)
 
-if Config.JimMenu then Config.img = "" else Config.img = "<img src=nui://"..Config.img..QBCore.Shared.Items[v].image.." width=30px onerror='this.onerror=null; this.remove();'>" end
+if Config.JimMenu then Config.img = "" end
 
 function removeJob()
 	for k in pairs(Targets) do exports['qb-target']:RemoveZone(k) end		
@@ -201,11 +201,95 @@ end)
 function loadAnimDict(dict) while not HasAnimDictLoaded(dict) do RequestAnimDict(dict) Wait(5) end end 
 
 RegisterNetEvent('jim-mining:MineOre', function(data)
-	local p = promise.new()	QBCore.Functions.TriggerCallback("QBCore:HasItem", function(cb) p:resolve(cb) end, "miningdrill")
+	-- Do they have laser
+	local p = promise.new()	QBCore.Functions.TriggerCallback("QBCore:HasItem", function(cb) p:resolve(cb) end, "mininglaser") Wait(0)
 	if Citizen.Await(p) then
+		-- Sounds
+		RequestAmbientAudioBank("DLC_HEIST_BIOLAB_DELIVER_EMP_SOUNDS", 0)
+		RequestAmbientAudioBank("dlc_xm_silo_laser_hack_sounds", 0)
+		soundId = GetSoundId()
+		loadAnimDict("anim@heists@fleeca_bank@drilling")
+		TaskPlayAnim(PlayerPedId(), 'anim@heists@fleeca_bank@drilling', 'drill_straight_idle' , 3.0, 3.0, -1, 1, 0, false, false, false)
+		local pos = GetEntityCoords(PlayerPedId(), true)
+		local DrillObject = CreateObject(`ch_prop_laserdrill_01a`, pos.x, pos.y, pos.z+1.2, true, true, true)
+		AttachEntityToEntity(DrillObject, PlayerPedId(), GetPedBoneIndex(PlayerPedId(), 57005), 0.14, 0, -0.01, 90.0, -90.0, 180.0, true, true, false, true, 1, true)
+		--Activation noise
+		PlaySoundFromEntity(soundId, "Pass", DrillObject, "dlc_xm_silo_laser_hack_sounds", 1, 0) Wait(1000)
+		
+		local IsDrilling = true
+		local dustcoords
+		local lasercoords = GetOffsetFromEntityInWorldCoords(DrillObject, 0.0,-0.5, 0.02)
+		for k, v in pairs(Props) do
+			if GetEntityModel(v) == `cs_x_rubweec` and #(GetEntityCoords(v) - GetEntityCoords(PlayerPedId())) <= 3.0 then
+				dustcoords = GetOffsetFromEntityInWorldCoords(v, 0.0, 0.0, 0.0)
+				break
+			end
+		end
+		--Laser Effect
+		CreateThread(function()
+			--Not sure about this, best one I could find as everything else wouldn't load
+			PlaySoundFromEntity(soundId, "EMP_Vehicle_Hum", DrillObject, "DLC_HEIST_BIOLAB_DELIVER_EMP_SOUNDS", 1, 0)
+			while IsDrilling do
+				RequestNamedPtfxAsset("core")
+				while not HasNamedPtfxAssetLoaded("core") do Citizen.Wait(10) end
+				local heading = GetEntityHeading(PlayerPedId())
+				UseParticleFxAssetNextCall("core")
+				local laser = StartNetworkedParticleFxNonLoopedAtCoord("muz_railgun", lasercoords.x, lasercoords.y, lasercoords.z, 0, -10.0, GetEntityHeading(DrillObject)+270, 1.0, 0.0, 0.0, 0.0)
+				Wait(50)
+			end
+		end)
+		--Rock Damage Effect
+		CreateThread(function()
+			while IsDrilling do
+				RequestNamedPtfxAsset("core")
+				while not HasNamedPtfxAssetLoaded("core") do Citizen.Wait(10) end
+				local heading = GetEntityHeading(PlayerPedId())
+				UseParticleFxAssetNextCall("core")
+
+				local dust = StartNetworkedParticleFxNonLoopedAtCoord("ent_dst_rocks", dustcoords.x, dustcoords.y, dustcoords.z, 0.0, 0.0, heading-180.0, 1.0, 0.0, 0.0, 0.0)
+				Wait(300)
+			end
+		end)
+		QBCore.Functions.Progressbar("open_locker_drill", Loc[Config.Lan].info["drilling_ore"], (Config.Timings["Mining"] / 3), false, true, {
+			disableMovement = true,	disableCarMovement = true, disableMouse = false, disableCombat = true, }, {}, {}, {}, function() -- Done
+			StopAnimTask(PlayerPedId(), "anim@heists@fleeca_bank@drilling", "drill_straight_idle", 1.0)
+			SetEntityAsMissionEntity(DrillObject) --nessesary for gta to even trigger DetachEntity
+			StopSound(soundId)
+			Wait(5)
+			DetachEntity(DrillObject, true, true)
+			Wait(5)
+			DeleteObject(DrillObject)
+			TriggerServerEvent('jim-mining:MineReward')
+			IsDrilling = false
+			
+			--Hide stone + target
+			CreateModelHide(dustcoords, 2.0, `cs_x_rubweec`, true)
+			exports['qb-target']:RemoveZone(data.name) Targets[data.name] = nil
+			
+			Wait(Config.Timings["OreRespawn"])
+			--Unhide Stone and create a new target location
+			RemoveModelHide(dustcoords, 2.0, `cs_x_rubweec`, false)
+			Targets[data.name] =
+				exports['qb-target']:AddCircleZone(data.name, vector3(data.coords.x, data.coords.y, data.coords.z-1.03), 1.2, { name=data.name, debugPoly=Config.Debug, useZ=true, }, 
+				{ options = { { event = "jim-mining:MineOre", icon = "fas fa-certificate", label = Loc[Config.Lan].info["mine_ore"], job = Config.Job, name = data.name, coords = data.coords }, },
+					distance = 2.2
+				})
+		end, function() -- Cancel
+			StopAnimTask(PlayerPedId(), "anim@heists@fleeca_bank@drilling", "drill_straight_idle", 1.0)
+			StopSound(soundId)
+			DetachEntity(DrillObject, true, true)
+			Wait(5)
+			DeleteObject(DrillObject)
+			IsDrilling = false
+		end, "mininglaser")
+		return
+	end
+	Wait(10)
+	local p2 = promise.new() QBCore.Functions.TriggerCallback("QBCore:HasItem", function(cb) p2:resolve(cb) end, "miningdrill") 
+	if Citizen.Await(p2) then
 		Wait(10)
-		local p2 = promise.new() QBCore.Functions.TriggerCallback("QBCore:HasItem", function(cb) p2:resolve(cb) end, "drillbit")
-		if Citizen.Await(p2) then
+		local p3 = promise.new() QBCore.Functions.TriggerCallback("QBCore:HasItem", function(cb) p3:resolve(cb) end, "drillbit")
+		if Citizen.Await(p3) then
 			-- Sounds
 			RequestAmbientAudioBank("DLC_HEIST_FLEECA_SOUNDSET", 0)
 			RequestAmbientAudioBank("DLC_MPHEIST\\HEIST_FLEECA_DRILL", 0)
@@ -605,7 +689,7 @@ RegisterNetEvent('jim-mining:SellOre', function()
 		{ header = Loc[Config.Lan].info["header_oresell"], txt = Loc[Config.Lan].info["oresell_txt"], isMenuHeader = true },
 		{ icon = "fas fa-circle-xmark", header = "", txt = Loc[Config.Lan].info["close"], params = { event = "jim-mining:CraftMenu:Close" } } }
 	for _, v in pairs(list) do
-		local setheader = Config.img..QBCore.Shared.Items[v].label
+		local setheader = "<img src=nui://"..Config.img..QBCore.Shared.Items[v].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items[v].label
 		local p = promise.new()	QBCore.Functions.TriggerCallback("QBCore:HasItem", function(cb) p:resolve(cb) end, v)
 		if Citizen.Await(p) then setheader = setheader.." 💰" end
 			sellMenu[#sellMenu+1] = { icon = v, header = setheader, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems[v].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim", args = { item = v } } }
@@ -642,7 +726,7 @@ RegisterNetEvent('jim-mining:JewelSell:Sub', function(data)
 	if data.sub == "necklaces" then list = {"goldchain", "silverchain", "diamond_necklace", "emerald_necklace", "ruby_necklace", "sapphire_necklace", "diamond_necklace_silver", "emerald_necklace_silver", "ruby_necklace_silver", "sapphire_necklace_silver"} end
 	if data.sub == "earrings" then list = {"goldearring", "silverearring", "diamond_earring", "emerald_earring", "ruby_earring", "sapphire_earring", "diamond_earring_silver", "emerald_earring_silver", "ruby_earring_silver", "sapphire_earring_silver"} end
 	for _, v in pairs(list) do
-		local setheader = Config.img..QBCore.Shared.Items[v].label
+		local setheader = "<img src=nui://"..Config.img..QBCore.Shared.Items[v].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items[v].label
 		local p = promise.new()	QBCore.Functions.TriggerCallback("QBCore:HasItem", function(cb) p:resolve(cb) end, v)
 		if Citizen.Await(p) then setheader = setheader.." 💰" end
 		sellMenu[#sellMenu+1] = { icon = v, header = setheader, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems[v].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim", args = { item = v, sub = data.sub } } }
@@ -677,7 +761,7 @@ RegisterNetEvent('jim-mining:CraftMenu', function(data)
 				if k ~= "amount" then
 					local text = ""
 					if data.craftable[i]["amount"] then amount = " x"..data.craftable[i]["amount"] else amount = "" end
-					setheader = QBCore.Shared.Items[k].label..tostring(amount)
+					setheader = "<img src=nui://"..Config.img..QBCore.Shared.Items[v].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items[k].label..tostring(amount)
 					if Config.CheckMarks then
 						Wait(0)
 						local p = promise.new()
@@ -690,7 +774,7 @@ RegisterNetEvent('jim-mining:CraftMenu', function(data)
 						text = text.."- "..QBCore.Shared.Items[l].label..number.."<br>"
 						settext = text
 					end
-					CraftMenu[#CraftMenu + 1] = { icon = k, header = Config.img..setheader, txt = settext, params = { event = "jim-mining:MakeItem", args = { item = k, tablenumber = i, craftable = data.craftable, ret = data.ret } } }
+					CraftMenu[#CraftMenu + 1] = { icon = k, header = setheader, txt = settext, params = { event = "jim-mining:MakeItem", args = { item = k, tablenumber = i, craftable = data.craftable, ret = data.ret } } }
 					settext, amount, setheader = nil
 				end
 			end
