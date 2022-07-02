@@ -3,7 +3,7 @@ print("Jim-Mining v2.0 - Mining Script by Jimathy")
 Loc = {}
 
 Config = {
-	Debug = true, -- enable debug mode
+	Debug = false, -- enable debug mode
 	Blips = true, -- Enable Blips?
 	BlipNamer = false, -- Enable to Name Blips different things, disable if you already have too many blips as this will group them together
 	propSpawn = true, -- Enable Ore Props
