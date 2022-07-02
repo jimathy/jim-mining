@@ -59,8 +59,8 @@ CreateModelHide(vector3(-596.04, 2089.01, 131.41), 10.5, -1241212535, true)
 if Config.JimMenu then Config.img = "" else Config.img = "<img src=nui://"..Config.img..QBCore.Shared.Items[v].image.." width=30px onerror='this.onerror=null; this.remove();'>" end
 
 function removeJob()
-	for k, v in pairs(Targets) do exports['qb-target']:RemoveZone(k) end		
-	for k, v in pairs(Peds) do DeletePed(Peds[k]) end
+	for k in pairs(Targets) do exports['qb-target']:RemoveZone(k) end		
+	for k in pairs(Peds) do DeletePed(Peds[k]) end
 	for i = 1, #Props do DeleteObject(Props[i]) end
 	for i = 1, #Blip do RemoveBlip(Blip[i]) end
 end
@@ -242,7 +242,7 @@ RegisterNetEvent('jim-mining:MineOre', function(data)
 			QBCore.Functions.Progressbar("open_locker_drill", Loc[Config.Lan].info["drilling_ore"], Config.Timings["Mining"], false, true, {
 				disableMovement = true,	disableCarMovement = true, disableMouse = false, disableCombat = true, }, {}, {}, {}, function() -- Done
 				StopAnimTask(PlayerPedId(), "anim@heists@fleeca_bank@drilling", "drill_straight_idle", 1.0)
-				SetEntityAsMissionEntity(DrillObject)--nessesary for gta to even trigger DetachEntity
+				SetEntityAsMissionEntity(DrillObject) --nessesary for gta to even trigger DetachEntity
 				StopSound(soundId)
 				Wait(5)
 				DetachEntity(DrillObject, true, true)
@@ -491,7 +491,7 @@ RegisterNetEvent('jim-mining:MakeItem', function(data)
 		local p = promise.new() QBCore.Functions.TriggerCallback("QBCore:HasItem", function(cb) p:resolve(cb) end, "drillbit")
 		if Citizen.Await(p) == false then TriggerEvent('QBCore:Notify', Loc[Config.Lan].error["no_drill_bit"], 'error')	TriggerEvent('jim-mining:JewelCut') return end
 	end
-	for k, v in pairs(data.craftable[data.tablenumber]) do
+	for k in pairs(data.craftable[data.tablenumber]) do
 		if data.item == k then
 			Wait(0) local p = promise.new()
 			QBCore.Functions.TriggerCallback('jim-mining:Check', function(cb) p:resolve(cb) end, data.item, data.craftable[data.tablenumber])
@@ -514,7 +514,7 @@ function itemProgress(data)
 	local isDrilling = true
 	if data.ret then -- If jewelcutting
 		local drillcoords
-		for k, v in pairs(Props) do
+		for _, v in pairs(Props) do
 			if #(GetEntityCoords(v) - GetEntityCoords(PlayerPedId())) <= 2.0 and GetEntityModel(v) == `xs_prop_x18_speeddrill_01c` then
 				RequestAmbientAudioBank("DLC_HEIST_FLEECA_SOUNDSET", 0)
 				RequestAmbientAudioBank("DLC_MPHEIST\\HEIST_FLEECA_DRILL", 0)
@@ -575,7 +575,7 @@ RegisterNetEvent('jim-mining:SellAnim', function(data)
 	local pid = PlayerPedId()
 	loadAnimDict("mp_common")
 	TriggerServerEvent('jim-mining:Selling', data) -- Had to slip in the sell command during the animation command
-	for k,v in pairs (Peds) do
+	for _, v in pairs (Peds) do
         pCoords = GetEntityCoords(PlayerPedId())
         ppCoords = GetEntityCoords(v)
 		ppRot = GetEntityRotation(v)
@@ -672,7 +672,7 @@ RegisterNetEvent('jim-mining:CraftMenu', function(data)
 		CraftMenu[#CraftMenu + 1] = { icon = "fas fa-circle-xmark", header = "", txt = Loc[Config.Lan].info["close"], params = { event = "jim-mining:CraftMenu:Close" } } 
 	end
 		for i = 1, #data.craftable do
-			for k, v in pairs(data.craftable[i]) do
+			for k in pairs(data.craftable[i]) do
 				if k ~= "amount" then
 					local text = ""
 					if data.craftable[i]["amount"] then amount = " x"..data.craftable[i]["amount"] else amount = "" end
@@ -684,12 +684,12 @@ RegisterNetEvent('jim-mining:CraftMenu', function(data)
 						if Citizen.Await(p) then setheader = setheader.." ✅" end
 					end
 					--p = nil check = nil
-					for l, b in pairs(data.craftable[i][tostring(k)]) do
+					for _, b in pairs(data.craftable[i][tostring(k)]) do
 						if b == 1 then number = "" else number = " x"..b end
 						text = text.."- "..QBCore.Shared.Items[l].label..number.."<br>"
 						settext = text
 					end
-					CraftMenu[#CraftMenu + 1] = { icon = k, header = "<img src=nui://"..Config.img..QBCore.Shared.Items[k].image.." width=30px onerror='this.onerror=null; this.remove();'> "..setheader, txt = settext, params = { event = "jim-mining:MakeItem", args = { item = k, tablenumber = i, craftable = data.craftable, ret = data.ret } } }
+					CraftMenu[#CraftMenu + 1] = { icon = k, header = Config.img..setheader, txt = settext, params = { event = "jim-mining:MakeItem", args = { item = k, tablenumber = i, craftable = data.craftable, ret = data.ret } } }
 					settext, amount, setheader = nil
 				end
 			end
