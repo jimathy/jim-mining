@@ -56,6 +56,8 @@ end
 
 CreateModelHide(vector3(-596.04, 2089.01, 131.41), 10.5, -1241212535, true)
 
+if Config.JimMenu then Config.img = "" else Config.img = "<img src=nui://"..Config.img..QBCore.Shared.Items[v].image.." width=30px onerror='this.onerror=null; this.remove();'>" end
+
 function removeJob()
 	for k, v in pairs(Targets) do exports['qb-target']:RemoveZone(k) end		
 	for k, v in pairs(Peds) do DeletePed(Peds[k]) end
@@ -191,11 +193,8 @@ end
 --------------------------------------------------------
 --Mining Store Opening
 RegisterNetEvent('jim-mining:openShop', function() 
-	if Config.JimShops then 
-		TriggerServerEvent("jim-shops:ShopOpen", "shop", "mine", Config.Items)
-	else
-		TriggerServerEvent("inventory:server:OpenInventory", "shop", "mine", Config.Items)
-	end
+	if Config.JimShops then event = "jim-shops:ShopOpen" else event = "inventory:server:OpenInventory" end
+	TriggerServerEvent(event, "shop", "mine", Config.Items)
 end)
 ------------------------------------------------------------
 -- Mine Ore Command / Animations
@@ -495,7 +494,7 @@ RegisterNetEvent('jim-mining:MakeItem', function(data)
 	for k, v in pairs(data.craftable[data.tablenumber]) do
 		if data.item == k then
 			Wait(0) local p = promise.new()
-			QBCore.Functions.TriggerCallback('jim-mining:Check', function(cb) p:resolve(cb) end, data.item, data.tablenumber, data.craftable)
+			QBCore.Functions.TriggerCallback('jim-mining:Check', function(cb) p:resolve(cb) end, data.item, data.craftable[data.tablenumber])
 			if not Citizen.Await(p) then 
 				TriggerEvent('QBCore:Notify', Loc[Config.Lan].error["no_ingredients"], 'error')
 				TriggerEvent('jim-mining:CraftMenu', data)
@@ -571,7 +570,7 @@ end
 --These also lead to the actual selling commands
 
 --Selling animations are simply a pass item to seller animation
---Sell Ore Animation
+--Sell Animation
 RegisterNetEvent('jim-mining:SellAnim', function(data)
 	local pid = PlayerPedId()
 	loadAnimDict("mp_common")
@@ -592,53 +591,26 @@ RegisterNetEvent('jim-mining:SellAnim', function(data)
 			break
 		end
 	end
-	TriggerEvent('jim-mining:SellOre')
-end)
-
---Sell Anim small Test
-RegisterNetEvent('jim-mining:SellAnim:Jewel', function(data)
-	local pid = PlayerPedId()
-	loadAnimDict("mp_common")
-	TriggerServerEvent('jim-mining:SellJewel', data) -- Had to slip in the sell command during the animation command
-	for k,v in pairs (Peds) do
-        pCoords = GetEntityCoords(PlayerPedId())
-        ppCoords = GetEntityCoords(v)
-		ppRot = GetEntityRotation(v)
-        dist = #(pCoords - ppCoords)
-        if dist < 2 then 
-			TaskPlayAnim(pid, "mp_common", "givetake2_a", 100.0, 200.0, 0.3, 120, 0.2, 0, 0, 0)
-            TaskPlayAnim(v, "mp_common", "givetake2_a", 100.0, 200.0, 0.3, 120, 0.2, 0, 0, 0)
-            Wait(1500)
-            StopAnimTask(pid, "mp_common", "givetake2_a", 1.0)
-            StopAnimTask(v, "mp_common", "givetake2_a", 1.0)
-            RemoveAnimDict("mp_common")
-			SetEntityRotation(v, 0, 0, ppRot.z, 0, 0, false)
-			break
-		end
-	end	
-	if string.find(data, "ear") then TriggerEvent('jim-mining:JewelSell:Earring') return
-	elseif string.find(data, "ring") then TriggerEvent('jim-mining:JewelSell:Rings') return
-	elseif string.find(data, "chain") or string.find(data, "necklace") then TriggerEvent('jim-mining:JewelSell:Necklace') return
-	elseif string.find(data, "emerald") then TriggerEvent('jim-mining:JewelSell:Emerald') return
-	elseif string.find(data, "ruby") then TriggerEvent('jim-mining:JewelSell:Ruby') return
-	elseif string.find(data, "diamond") then TriggerEvent('jim-mining:JewelSell:Diamond') return
-	elseif string.find(data, "sapphire") then TriggerEvent('jim-mining:JewelSell:Sapphire') return
-	else TriggerEvent('jim-mining:JewelSell') return end
+	if data.sub then TriggerEvent('jim-mining:JewelSell:Sub', { sub = data.sub }) return
+	else TriggerEvent('jim-mining:SellOre') return end
 end)
 
 ------------------------------------------------------------
 --Context Menus
 --Selling Ore
 RegisterNetEvent('jim-mining:SellOre', function()
-	exports['qb-menu']:openMenu({
+	local list = {"copperore", "ironore", "goldore", "silverore", "carbon"}
+	local sellMenu = {
 		{ header = Loc[Config.Lan].info["header_oresell"], txt = Loc[Config.Lan].info["oresell_txt"], isMenuHeader = true },
-		{ icon = "fas fa-circle-xmark", header = "", txt = Loc[Config.Lan].info["close"], params = { event = "jim-mining:CraftMenu:Close" } },
-		{ icon = "copperore", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["copperore"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["copperore"].label, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['copperore'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim", args = 'copperore' } },
-		{ icon = "ironore", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["ironore"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["ironore"].label, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['ironore'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim", args = 'ironore' } },
-		{ icon = "goldore", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["goldore"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["goldore"].label, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['goldore'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim", args = 'goldore' } },
-		{ icon = "silverore", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["silverore"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["silverore"].label, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['goldore'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim", args = 'silverore' } },
-		{ icon = "carbon", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["carbon"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["carbon"].label, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['carbon'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim", args = 'carbon' } }, 
-	})
+		{ icon = "fas fa-circle-xmark", header = "", txt = Loc[Config.Lan].info["close"], params = { event = "jim-mining:CraftMenu:Close" } } }
+	for _, v in pairs(list) do
+		local setheader = Config.img..QBCore.Shared.Items[v].label
+		local p = promise.new()	QBCore.Functions.TriggerCallback("QBCore:HasItem", function(cb) p:resolve(cb) end, v)
+		if Citizen.Await(p) then setheader = setheader.." 💰" end
+			sellMenu[#sellMenu+1] = { icon = v, header = setheader, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems[v].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim", args = { item = v } } }
+		Wait(0)
+	end
+	exports['qb-menu']:openMenu(sellMenu)
 end)
 ------------------------
 --Jewel Selling Main Menu
@@ -646,108 +618,37 @@ RegisterNetEvent('jim-mining:JewelSell', function()
     exports['qb-menu']:openMenu({
 		{ header = Loc[Config.Lan].info["jewel_buyer"], txt = Loc[Config.Lan].info["sell_jewel"], isMenuHeader = true }, 
 		{ icon = "fas fa-circle-xmark", header = "", txt = Loc[Config.Lan].info["close"], params = { event = "jim-mining:CraftMenu:Close" } },
-		{ header = QBCore.Shared.Items["emerald"].label, txt = Loc[Config.Lan].info["see_options"], params = { event = "jim-mining:JewelSell:Emerald", } },
-		{ header = QBCore.Shared.Items["ruby"].label, txt = Loc[Config.Lan].info["see_options"], params = { event = "jim-mining:JewelSell:Ruby", } },
-		{ header = QBCore.Shared.Items["diamond"].label, txt = Loc[Config.Lan].info["see_options"], params = { event = "jim-mining:JewelSell:Diamond", } },
-		{ header = QBCore.Shared.Items["sapphire"].label, txt = Loc[Config.Lan].info["see_options"], params = { event = "jim-mining:JewelSell:Sapphire", } },
-		{ header = Loc[Config.Lan].info["rings"], txt = Loc[Config.Lan].info["see_options"], params = { event = "jim-mining:JewelSell:Rings", } },
-		{ header = Loc[Config.Lan].info["necklaces"], txt = Loc[Config.Lan].info["see_options"], params = { event = "jim-mining:JewelSell:Necklace", } },
-		{ header = Loc[Config.Lan].info["earrings"], txt = Loc[Config.Lan].info["see_options"], params = { event = "jim-mining:JewelSell:Earring", } },
+		{ header = QBCore.Shared.Items["emerald"].label, txt = Loc[Config.Lan].info["see_options"], params = { event = "jim-mining:JewelSell:Sub", args = { sub = "emerald" } } },
+		{ header = QBCore.Shared.Items["ruby"].label, txt = Loc[Config.Lan].info["see_options"], params = { event = "jim-mining:JewelSell:Sub", args = { sub = "ruby" } } },
+		{ header = QBCore.Shared.Items["diamond"].label, txt = Loc[Config.Lan].info["see_options"], params = { event = "jim-mining:JewelSell:Sub", args = { sub = "diamond" } } },
+		{ header = QBCore.Shared.Items["sapphire"].label, txt = Loc[Config.Lan].info["see_options"], params = { event = "jim-mining:JewelSell:Sub", args = { sub = "sapphire" } } },
+		{ header = Loc[Config.Lan].info["rings"], txt = Loc[Config.Lan].info["see_options"], params = { event = "jim-mining:JewelSell:Sub", args = { sub = "rings" } } },
+		{ header = Loc[Config.Lan].info["necklaces"], txt = Loc[Config.Lan].info["see_options"], params = { event = "jim-mining:JewelSell:Sub", args = { sub = "necklaces" } } },
+		{ header = Loc[Config.Lan].info["earrings"], txt = Loc[Config.Lan].info["see_options"], params = { event = "jim-mining:JewelSell:Sub", args = { sub = "earrings" } } },
 	})
 end)
---Jewel Selling - Emerald Menu
-RegisterNetEvent('jim-mining:JewelSell:Emerald', function()
-    exports['qb-menu']:openMenu({
-		{ header = Loc[Config.Lan].info["jewel_buyer"], txt = Loc[Config.Lan].info["sell_jewel"], isMenuHeader = true }, 
-		{ icon = "fas fa-circle-arrow-left", header = "", txt = Loc[Config.Lan].info["return"], params = { event = "jim-mining:JewelSell", } },
-		{ icon = "emerald", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["emerald"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["emerald"].label, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['emerald'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'emerald' } },
-		{ icon = "uncut_emerald", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["uncut_emerald"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["uncut_emerald"].label, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['uncut_emerald'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'uncut_emerald' } }, 
-	})
+--Jewel Selling - Sub Menu Controller
+RegisterNetEvent('jim-mining:JewelSell:Sub', function(data)
+	local list = {}
+	local sellMenu = {
+		{ header = Loc[Config.Lan].info["jewel_buyer"], txt = Loc[Config.Lan].info["sell_jewel"], isMenuHeader = true },
+		{ icon = "fas fa-circle-arrow-left", header = "", txt = Loc[Config.Lan].info["return"], params = { event = "jim-mining:JewelSell", } }, }
+	if data.sub == "emerald" then list = {"emerald", "uncut_emerald"} end
+	if data.sub == "ruby" then list = {"ruby", "uncut_ruby"} end
+	if data.sub == "diamond" then list = {"diamond", "uncut_diamond"} end
+	if data.sub == "sapphire" then list = {"sapphire", "uncut_sapphire"} end
+	if data.sub == "rings" then list = {"gold_ring", "silver_ring", "diamond_ring", "emerald_ring", "ruby_ring", "sapphire_ring", "diamond_ring_silver", "emerald_ring_silver", "ruby_ring_silver", "sapphire_ring_silver"} end
+	if data.sub == "necklaces" then list = {"goldchain", "silverchain", "diamond_necklace", "emerald_necklace", "ruby_necklace", "sapphire_necklace", "diamond_necklace_silver", "emerald_necklace_silver", "ruby_necklace_silver", "sapphire_necklace_silver"} end
+	if data.sub == "earrings" then list = {"goldearring", "silverearring", "diamond_earring", "emerald_earring", "ruby_earring", "sapphire_earring", "diamond_earring_silver", "emerald_earring_silver", "ruby_earring_silver", "sapphire_earring_silver"} end
+	for _, v in pairs(list) do
+		local setheader = Config.img..QBCore.Shared.Items[v].label
+		local p = promise.new()	QBCore.Functions.TriggerCallback("QBCore:HasItem", function(cb) p:resolve(cb) end, v)
+		if Citizen.Await(p) then setheader = setheader.." 💰" end
+		sellMenu[#sellMenu+1] = { icon = v, header = setheader, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems[v].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim", args = { item = v, sub = data.sub } } }
+		Wait(0)
+	end
+	exports['qb-menu']:openMenu(sellMenu)
 end)
---Jewel Selling - Ruby Menu
-RegisterNetEvent('jim-mining:JewelSell:Ruby', function()
-    exports['qb-menu']:openMenu({
-		{ header = Loc[Config.Lan].info["jewel_buyer"], txt = Loc[Config.Lan].info["sell_jewel"], isMenuHeader = true }, 
-		{ icon = "fas fa-circle-arrow-left", header = "", txt = Loc[Config.Lan].info["return"], params = { event = "jim-mining:JewelSell", } },
-		{ icon = "ruby", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["ruby"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["ruby"].label, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['ruby'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'ruby' } },
-		{ icon = "uncut_ruby", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["uncut_ruby"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["uncut_ruby"].label, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['uncut_ruby'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'uncut_ruby' } },
-	})
-end)
---Jewel Selling - Diamonds Menu
-RegisterNetEvent('jim-mining:JewelSell:Diamond', function()
-    exports['qb-menu']:openMenu({
-		{ header = Loc[Config.Lan].info["jewel_buyer"], txt = Loc[Config.Lan].info["sell_jewel"], isMenuHeader = true }, 
-		{ icon = "fas fa-circle-arrow-left", header = "", txt = Loc[Config.Lan].info["return"], params = { event = "jim-mining:JewelSell", } },
-		{ icon = "diamond", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["diamond"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["diamond"].label, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['diamond'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'diamond' } },
-		{ icon = "uncut_diamond", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["uncut_diamond"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["uncut_diamond"].label, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['uncut_diamond'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'uncut_diamond' } },
-	})
-end)
---Jewel Selling - Sapphire Menu
-RegisterNetEvent('jim-mining:JewelSell:Sapphire', function()
-    exports['qb-menu']:openMenu({
-		{ header = Loc[Config.Lan].info["jewel_buyer"], txt = Loc[Config.Lan].info["sell_jewel"], isMenuHeader = true }, 
-		{ icon = "fas fa-circle-arrow-left", header = "", txt = Loc[Config.Lan].info["return"], params = { event = "jim-mining:JewelSell", } },
-		{ icon = "sapphire", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["sapphire"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["sapphire"].label, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['sapphire'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'sapphire' } },
-		{ icon = "uncut_sapphire", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["uncut_sapphire"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["uncut_sapphire"].label, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['uncut_sapphire'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'uncut_sapphire' } },
-	})
-end)
-
---Jewel Selling - Jewellry Menu
-RegisterNetEvent('jim-mining:JewelSell:Rings', function()
-    exports['qb-menu']:openMenu({
-		{ header = Loc[Config.Lan].info["jewel_buyer"], txt = Loc[Config.Lan].info["sell_jewel"], isMenuHeader = true }, 
-		{ icon = "fas fa-circle-arrow-left", header = "", txt = Loc[Config.Lan].info["return"], params = { event = "jim-mining:JewelSell", } },
-		{ icon = "gold_ring", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["gold_ring"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["gold_ring"].label, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['gold_ring'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'gold_ring' } },
-		{ icon = "silver_ring", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["silver_ring"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["silver_ring"].label, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['silver_ring'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'silver_ring' } },
-		{ icon = "diamond_ring", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["diamond_ring"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["diamond_ring"].label, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['diamond_ring'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'diamond_ring'} },
-		{ icon = "emerald_ring", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["emerald_ring"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["emerald_ring"].label, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['emerald_ring'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'emerald_ring' } },
-		{ icon = "ruby_ring", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["ruby_ring"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["ruby_ring"].label, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['ruby_ring'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'ruby_ring' } },	
-		{ icon = "sapphire_ring", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["sapphire_ring"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["sapphire_ring"].label, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['sapphire_ring'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'sapphire_ring' } },
-		{ icon = "diamond_ring_silver", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["diamond_ring_silver"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["diamond_ring_silver"].label, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['diamond_ring_silver'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'diamond_ring_silver'} },
-		{ icon = "emerald_ring_silver", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["emerald_ring_silver"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["emerald_ring_silver"].label, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['emerald_ring_silver'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'emerald_ring_silver' } },
-		{ icon = "ruby_ring_silver", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["ruby_ring_silver"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["ruby_ring_silver"].label, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['ruby_ring_silver'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'ruby_ring_silver' } },	
-		{ icon = "sapphire_ring_silver", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["sapphire_ring_silver"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["sapphire_ring_silver"].label, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['sapphire_ring_silver'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'sapphire_ring_silver' } },
-
-
-	})
-end)
---Jewel Selling - Jewellery Menu
-RegisterNetEvent('jim-mining:JewelSell:Necklace', function()
-    exports['qb-menu']:openMenu({
-		{ header = Loc[Config.Lan].info["jewel_buyer"], txt = Loc[Config.Lan].info["sell_jewel"], isMenuHeader = true }, 
-		{ icon = "fas fa-circle-arrow-left", header = "", txt = Loc[Config.Lan].info["return"], params = { event = "jim-mining:JewelSell", } },
-		{ icon = "goldchain", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["goldchain"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["goldchain"].label,	txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['goldchain'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'goldchain' } },
-		{ icon = "silverchain", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["silverchain"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["silverchain"].label,	txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['silverchain'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'silverchain' } },
-		{ icon = "diamond_necklace", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["diamond_necklace"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["diamond_necklace"].label, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['diamond_necklace'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'diamond_necklace' } },
-		{ icon = "emerald_necklace", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["emerald_necklace"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["emerald_necklace"].label, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['emerald_necklace'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'emerald_necklace' } },
-		{ icon = "ruby_necklace", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["ruby_necklace"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["ruby_necklace"].label, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['ruby_necklace'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'ruby_necklace' } },	
-		{ icon = "sapphire_necklace", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["sapphire_necklace"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["sapphire_necklace"].label, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['sapphire_necklace'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'sapphire_necklace' } },
-		{ icon = "diamond_necklace_silver", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["diamond_necklace_silver"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["diamond_necklace_silver"].label, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['diamond_necklace_silver'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'diamond_necklace_silver' } },
-		{ icon = "emerald_necklace_silver", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["emerald_necklace_silver"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["emerald_necklace_silver"].label, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['emerald_necklace_silver'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'emerald_necklace_silver' } },
-		{ icon = "ruby_necklace_silver", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["ruby_necklace_silver"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["ruby_necklace_silver"].label, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['ruby_necklace_silver'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'ruby_necklace_silver' } },	
-		{ icon = "sapphire_necklace_silver", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["sapphire_necklace_silver"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["sapphire_necklace_silver"].label, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['sapphire_necklace_silver'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'sapphire_necklace_silver' } },
-	})
-end)
---Jewel Selling - Jewellery Menu
-RegisterNetEvent('jim-mining:JewelSell:Earring', function()
-    exports['qb-menu']:openMenu({
-		{ header = Loc[Config.Lan].info["jewel_buyer"], txt = Loc[Config.Lan].info["sell_jewel"], isMenuHeader = true }, 
-		{ icon = "fas fa-circle-arrow-left", header = "", txt = Loc[Config.Lan].info["return"], params = { event = "jim-mining:JewelSell", } },
-		{ icon = "goldearring", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["goldearring"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["goldearring"].label,	txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['goldearring'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'goldearring' } },
-		{ icon = "silverearring", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["silverearring"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["silverearring"].label,	txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['silverearring'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'silverearring' } },
-		{ icon = "diamond_earring", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["diamond_earring"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["diamond_earring"].label, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['diamond_earring'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'diamond_earring' } },
-		{ icon = "emerald_earring", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["emerald_earring"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["emerald_earring"].label, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['emerald_earring'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'emerald_earring' } },
-		{ icon = "ruby_earring", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["ruby_earring"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["ruby_earring"].label, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['ruby_earring'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'ruby_earring' } },	
-		{ icon = "sapphire_earring", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["sapphire_earring"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["sapphire_earring"].label, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['sapphire_earring'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'sapphire_earring' } },
-		{ icon = "diamond_earring_silver", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["diamond_earring_silver"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["diamond_earring_silver"].label, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['diamond_earring_silver'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'diamond_earring_silver' } },
-		{ icon = "emerald_earring_silver", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["emerald_earring_silver"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["emerald_earring_silver"].label, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['emerald_earring_silver'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'emerald_earring_silver' } },
-		{ icon = "ruby_earring_silver", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["ruby_earring_silver"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["ruby_earring_silver"].label, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['ruby_earring_silver'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'ruby_earring_silver' } },	
-		{ icon = "sapphire_earring_silver", header = "<img src=nui://"..Config.img..QBCore.Shared.Items["sapphire_earring_silver"].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items["sapphire_earring_silver"].label, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems['sapphire_earring_silver'].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim:Jewel", args = 'sapphire_earring_silver' } },
-	})
-end)
-------------------------
-
-RegisterNetEvent('jim-mining:CraftMenu:Close', function() exports['qb-menu']:closeMenu() end)
 
 --Cutting Jewels
 RegisterNetEvent('jim-mining:JewelCut', function()
@@ -776,9 +677,13 @@ RegisterNetEvent('jim-mining:CraftMenu', function(data)
 					local text = ""
 					if data.craftable[i]["amount"] then amount = " x"..data.craftable[i]["amount"] else amount = "" end
 					setheader = QBCore.Shared.Items[k].label..tostring(amount)
-					Wait(0) local p = promise.new()
-					QBCore.Functions.TriggerCallback('jim-mining:Check', function(cb) p:resolve(cb) end, tostring(k), i, data.craftable) --check = Citizen.Await(p)
-					if Citizen.Await(p) then setheader = setheader.." ✅" end p = nil check = nil
+					if Config.CheckMarks then
+						Wait(0)
+						local p = promise.new()
+						QBCore.Functions.TriggerCallback('jim-mining:Check', function(cb) p:resolve(cb) end, tostring(k), data.craftable[i]) check = Citizen.Await(p)
+						if Citizen.Await(p) then setheader = setheader.." ✅" end
+					end
+					--p = nil check = nil
 					for l, b in pairs(data.craftable[i][tostring(k)]) do
 						if b == 1 then number = "" else number = " x"..b end
 						text = text.."- "..QBCore.Shared.Items[l].label..number.."<br>"
