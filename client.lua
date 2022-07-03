@@ -549,65 +549,49 @@ RegisterNetEvent('jim-mining:WashStart', function(data)
 	end	
 end)
 ------------------------------------------------------------
-
 -- Gold Panning Command / Animations
--- Command Starts here where it calls to being the stone inv checking
 local Panning = false
 RegisterNetEvent('jim-mining:PanStart', function(data)
-	if not Panning then
-	 	if IsEntityInWater(PlayerPedId()) then
-			local p = promise.new()	QBCore.Functions.TriggerCallback("QBCore:HasItem", function(cb) p:resolve(cb) end, "goldpan")
-			if Citizen.Await(p) then
-				Panning = true
-				
-				loadAnimDict('amb@prop_human_parking_meter@male@idle_a')
-				local benchcoords
-				local isPanning = true
-				
-				local trayCoords = GetOffsetFromEntityInWorldCoords(PlayerPedId(), 0.0, 0.5, -0.85)
-
-				local water
-				makeProp({ coords = vector4(trayCoords.x, trayCoords.y, trayCoords.z+1.03, GetEntityHeading(PlayerPedId())), prop = `v_res_r_silvrtray`} , "tray")
-				CreateThread(function()
-					while isPanning do
-						RequestNamedPtfxAsset("core")
-						while not HasNamedPtfxAssetLoaded("core") do Citizen.Wait(10) end
-						local heading = GetEntityHeading(PlayerPedId())
-						UseParticleFxAssetNextCall("core")
-						local direction = math.random(0, 359)
-						water = StartNetworkedParticleFxLoopedOnEntity("water_splash_veh_out", Props[#Props], 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 3.0, 0, 0, 0)
-						Wait(100)
-					end		
-				end)
-				
-				TaskStartScenarioInPlace(PlayerPedId(), "CODE_HUMAN_MEDIC_KNEEL", 0, true)
-
-				LocalPlayer.state:set("inv_busy", true, true)
-				
-				QBCore.Functions.Progressbar("open_locker_drill", Loc[Config.Lan].info["goldpanning"], Config.Timings["Panning"], false, true, {
-					disableMovement = true,	disableCarMovement = true, disableMouse = false, disableCombat = true, }, {}, {}, {}, function() -- Done
-					StopAnimTask(PlayerPedId(), 'amb@prop_human_parking_meter@male@idle_a', 'idle_a', 1.0)
-					TriggerServerEvent('jim-mining:PanReward')
-					
-					ClearPedTasksImmediately(PlayerPedId())
-					TaskGoStraightToCoord(PlayerPedId(), trayCoords, 4.0, 100, GetEntityHeading(PlayerPedId()), 0)
-					
-					DeleteObject(Props[#Props])
-					LocalPlayer.state:set("inv_busy", false, true)
-					isPanning = false
-					Panning = false
-				end, function() -- Cancel
-					StopAnimTask(PlayerPedId(), 'amb@prop_human_parking_meter@male@idle_a', 'idle_a', 1.0)
-					DeleteObject(Props[#Props])
-					ClearPedTasksImmediately(PlayerPedId())					
-					TaskGoStraightToCoord(PlayerPedId(), trayCoords, 4.0, 100, GetEntityHeading(PlayerPedId()), 0)
-					LocalPlayer.state:set("inv_busy", false, true)
-					isPanning = false
-					Panning = false
-				end, "goldpan")
-			else
-				TriggerEvent('QBCore:Notify', Loc[Config.Lan].error["no_pan"], 'error')
-			end
+	if Panning then return else Panning = true end
+	if IsEntityInWater(PlayerPedId()) then
+		local p = promise.new()	QBCore.Functions.TriggerCallback("QBCore:HasItem", function(cb) p:resolve(cb) end, "goldpan")
+		if Citizen.Await(p) then
+			--Create Rock and Attach
+			local isPanning = true
+			local trayCoords = GetOffsetFromEntityInWorldCoords(PlayerPedId(), 0.0, 0.5, -0.85)
+			makeProp({ coords = vector4(trayCoords.x, trayCoords.y, trayCoords.z+1.03, GetEntityHeading(PlayerPedId())), prop = `v_res_r_silvrtray`} , "tray")
+			local water
+			CreateThread(function()
+				loadPtfxDict("core")
+				while isPanning do
+					UseParticleFxAssetNextCall("core")
+					water = StartNetworkedParticleFxLoopedOnEntity("water_splash_veh_out", Props[#Props], 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 3.0, 0, 0, 0)
+					Wait(100)
+				end		
+			end)
+			TaskStartScenarioInPlace(PlayerPedId(), "CODE_HUMAN_MEDIC_KNEEL", 0, true)
+			LocalPlayer.state:set("inv_busy", true, true)
+			QBCore.Functions.Progressbar("open_locker_drill", Loc[Config.Lan].info["goldpanning"], Config.Timings["Panning"], false, true, {
+				disableMovement = true,	disableCarMovement = true, disableMouse = false, disableCombat = true, }, {}, {}, {}, function() -- Done
+				TriggerServerEvent('jim-mining:PanReward')
+				ClearPedTasksImmediately(PlayerPedId())
+				TaskGoStraightToCoord(PlayerPedId(), trayCoords, 4.0, 100, GetEntityHeading(PlayerPedId()), 0)
+				destroyProp(Props[#Props])
+				unloadPtfxDict("core")
+				LocalPlayer.state:set("inv_busy", false, true)
+				isPanning = false
+				Panning = false
+			end, function() -- Cance
+				ClearPedTasksImmediately(PlayerPedId())					
+				TaskGoStraightToCoord(PlayerPedId(), trayCoords, 4.0, 100, GetEntityHeading(PlayerPedId()), 0)
+				destroyProp(Props[#Props])
+				unloadPtfxDict("core")
+				LocalPlayer.state:set("inv_busy", false, true)
+				isPanning = false
+				Panning = false
+			end, "goldpan")
+		else
+			TriggerEvent('QBCore:Notify', Loc[Config.Lan].error["no_pan"], 'error')
 		end
 	end
 end)
@@ -642,37 +626,26 @@ function itemProgress(data)
 		local dict = "anim@amb@machinery@speed_drill@"
 		local anim = "operate_02_hi_amy_skater_01"
 		loadAnimDict(tostring(dict))
-			
 		for _, v in pairs(Props) do
 			if #(GetEntityCoords(v) - GetEntityCoords(PlayerPedId())) <= 2.0 and GetEntityModel(v) == `gr_prop_gr_speeddrill_01c` then
-				RequestAmbientAudioBank("DLC_HEIST_FLEECA_SOUNDSET", 0)
-				RequestAmbientAudioBank("DLC_MPHEIST\\HEIST_FLEECA_DRILL", 0)
-				RequestAmbientAudioBank("DLC_MPHEIST\\HEIST_FLEECA_DRILL_2", 0)
-				soundId = GetSoundId()
+				loadDrillSound()
 				PlaySoundFromEntity(soundId, "Drill", v, "DLC_HEIST_FLEECA_SOUNDSET", 0.5, 0)
 				drillcoords = GetOffsetFromEntityInWorldCoords(v, 0.0, -0.15, 0.0)
 				scene = NetworkCreateSynchronisedScene(GetEntityCoords(v), GetEntityRotation(v), 2, false, false, 1065353216, 0, 1.3)
 				NetworkAddPedToSynchronisedScene(PlayerPedId(), scene, tostring(dict), tostring(anim), 0, 0, 0, 16, 1148846080, 0)
 				NetworkStartSynchronisedScene(scene)
-				
 				break
 			end
 		end
 		CreateThread(function()
+			loadPtfxDict("core")
 			while isDrilling do
-				RequestNamedPtfxAsset("core")
-				while not HasNamedPtfxAssetLoaded("core") do Citizen.Wait(10) end
-				local heading = GetEntityHeading(PlayerPedId())
 				UseParticleFxAssetNextCall("core")
-				SetParticleFxNonLoopedColour(255 / 255, 255 / 255, 255 / 255)
-				SetParticleFxNonLoopedAlpha(1.0)
-				local direction = math.random(0, 359)
-				local dust = StartNetworkedParticleFxNonLoopedAtCoord("glass_side_window", drillcoords.x, drillcoords.y, drillcoords.z+1.1, 0.0, 0.0, heading+direction, 0.2, 0.0, 0.0, 0.0)
+				local dust = StartNetworkedParticleFxNonLoopedAtCoord("glass_side_window", drillcoords.x, drillcoords.y, drillcoords.z+1.1, 0.0, 0.0, GetEntityHeading(PlayerPedId())+math.random(0, 359), 0.2, 0.0, 0.0, 0.0)
 				Wait(100)
 			end
 		end)
-
-	else
+	else -- If not Jewel Cutting
 		animDictNow = "amb@prop_human_parking_meter@male@idle_a"
 		animNow = "idle_a"
 	end
@@ -680,27 +653,25 @@ function itemProgress(data)
 	{ animDict = animDictNow, anim = animNow, flags = 8, }, {}, {}, function()  
 		TriggerServerEvent('jim-mining:GetItem', data)
 		if data.ret then
-			local breackChance = math.random(1,10)
-			if breackChance >= 8 then
+			if math.random(1,10) >= 8 then
 				local breakId = GetSoundId()
 				PlaySoundFromEntity(breakId, "Drill_Pin_Break", PlayerPedId(), "DLC_HEIST_FLEECA_SOUNDSET", 1, 0)
 				TriggerServerEvent("QBCore:Server:RemoveItem", "drillbit", 1)
 				TriggerEvent('inventory:client:ItemBox', QBCore.Shared.Items['drillbit'], 'remove', 1)
 			end
 		end
-		
-		StopAnimTask(PlayerPedId(), animDictNow, animNow, 1.0)
 	    LocalPlayer.state:set("inv_busy", false, true)
-		StopSound(soundId)
-		--DeleteObject(Props[#Props])
+		unloadDrillSound()
+		unloadPtfxDict("core")
 		isDrilling = false
 		NetworkStopSynchronisedScene(scene)
 	end, function() -- Cancel
 		TriggerEvent('QBCore:Notify', Loc[Config.Lan].error["cancelled"], 'error')
 		StopAnimTask(PlayerPedId(), animDictNow, animNow, 1.0)
 	    LocalPlayer.state:set("inv_busy", false, true)
-		--DeleteObject(Props[#Props])
-		StopSound(soundId)
+		unloadDrillSound()
+		unloadPtfxDict("core")
+		unloadAnimDict(dict)
 		isDrilling = false
 		NetworkStopSynchronisedScene(scene)
 	end, data.item)
