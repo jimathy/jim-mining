@@ -274,19 +274,13 @@ RegisterNetEvent('jim-mining:MineOre:Drill', function(data)
 		local anim = "drill_straight_fail"
 		loadAnimDict(tostring(dict))
 		--Create Drill and Attach
-		local pos = GetEntityCoords(PlayerPedId(), true)
 		local DrillObject = CreateObject(`hei_prop_heist_drill`, GetEntityCoords(PlayerPedId(), true), true, true, true)
 		AttachEntityToEntity(DrillObject, PlayerPedId(), GetPedBoneIndex(PlayerPedId(), 57005), 0.14, 0, -0.01, 90.0, -90.0, 180.0, true, true, false, true, 1, true)
 		local IsDrilling = true
 		local rockcoords = getNearestRockCoords()
 		--Calculate if you're heading is within 20.0 degrees -
-		if not IsPedHeadingTowardsPosition(PlayerPedId(), rockcoords.x, rockcoords.y, rockcoords.z, 20.0) then
-			TaskTurnPedToFaceCoord(PlayerPedId(), rockcoords.x, rockcoords.y, rockcoords.z,	1500)
-			Wait(1500)
-		end
-		-- If not close enough, walk slightly towards (This stops the player drilling nothing)
-		if #(rockcoords - GetEntityCoords(PlayerPedId())) > 1.5 then TaskGoStraightToCoord(PlayerPedId(), rockcoords.x, rockcoords.y, rockcoords.z, 0.5, 400, 0.0, 0) Wait(400) end
-
+		if not IsPedHeadingTowardsPosition(PlayerPedId(), rockcoords, 20.0) then TaskTurnPedToFaceCoord(PlayerPedId(), rockcoords, 1500) Wait(1500)	end
+		if #(rockcoords - GetEntityCoords(PlayerPedId())) > 1.5 then TaskGoStraightToCoord(PlayerPedId(), rockcoords, 0.5, 400, 0.0, 0) Wait(400) end
 		TaskPlayAnim(PlayerPedId(), tostring(dict), tostring(anim), 3.0, 3.0, -1, 1, 0, false, false, false)
 		Wait(200)
 		PlaySoundFromEntity(soundId, "Drill", DrillObject, "DLC_HEIST_FLEECA_SOUNDSET", 1, 0)
@@ -345,12 +339,8 @@ RegisterNetEvent('jim-mining:MineOre:Pick', function(data)
 	local IsDrilling = true
 	local rockcoords = getNearestRockCoords()
 	--Calculate if you're facing the stone--
-	if not IsPedHeadingTowardsPosition(PlayerPedId(), rockcoords.x, rockcoords.y, rockcoords.z, 20.0) then
-		TaskTurnPedToFaceCoord(PlayerPedId(), rockcoords.x, rockcoords.y, rockcoords.z,	1500) Wait(1500)
-	end
-	if #(rockcoords - GetEntityCoords(PlayerPedId())) > 1.5 then 
-		TaskGoStraightToCoord(PlayerPedId(), rockcoords.x, rockcoords.y, rockcoords.z, 0.5, 400, 0.0, 0) Wait(400)
-	end
+	if not IsPedHeadingTowardsPosition(PlayerPedId(), rockcoords, 20.0) then TaskTurnPedToFaceCoord(PlayerPedId(), rockcoords, 1500) Wait(1500)	end
+	if #(rockcoords - GetEntityCoords(PlayerPedId())) > 1.5 then TaskGoStraightToCoord(PlayerPedId(), rockcoords, 0.5, 400, 0.0, 0) Wait(400) end
 	loadPtfxDict("core")
 	CreateThread(function()
 		while IsDrilling do
@@ -404,9 +394,8 @@ RegisterNetEvent('jim-mining:MineOre:Laser', function(data)
 	local IsDrilling = true
 	local rockcoords = getNearestRockCoords()
 	--Calculate if you're facing the stone--
-	if not IsPedHeadingTowardsPosition(PlayerPedId(), rockcoords.x, rockcoords.y, rockcoords.z, 20.0) then
-		TaskTurnPedToFaceCoord(PlayerPedId(), rockcoords.x, rockcoords.y, rockcoords.z,	1500)
-		Wait(1500)
+	if not IsPedHeadingTowardsPosition(PlayerPedId(), rockcoords, 20.0) then
+		TaskTurnPedToFaceCoord(PlayerPedId(), rockcoords, 1500) Wait(1500)
 	end
 	--Activation noise & Anims
 	TaskPlayAnim(PlayerPedId(), 'anim@heists@fleeca_bank@drilling', 'drill_straight_idle' , 3.0, 3.0, -1, 1, 0, false, false, false)
@@ -515,74 +504,50 @@ RegisterNetEvent('jim-mining:CrackStart', function(data)
 	end
 end)
 ------------------------------------------------------------
-
 -- Washing Command / Animations
--- Command Starts here where it calls to being the stone inv checking
 local Washing = false
 RegisterNetEvent('jim-mining:WashStart', function(data)
-	if not Washing then
-	 	--if IsEntityInWater(PlayerPedId()) then
-			local p = promise.new()	QBCore.Functions.TriggerCallback("QBCore:HasItem", function(cb) p:resolve(cb) end, "stone")
-			if Citizen.Await(p) then
-				Washing = true
-				local pos = GetEntityCoords(PlayerPedId())
-				loadAnimDict('amb@prop_human_parking_meter@male@idle_a')
-				local benchcoords
-				local isWashing = true
-				
-				local Rock = CreateObject(`prop_rock_5_smash1`, pos.x, pos.y, pos.z+0.5, true, true, true)
-				AttachEntityToEntity(Rock, PlayerPedId(), GetPedBoneIndex(PlayerPedId(), 60309), 0.1, 0.0, 0.05, 90.0, -90.0, 90.0, true, true, false, true, 1, true)
-				local water
-				CreateThread(function()
-					Wait(3000)
-					while isWashing do
-						RequestNamedPtfxAsset("core")
-						while not HasNamedPtfxAssetLoaded("core") do Citizen.Wait(10) end
-						local heading = GetEntityHeading(PlayerPedId())
-						UseParticleFxAssetNextCall("core")
-						local direction = math.random(0, 359)
-						water = StartNetworkedParticleFxLoopedOnEntity("water_splash_veh_out", PlayerPedId(), 0.0, 1.0, -0.2, 0.0, 0.0, 0.0, 2.0, 0, 0, 0)
-						Wait(500)
-					end		
-				end)
-				TaskStartScenarioInPlace(PlayerPedId(), "PROP_HUMAN_BUM_BIN", 0, true)
-				LocalPlayer.state:set("inv_busy", true, true)
-				QBCore.Functions.Progressbar("open_locker_drill", Loc[Config.Lan].info["washing_stone"], Config.Timings["Washing"], false, true, {
-					disableMovement = true,	disableCarMovement = true, disableMouse = false, disableCombat = true, }, {}, {}, {}, function() -- Done
-					TriggerServerEvent('jim-mining:WashReward')
-					LocalPlayer.state:set("inv_busy", false, true)
-					StopSound(soundId)
-					StopParticleFxLooped(water, 0)
-					DetachEntity(Rock, true, true)
-					Wait(5)
-					DeleteObject(Rock)
-					
-					ClearPedTasksImmediately(PlayerPedId())
-					TaskGoStraightToCoord(PlayerPedId(), trayCoords, 4.0, 100, GetEntityHeading(PlayerPedId()), 0)
-					
-					isWashing = false
-					Washing = false
-				end, function() -- Cancel
-					LocalPlayer.state:set("inv_busy", false, true)
-					StopSound(soundId)
-					StopParticleFxLooped(water, 0)
-					DetachEntity(Rock, true, true)
-					Wait(5)
-					DeleteObject(Rock)
-					
-					ClearPedTasksImmediately(PlayerPedId())
-					TaskGoStraightToCoord(PlayerPedId(), trayCoords, 4.0, 100, GetEntityHeading(PlayerPedId()), 0)
-					
-					isWashing = false
-					Washing = false
-				end, "stone")
-			else 
-				TriggerEvent('QBCore:Notify', Loc[Config.Lan].error["no_stone"], 'error')
-			end
-		--end
-	end
+	if Washing then return else Washing = true end
+	local p = promise.new()	QBCore.Functions.TriggerCallback("QBCore:HasItem", function(cb) p:resolve(cb) end, "stone")
+	if Citizen.Await(p) then
+		--Create Rock and Attach
+		local Rock = CreateObject(`prop_rock_5_smash1`, GetEntityCoords(PlayerPedId()), true, true, true)
+		local rockcoords = GetEntityCoords(Rock)
+		AttachEntityToEntity(Rock, PlayerPedId(), GetPedBoneIndex(PlayerPedId(), 60309), 0.1, 0.0, 0.05, 90.0, -90.0, 90.0, true, true, false, true, 1, true)
+		local isWashing = true
+		TaskStartScenarioInPlace(PlayerPedId(), "PROP_HUMAN_BUM_BIN", 0, true)
+		local water
+		CreateThread(function()
+			Wait(3000)
+			loadPtfxDict("core")
+			while isWashing do
+				UseParticleFxAssetNextCall("core")
+				water = StartNetworkedParticleFxLoopedOnEntity("water_splash_veh_out", PlayerPedId(), 0.0, 1.0, -0.2, 0.0, 0.0, 0.0, 2.0, 0, 0, 0)
+				Wait(500)
+			end		
+		end)
+		LocalPlayer.state:set("inv_busy", true, true)
+		QBCore.Functions.Progressbar("open_locker_drill", Loc[Config.Lan].info["washing_stone"], Config.Timings["Washing"], false, true, {
+			disableMovement = true,	disableCarMovement = true, disableMouse = false, disableCombat = true, }, {}, {}, {}, function() -- Done
+			TriggerServerEvent('jim-mining:WashReward')
+			LocalPlayer.state:set("inv_busy", false, true)
+			StopParticleFxLooped(water, 0)
+			destroyProp(Rock)
+			unloadPtfxDict("core")
+			isWashing = false
+			Washing = false
+		end, function() -- Cancel
+			LocalPlayer.state:set("inv_busy", false, true)
+			StopParticleFxLooped(water, 0)
+			destroyProp(Rock)
+			unloadPtfxDict("core")
+			isWashing = false
+			Washing = false
+		end, "stone")
+	else 
+		TriggerEvent('QBCore:Notify', Loc[Config.Lan].error["no_stone"], 'error')
+	end	
 end)
-
 ------------------------------------------------------------
 
 -- Gold Panning Command / Animations
