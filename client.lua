@@ -33,7 +33,7 @@ end
 
 function makeProp(data, name)
 	RequestModel(data.prop)
-	while not HasModelLoaded(data.prop) do Citizen.Wait(1) end	
+	while not HasModelLoaded(data.prop) do Citizen.Wait(1) end
 	Props[#Props+1] = CreateObject(data.prop, vector3(data.coords.x, data.coords.y, data.coords.z-1.03), false, false, false)
 	SetEntityHeading(Props[#Props], data.coords[4]-180.0)
 	FreezeEntityPosition(Props[#Props], true)
@@ -54,7 +54,6 @@ function removeJob()
 end
 
 function makeJob()
-
 	if Config.propSpawn then
 		--Quickly add outside lighting
 		makeProp({coords = vector4(-593.29, 2093.22, 131.7, 110.0), prop = `prop_worklight_02a`}, "WorkLight 1") -- Mineshaft door
@@ -202,49 +201,57 @@ RegisterNetEvent('jim-mining:openShop', function()
 end)
 ------------------------------------------------------------
 -- Mine Ore Command / Animations
+function loadAnimDict(dict) while not HasAnimDictLoaded(dict) do RequestAnimDict(dict) Wait(5) end end
 
-function loadAnimDict(dict) while not HasAnimDictLoaded(dict) do RequestAnimDict(dict) Wait(5) end end 
 local isMining = false
 RegisterNetEvent('jim-mining:MineOre:Drill', function(data)
 	if isMining then return end
 	local p = promise.new() QBCore.Functions.TriggerCallback("QBCore:HasItem", function(cb) p:resolve(cb) end, "drillbit")
 	if Citizen.Await(p) then
 		isMining = true
-		-- Sounds
+		-- Sounds & Anim loading
 		RequestAmbientAudioBank("DLC_HEIST_FLEECA_SOUNDSET", 0)
 		RequestAmbientAudioBank("DLC_MPHEIST\\HEIST_FLEECA_DRILL", 0)
 		RequestAmbientAudioBank("DLC_MPHEIST\\HEIST_FLEECA_DRILL_2", 0)
 		soundId = GetSoundId()
+		local dict = "anim@heists@fleeca_bank@drilling"
+		local anim = "drill_straight_fail"
+		loadAnimDict(tostring(dict))
 		
-		loadAnimDict("anim@heists@fleeca_bank@drilling")
-		TaskPlayAnim(PlayerPedId(), 'anim@heists@fleeca_bank@drilling', 'drill_straight_idle' , 3.0, 3.0, -1, 1, 0, false, false, false)
 		local pos = GetEntityCoords(PlayerPedId(), true)
 		local DrillObject = CreateObject(`hei_prop_heist_drill`, pos.x, pos.y, pos.z+0.5, true, true, true)
 		AttachEntityToEntity(DrillObject, PlayerPedId(), GetPedBoneIndex(PlayerPedId(), 57005), 0.14, 0, -0.01, 90.0, -90.0, 180.0, true, true, false, true, 1, true)
-		PlaySoundFromEntity(soundId, "Drill", DrillObject, "DLC_HEIST_FLEECA_SOUNDSET", 1, 0)
 		local IsDrilling = true
-		local drillcoords
+		local rockcoords
 		for k, v in pairs(Props) do
 			if GetEntityModel(v) == `cs_x_rubweec` and #(GetEntityCoords(v) - GetEntityCoords(PlayerPedId())) <= 3.0 then
-				drillcoords = GetOffsetFromEntityInWorldCoords(v, 0.0, 0.0, 0.0)
+				rockcoords = GetOffsetFromEntityInWorldCoords(v, 0.0, 0.0, 0.0)
 				break
 			end
 		end
+		--Calculate if you're facing the stone--
+		if not IsPedHeadingTowardsPosition(PlayerPedId(), rockcoords.x, rockcoords.y, rockcoords.z, 20.0) then
+			TaskTurnPedToFaceCoord(PlayerPedId(), rockcoords.x, rockcoords.y, rockcoords.z,	1500)
+			Wait(1500)
+		end
+		if #(rockcoords - GetEntityCoords(PlayerPedId())) > 1.5 then TaskGoStraightToCoord(PlayerPedId(), rockcoords.x, rockcoords.y, rockcoords.z, 0.5, 400, 0.0, 0) Wait(400) end
+		
+		TaskPlayAnim(PlayerPedId(), tostring(dict), tostring(anim), 3.0, 3.0, -1, 1, 0, false, false, false)
+		Wait(100)
+		PlaySoundFromEntity(soundId, "Drill", DrillObject, "DLC_HEIST_FLEECA_SOUNDSET", 1, 0)
 		CreateThread(function()
 			while IsDrilling do
 				RequestNamedPtfxAsset("core")
 				while not HasNamedPtfxAssetLoaded("core") do Citizen.Wait(10) end
 				local heading = GetEntityHeading(PlayerPedId())
 				UseParticleFxAssetNextCall("core")
-				SetParticleFxNonLoopedColour(150 / 255, 150 / 255, 150 / 255)
-				SetParticleFxNonLoopedAlpha(1.0)
-				local dust = StartNetworkedParticleFxNonLoopedAtCoord("ent_dst_rocks", drillcoords.x, drillcoords.y, drillcoords.z, 0.0, 0.0, heading-180.0, 1.0, 0.0, 0.0, 0.0)
+				local dust = StartNetworkedParticleFxNonLoopedAtCoord("ent_dst_rocks", rockcoords.x, rockcoords.y, rockcoords.z, 0.0, 0.0, heading-180.0, 1.0, 0.0, 0.0, 0.0)
 				Wait(600)
 			end
 		end)
 		QBCore.Functions.Progressbar("open_locker_drill", Loc[Config.Lan].info["drilling_ore"], Config.Timings["Mining"], false, true, {
 			disableMovement = true,	disableCarMovement = true, disableMouse = false, disableCombat = true, }, {}, {}, {}, function() -- Done
-			StopAnimTask(PlayerPedId(), "anim@heists@fleeca_bank@drilling", "drill_straight_idle", 1.0)
+			StopAnimTask(PlayerPedId(), "anim@heists@fleeca_bank@drilling", "drill_straight_fail", 1.0)
 			SetEntityAsMissionEntity(DrillObject) --nessesary for gta to even trigger DetachEntity
 			StopSound(soundId)
 			Wait(5)
@@ -253,32 +260,27 @@ RegisterNetEvent('jim-mining:MineOre:Drill', function(data)
 			DeleteObject(DrillObject)
 			TriggerServerEvent('jim-mining:MineReward')
 			IsDrilling = false
-			isMining = false
-			
 			if math.random(1,10) >= 8 then
 				local breakId = GetSoundId()
 				PlaySoundFromEntity(breakId, "Drill_Pin_Break", PlayerPedId(), "DLC_HEIST_FLEECA_SOUNDSET", 1, 0)
 				TriggerServerEvent("QBCore:Server:RemoveItem", "drillbit", 1)
 				TriggerEvent('inventory:client:ItemBox', QBCore.Shared.Items['drillbit'], 'remove', 1)
 			end		
-			
 			--Hide stone + target
-			CreateModelHide(drillcoords, 2.0, `cs_x_rubweec`, true)
+			CreateModelHide(rockcoords, 2.0, `cs_x_rubweec`, true)
 			exports['qb-target']:RemoveZone(data.name) Targets[data.name] = nil
-			
+			isMining = false
 			Wait(Config.Timings["OreRespawn"])
 			--Unhide Stone and create a new target location
-			RemoveModelHide(drillcoords, 2.0, `cs_x_rubweec`, false)
-			Targets[data.name] =
-				exports['qb-target']:AddCircleZone(data.name, vector3(data.coords.x, data.coords.y, data.coords.z-1.03), 1.2, { name=data.name, debugPoly=Config.Debug, useZ=true, }, 
-					{ options = { 
-						{ event = "jim-mining:MineOre:Pick", icon = "fas fa-hammer", item = "pickaxe", label = Loc[Config.Lan].info["mine_ore"].." ("..QBCore.Shared.Items["pickaxe"].label..")", job = Config.Job, name = name , coords = v.coords },
-						{ event = "jim-mining:MineOre:Drill", icon = "fas fa-screwdriver", item = "miningdrill", label = Loc[Config.Lan].info["mine_ore"].." ("..QBCore.Shared.Items["miningdrill"].label..")", job = Config.Job, name = name , coords = v.coords },
-						{ event = "jim-mining:MineOre:Laser", icon = "fas fa-screwdriver-wrench", item = "mininglaser", label = Loc[Config.Lan].info["mine_ore"].." ("..QBCore.Shared.Items["mininglaser"].label..")", job = Config.Job, name = name , coords = v.coords },
-					},
-				distance = 2.2 })
-				
-
+			RemoveModelHide(rockcoords, 2.0, `cs_x_rubweec`, false)
+			exports['qb-target']:AddCircleZone(data.name, vector3(rockcoords.x, rockcoords.y, rockcoords.z), 1.2, { name=data.name, debugPoly=Config.Debug, useZ=true, }, 
+			{ options = { 
+				{ event = "jim-mining:MineOre:Pick", icon = "fas fa-hammer", item = "pickaxe", label = Loc[Config.Lan].info["mine_ore"].." ("..QBCore.Shared.Items["pickaxe"].label..")", job = Config.Job, name = data.name , coords = rockcoords },
+				{ event = "jim-mining:MineOre:Drill", icon = "fas fa-screwdriver", item = "miningdrill", label = Loc[Config.Lan].info["mine_ore"].." ("..QBCore.Shared.Items["miningdrill"].label..")", job = Config.Job, name = data.name , coords = rockcoords },
+				{ event = "jim-mining:MineOre:Laser", icon = "fas fa-screwdriver-wrench", item = "mininglaser", label = Loc[Config.Lan].info["mine_ore"].." ("..QBCore.Shared.Items["mininglaser"].label..")", job = Config.Job, name = data.name , coords = rockcoords },
+				},
+				distance = 1.3
+			})
 		end, function() -- Cancel
 			StopAnimTask(PlayerPedId(), "anim@heists@fleeca_bank@drilling", "drill_straight_idle", 1.0)
 			StopSound(soundId)
@@ -296,19 +298,29 @@ end)
 RegisterNetEvent('jim-mining:MineOre:Pick', function(data)
 	if isMining then return end
 	isMining = true
-	loadAnimDict("amb@world_human_hammering@male@base")
+	local dict = "amb@world_human_hammering@male@base"
+	local anim = "base"
+	loadAnimDict(tostring(dict))
 	local pos = GetEntityCoords(PlayerPedId(), true)
-	local DrillObject = CreateObject(`prop_tool_pickaxe`, pos.x, pos.y, pos.z-5, true, true, true)
-	DisableCamCollisionForObject(DrillObject)
-	AttachEntityToEntity(DrillObject, PlayerPedId(), GetPedBoneIndex(PlayerPedId(), 57005), 0.09, -0.53, -0.22, 252.0, 180.0, 0.0, false, true, true, true, 0, true)
+	local PickAxe = CreateObject(`prop_tool_pickaxe`, pos.x, pos.y, pos.z+1.0, true, true, true)
+	DisableCamCollisionForObject(PickAxe)
+	DisableCamCollisionForEntity(PickAxe)
+	AttachEntityToEntity(PickAxe, PlayerPedId(), GetPedBoneIndex(PlayerPedId(), 57005), 0.09, -0.53, -0.22, 252.0, 180.0, 0.0, false, true, true, true, 0, true)
 	local IsDrilling = true
-	local drillcoords
+	local rockcoords
 	FreezeEntityPosition(PlayerPedId(), false)
 	for k, v in pairs(Props) do
 		if GetEntityModel(v) == `cs_x_rubweec` and #(GetEntityCoords(v) - GetEntityCoords(PlayerPedId())) <= 3.0 then
-			drillcoords = GetOffsetFromEntityInWorldCoords(v, 0.0, 0.0, 0.0)
+			rockcoords = GetOffsetFromEntityInWorldCoords(v, 0.0, 0.0, 0.0)
 			break
 		end
+	end
+	--Calculate if you're facing the stone--
+	if not IsPedHeadingTowardsPosition(PlayerPedId(), rockcoords.x, rockcoords.y, rockcoords.z, 20.0) then
+		TaskTurnPedToFaceCoord(PlayerPedId(), rockcoords.x, rockcoords.y, rockcoords.z,	1500) Wait(1500)
+	end
+	if #(rockcoords - GetEntityCoords(PlayerPedId())) > 1.5 then 
+		TaskGoStraightToCoord(PlayerPedId(), rockcoords.x, rockcoords.y, rockcoords.z, 0.5, 400, 0.0, 0) Wait(400)
 	end
 	CreateThread(function()
 		while IsDrilling do
@@ -316,21 +328,23 @@ RegisterNetEvent('jim-mining:MineOre:Pick', function(data)
 			while not HasNamedPtfxAssetLoaded("core") do Citizen.Wait(10) end
 			local heading = GetEntityHeading(PlayerPedId())
 			UseParticleFxAssetNextCall("core")
-			TaskPlayAnim(PlayerPedId(), "amb@world_human_hammering@male@base", "base", 8.0, -8.0, -1, 2, 0, false, false, false)
+			TaskPlayAnim(PlayerPedId(), tostring(dict), tostring(anim), 8.0, -8.0, -1, 2, 0, false, false, false)
 			Wait(200)
-			local dust = StartNetworkedParticleFxNonLoopedAtCoord("ent_dst_rocks", drillcoords.x, drillcoords.y, drillcoords.z, 0.0, 0.0, 0.0, 1.5, 0.0, 0.0, 0.0)
+			local pickcoords = GetOffsetFromEntityInWorldCoords(PickAxe, -0.4, 0.0, 0.7)
+			local dust = StartNetworkedParticleFxNonLoopedAtCoord("ent_dst_rocks", pickcoords.x, pickcoords.y, pickcoords.z, 0.0, 0.0, 0.0, 0.4, 0.0, 0.0, 0.0)
 			Wait(350)
 		end
 	end)
 	QBCore.Functions.Progressbar("open_locker_drill", Loc[Config.Lan].info["drilling_ore"], Config.Timings["Pickaxe"], false, true, {
 		disableMovement = true,	disableCarMovement = true, disableMouse = false, disableCombat = true, }, {}, {}, {}, function() -- Done
-		StopAnimTask(PlayerPedId(), "amb@world_human_hammering@male@base", "base", 1.0)
-		SetEntityAsMissionEntity(DrillObject) --nessesary for gta to even trigger DetachEntity
+		ClearPedTasksImmediately(PlayerPedId())
+		--StopAnimTask(PlayerPedId(), tostring(dict), tostring(anim), 1.0)
+		SetEntityAsMissionEntity(PickAxe) --nessesary for gta to even trigger DetachEntity
 		StopSound(soundId)
 		Wait(5)
-		DetachEntity(DrillObject, true, true)
+		DetachEntity(PickAxe, true, true)
 		Wait(5)
-		DeleteObject(DrillObject)
+		DeleteObject(PickAxe)
 		TriggerServerEvent('jim-mining:MineReward')
 		IsDrilling = false
 		isMining = false
@@ -345,29 +359,28 @@ RegisterNetEvent('jim-mining:MineOre:Pick', function(data)
 		end		
 		
 		--Hide stone + target
-		CreateModelHide(drillcoords, 2.0, `cs_x_rubweec`, true)
+		CreateModelHide(rockcoords, 2.0, `cs_x_rubweec`, true)
 		exports['qb-target']:RemoveZone(data.name) Targets[data.name] = nil
 		
 		Wait(Config.Timings["OreRespawn"])
 		--Unhide Stone and create a new target location
-		RemoveModelHide(drillcoords, 2.0, `cs_x_rubweec`, false)
-		Targets[data.name] =
-			exports['qb-target']:AddCircleZone(data.name, vector3(data.coords.x, data.coords.y, data.coords.z-1.03), 1.2, { name=data.name, debugPoly=Config.Debug, useZ=true, }, 
-				{ options = { 
-					{ event = "jim-mining:MineOre:Pick", icon = "fas fa-hammer", item = "pickaxe", label = Loc[Config.Lan].info["mine_ore"].." ("..QBCore.Shared.Items["pickaxe"].label..")", job = Config.Job, name = name , coords = v.coords },
-					{ event = "jim-mining:MineOre:Drill", icon = "fas fa-screwdriver", item = "miningdrill", label = Loc[Config.Lan].info["mine_ore"].." ("..QBCore.Shared.Items["miningdrill"].label..")", job = Config.Job, name = name , coords = v.coords },
-					{ event = "jim-mining:MineOre:Laser", icon = "fas fa-screwdriver-wrench", item = "mininglaser", label = Loc[Config.Lan].info["mine_ore"].." ("..QBCore.Shared.Items["mininglaser"].label..")", job = Config.Job, name = name , coords = v.coords },
-				},
-			distance = 2.2 })
-			
-
+		RemoveModelHide(rockcoords, 2.0, `cs_x_rubweec`, false)
+		exports['qb-target']:AddCircleZone(data.name, vector3(rockcoords.x, rockcoords.y, rockcoords.z), 1.2, { name=data.name, debugPoly=Config.Debug, useZ=true, }, 
+		{ options = { 
+			{ event = "jim-mining:MineOre:Pick", icon = "fas fa-hammer", item = "pickaxe", label = Loc[Config.Lan].info["mine_ore"].." ("..QBCore.Shared.Items["pickaxe"].label..")", job = Config.Job, name = data.name , coords = rockcoords },
+			{ event = "jim-mining:MineOre:Drill", icon = "fas fa-screwdriver", item = "miningdrill", label = Loc[Config.Lan].info["mine_ore"].." ("..QBCore.Shared.Items["miningdrill"].label..")", job = Config.Job, name = data.name , coords = rockcoords },
+			{ event = "jim-mining:MineOre:Laser", icon = "fas fa-screwdriver-wrench", item = "mininglaser", label = Loc[Config.Lan].info["mine_ore"].." ("..QBCore.Shared.Items["mininglaser"].label..")", job = Config.Job, name = data.name , coords = rockcoords },
+			},
+			distance = 1.3
+		})
 	end, function() -- Cancel
 		FreezeEntityPosition(PlayerPedId(), false)
-		StopAnimTask(PlayerPedId(), "anim@heists@fleeca_bank@drilling", "drill_straight_idle", 1.0)
+		ClearPedTasksImmediately(PlayerPedId())
+		--StopAnimTask(PlayerPedId(), tostring(dict), tostring(anim), 1.0)
 		StopSound(soundId)
-		DetachEntity(DrillObject, true, true)
+		DetachEntity(PickAxe, true, true)
 		Wait(5)
-		DeleteObject(DrillObject)
+		DeleteObject(PickAxe)
 		IsDrilling = false
 		isMining = false
 	end, "pickaxe")
@@ -376,28 +389,41 @@ end)
 RegisterNetEvent('jim-mining:MineOre:Laser', function(data)
 	if isMining then return end
 	isMining = true
-	-- Sounds
+	-- Sounds & Anim Loading
 	RequestAmbientAudioBank("DLC_HEIST_BIOLAB_DELIVER_EMP_SOUNDS", 0)
 	RequestAmbientAudioBank("dlc_xm_silo_laser_hack_sounds", 0)
-	soundId = GetSoundId()
-	loadAnimDict("anim@heists@fleeca_bank@drilling")
-	TaskPlayAnim(PlayerPedId(), 'anim@heists@fleeca_bank@drilling', 'drill_straight_idle' , 3.0, 3.0, -1, 1, 0, false, false, false)
-	local pos = GetEntityCoords(PlayerPedId(), true)
-	local DrillObject = CreateObject(`ch_prop_laserdrill_01a`, pos.x, pos.y, pos.z+1.2, true, true, true)
-	AttachEntityToEntity(DrillObject, PlayerPedId(), GetPedBoneIndex(PlayerPedId(), 57005), 0.14, 0, -0.01, 90.0, -90.0, 180.0, true, true, false, true, 1, true)
-	--Activation noise
-	PlaySoundFromEntity(soundId, "Pass", DrillObject, "dlc_xm_silo_laser_hack_sounds", 1, 0) Wait(1000)
+	soundId = GetSoundId()	
 	
+	local dict = "anim@heists@fleeca_bank@drilling"
+	local anim = "drill_straight_fail"
+	loadAnimDict(tostring(dict))
+	local pos = GetEntityCoords(PlayerPedId(), true)
+	local DrillObject = CreateObject(`ch_prop_laserdrill_01a`, pos.x, pos.y, pos.z+0.5, true, true, true)
+	AttachEntityToEntity(DrillObject, PlayerPedId(), GetPedBoneIndex(PlayerPedId(), 57005), 0.14, 0, -0.01, 90.0, -90.0, 180.0, true, true, false, true, 1, true)
+
 	local IsDrilling = true
-	local dustcoords
-	local lasercoords = GetOffsetFromEntityInWorldCoords(DrillObject, 0.0,-0.5, 0.02)
+	local rockcoords
 	for k, v in pairs(Props) do
 		if GetEntityModel(v) == `cs_x_rubweec` and #(GetEntityCoords(v) - GetEntityCoords(PlayerPedId())) <= 3.0 then
-			dustcoords = GetOffsetFromEntityInWorldCoords(v, 0.0, 0.0, 0.0)
+			rockcoords = GetOffsetFromEntityInWorldCoords(v, 0.0, 0.0, 0.0)
 			break
 		end
 	end
+	--Calculate if you're facing the stone--
+	
+	print(#(rockcoords - GetEntityCoords(PlayerPedId())))
+
+	if not IsPedHeadingTowardsPosition(PlayerPedId(), rockcoords.x, rockcoords.y, rockcoords.z, 20.0) then
+		TaskTurnPedToFaceCoord(PlayerPedId(), rockcoords.x, rockcoords.y, rockcoords.z,	1500)
+		Wait(1500)
+	end	
+	--Activation noise & Anims
+	TaskPlayAnim(PlayerPedId(), 'anim@heists@fleeca_bank@drilling', 'drill_straight_idle' , 3.0, 3.0, -1, 1, 0, false, false, false)
+	PlaySoundFromEntity(soundId, "Pass", DrillObject, "dlc_xm_silo_laser_hack_sounds", 1, 0) Wait(1000)
+	TaskPlayAnim(PlayerPedId(), 'anim@heists@fleeca_bank@drilling', 'drill_straight_fail' , 3.0, 3.0, -1, 1, 0, false, false, false)
+	
 	--Laser Effect
+	local lasercoords = GetOffsetFromEntityInWorldCoords(DrillObject, 0.0,-0.5, 0.02)
 	CreateThread(function()
 		--Not sure about this, best one I could find as everything else wouldn't load
 		PlaySoundFromEntity(soundId, "EMP_Vehicle_Hum", DrillObject, "DLC_HEIST_BIOLAB_DELIVER_EMP_SOUNDS", 1, 0)
@@ -418,7 +444,7 @@ RegisterNetEvent('jim-mining:MineOre:Laser', function(data)
 			local heading = GetEntityHeading(PlayerPedId())
 			UseParticleFxAssetNextCall("core")
 
-			local dust = StartNetworkedParticleFxNonLoopedAtCoord("ent_dst_rocks", dustcoords.x, dustcoords.y, dustcoords.z, 0.0, 0.0, heading-180.0, 1.0, 0.0, 0.0, 0.0)
+			local dust = StartNetworkedParticleFxNonLoopedAtCoord("ent_dst_rocks", rockcoords.x, rockcoords.y, rockcoords.z, 0.0, 0.0, heading-180.0, 1.0, 0.0, 0.0, 0.0)
 			Wait(300)
 		end
 	end)
@@ -436,20 +462,21 @@ RegisterNetEvent('jim-mining:MineOre:Laser', function(data)
 		isMining = false
 		
 		--Hide stone + target
-		CreateModelHide(dustcoords, 2.0, `cs_x_rubweec`, true)
+		CreateModelHide(rockcoords, 2.0, `cs_x_rubweec`, true)
 		exports['qb-target']:RemoveZone(data.name) Targets[data.name] = nil
 		
 		Wait(Config.Timings["OreRespawn"])
 		--Unhide Stone and create a new target location
-		RemoveModelHide(dustcoords, 2.0, `cs_x_rubweec`, false)
 		Targets[data.name] =
-			exports['qb-target']:AddCircleZone(data.name, vector3(data.coords.x, data.coords.y, data.coords.z-1.03), 1.2, { name=data.name, debugPoly=Config.Debug, useZ=true, }, 
-			{ options = { 
-				{ event = "jim-mining:MineOre:Pick", icon = "fas fa-hammer", item = "pickaxe", label = Loc[Config.Lan].info["mine_ore"].." ("..QBCore.Shared.Items["pickaxe"].label..")", job = Config.Job, name = name , coords = v.coords },
-				{ event = "jim-mining:MineOre:Drill", icon = "fas fa-screwdriver", item = "miningdrill", label = Loc[Config.Lan].info["mine_ore"].." ("..QBCore.Shared.Items["miningdrill"].label..")", job = Config.Job, name = name , coords = v.coords },
-				{ event = "jim-mining:MineOre:Laser", icon = "fas fa-screwdriver-wrench", item = "mininglaser", label = Loc[Config.Lan].info["mine_ore"].." ("..QBCore.Shared.Items["mininglaser"].label..")", job = Config.Job, name = name , coords = v.coords },
+		exports['qb-target']:AddCircleZone(data.name, vector3(rockcoords.x, rockcoords.y, rockcoords.z), 1.2, { name=data.name, debugPoly=Config.Debug, useZ=true, }, 
+		{ options = { 
+			{ event = "jim-mining:MineOre:Pick", icon = "fas fa-hammer", item = "pickaxe", label = Loc[Config.Lan].info["mine_ore"].." ("..QBCore.Shared.Items["pickaxe"].label..")", job = Config.Job, name = data.name , coords = rockcoords },
+			{ event = "jim-mining:MineOre:Drill", icon = "fas fa-screwdriver", item = "miningdrill", label = Loc[Config.Lan].info["mine_ore"].." ("..QBCore.Shared.Items["miningdrill"].label..")", job = Config.Job, name = data.name , coords = rockcoords },
+			{ event = "jim-mining:MineOre:Laser", icon = "fas fa-screwdriver-wrench", item = "mininglaser", label = Loc[Config.Lan].info["mine_ore"].." ("..QBCore.Shared.Items["mininglaser"].label..")", job = Config.Job, name = data.name , coords = rockcoords },
 			},
-				distance = 2.2 })
+			distance = 1.3
+		})
+		RemoveModelHide(rockcoords, 2.0, `cs_x_rubweec`, false)
 	end, function() -- Cancel
 		StopAnimTask(PlayerPedId(), "anim@heists@fleeca_bank@drilling", "drill_straight_idle", 1.0)
 		StopSound(soundId)
@@ -528,7 +555,7 @@ end)
 
 ------------------------------------------------------------
 
--- Cracking Command / Animations
+-- Washing Command / Animations
 -- Command Starts here where it calls to being the stone inv checking
 local Washing = false
 RegisterNetEvent('jim-mining:WashStart', function(data)
@@ -597,7 +624,7 @@ end)
 
 ------------------------------------------------------------
 
--- Cracking Command / Animations
+-- Gold Panning Command / Animations
 -- Command Starts here where it calls to being the stone inv checking
 local Panning = false
 RegisterNetEvent('jim-mining:PanStart', function(data)
@@ -662,7 +689,7 @@ end)
 RegisterNetEvent('jim-mining:MakeItem', function(data)
 	if data.ret then 
 		local p = promise.new() QBCore.Functions.TriggerCallback("QBCore:HasItem", function(cb) p:resolve(cb) end, "drillbit")
-		if Citizen.Await(p) == false then TriggerEvent('QBCore:Notify', Loc[Config.Lan].error["no_drill_bit"], 'error')	TriggerEvent('jim-mining:JewelCut') return end
+		if Citizen.Await(p) == false then TriggerEvent('QBCore:Notify', Loc[Config.Lan].error["no_drillbit"], 'error')	TriggerEvent('jim-mining:JewelCut') return end
 	end
 	for k in pairs(data.craftable[data.tablenumber]) do
 		if data.item == k then
@@ -680,21 +707,29 @@ function itemProgress(data)
 	if data.craftable then
 		if not data.ret then bartext = Loc[Config.Lan].info["smelting"]..QBCore.Shared.Items[data.item].label
 		else bartext = Loc[Config.Lan].info["cutting"]..QBCore.Shared.Items[data.item].label end
-		animDictNow = "amb@prop_human_parking_meter@male@idle_a"
-		animNow = "idle_a"
 	end
 	LocalPlayer.state:set("inv_busy", true, true)
 	local isDrilling = true
 	if data.ret then -- If jewelcutting
 		local drillcoords
+		local scene
+		local dict = "anim@amb@machinery@speed_drill@"
+		local anim = "operate_02_hi_amy_skater_01"
+		loadAnimDict(tostring(dict))
+			
 		for _, v in pairs(Props) do
-			if #(GetEntityCoords(v) - GetEntityCoords(PlayerPedId())) <= 2.0 and GetEntityModel(v) == `xs_prop_x18_speeddrill_01c` then
+			if #(GetEntityCoords(v) - GetEntityCoords(PlayerPedId())) <= 2.0 and GetEntityModel(v) == `gr_prop_gr_speeddrill_01c` then
 				RequestAmbientAudioBank("DLC_HEIST_FLEECA_SOUNDSET", 0)
 				RequestAmbientAudioBank("DLC_MPHEIST\\HEIST_FLEECA_DRILL", 0)
 				RequestAmbientAudioBank("DLC_MPHEIST\\HEIST_FLEECA_DRILL_2", 0)
 				soundId = GetSoundId()
-				PlaySoundFromEntity(soundId, "Drill", v, "DLC_HEIST_FLEECA_SOUNDSET", 1, 0)
+				PlaySoundFromEntity(soundId, "Drill", v, "DLC_HEIST_FLEECA_SOUNDSET", 0.5, 0)
 				drillcoords = GetOffsetFromEntityInWorldCoords(v, 0.0, -0.15, 0.0)
+				scene = NetworkCreateSynchronisedScene(GetEntityCoords(v), GetEntityRotation(v), 2, false, false, 1065353216, 0, 1.3)
+				NetworkAddPedToSynchronisedScene(PlayerPedId(), scene, tostring(dict), tostring(anim), 0, 0, 0, 16, 1148846080, 0)
+				NetworkStartSynchronisedScene(scene)
+				
+				break
 			end
 		end
 		CreateThread(function()
@@ -711,6 +746,9 @@ function itemProgress(data)
 			end
 		end)
 
+	else
+		animDictNow = "amb@prop_human_parking_meter@male@idle_a"
+		animNow = "idle_a"
 	end
 	QBCore.Functions.Progressbar('making_food', bartext, Config.Timings["Crafting"], false, true, { disableMovement = true, disableCarMovement = true, disableMouse = false, disableCombat = true, }, 
 	{ animDict = animDictNow, anim = animNow, flags = 8, }, {}, {}, function()  
@@ -730,6 +768,7 @@ function itemProgress(data)
 		StopSound(soundId)
 		--DeleteObject(Props[#Props])
 		isDrilling = false
+		NetworkStopSynchronisedScene(scene)
 	end, function() -- Cancel
 		TriggerEvent('QBCore:Notify', Loc[Config.Lan].error["cancelled"], 'error')
 		StopAnimTask(PlayerPedId(), animDictNow, animNow, 1.0)
@@ -737,6 +776,7 @@ function itemProgress(data)
 		--DeleteObject(Props[#Props])
 		StopSound(soundId)
 		isDrilling = false
+		NetworkStopSynchronisedScene(scene)
 	end, data.item)
 end
 ------------------------------------------------------------
@@ -855,10 +895,9 @@ RegisterNetEvent('jim-mining:CraftMenu', function(data)
 					if Config.CheckMarks then
 						Wait(0)
 						local p = promise.new()
-						QBCore.Functions.TriggerCallback('jim-mining:Check', function(cb) p:resolve(cb) end, tostring(k), data.craftable[i]) check = Citizen.Await(p)
+						QBCore.Functions.TriggerCallback('jim-mining:Check', function(cb) p:resolve(cb) end, tostring(k), data.craftable[i])
 						if Citizen.Await(p) then setheader = setheader.." ✅" end
 					end
-					--p = nil check = nil
 					for l, b in pairs(data.craftable[i][tostring(k)]) do
 						if b == 1 then number = "" else number = " x"..b end
 						text = text.."- "..QBCore.Shared.Items[l].label..number.."<br>"

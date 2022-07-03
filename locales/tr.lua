@@ -1,7 +1,6 @@
 Loc["tr"] = {
     error = {
         ["cancelled"] = "İptal edildi!",
-        ["no_drill"] = "Matkabın yok",
         ["no_drillbit"] = "Matkabınız veya Matkap Ucunuz yok",
         ["no_stone"] = "Hiç Taşınız yok",
         ["no_pan"] = "You don't a Gold Pan",

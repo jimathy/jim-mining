@@ -1,7 +1,6 @@
 Loc["pt"] = {
 	error = { 
 		["cancelled"] = "Cancelado!",
-		["no_drill"] = "Você não tem uma furadeira",
 		["no_drillbit"] = "Você não tem uma broca",
 		["no_stone"] = "Você não tem nenhuma pedra",
         ["no_pan"] = "You don't a Gold Pan",

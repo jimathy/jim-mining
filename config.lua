@@ -25,7 +25,7 @@ Config = {
 		["Mining"] = math.random(10000, 15000),
 		["Laser"] = math.random(7000, 10000),
 		["OreRespawn"] = math.random(55000, 75000),
-		["Crafting"] = 7000,
+		["Crafting"] = 8000,
 	},
 
 	Locations =  {
@@ -75,8 +75,8 @@ Config = {
 			{ name = "Ore Buyer", coords = vector4(1090.18, -1999.51, 30.93, 146.24), sprite = 568, col = 81, blipTrue = false, model = `S_M_Y_Construct_01`, scenario = "WORLD_HUMAN_CLIPBOARD", },
 		},
 		['JewelCut'] = { -- The Location of the jewel cutting bench. Couldn't decide so left in smeltery
-			{ name = "Jewel Cutting", coords = vector4(1077.11, -1984.22, 31.02, 235.8), sprite = 566, col = 81, blipTrue = false, prop = `xs_prop_x18_speeddrill_01c` },
-			{ name = "Jewel Cutting", coords = vector4(1075.19, -1985.45, 30.92, 144.89), sprite = 566, col = 81, blipTrue = false, prop = `xs_prop_x18_speeddrill_01c` },
+			{ name = "Jewel Cutting", coords = vector4(1077.11, -1984.22, 31.02, 235.8), sprite = 566, col = 81, blipTrue = false, prop = `gr_prop_gr_speeddrill_01c` },
+			{ name = "Jewel Cutting", coords = vector4(1075.19, -1985.45, 30.92, 144.89), sprite = 566, col = 81, blipTrue = false, prop = `gr_prop_gr_speeddrill_01c` },
 		},
 		['JewelBuyer'] = { -- The Location of the jewel buyer, I left this as Vangelico, others will proabably change to pawn shops
 			{ name = "Jewel Buyer", coords = vector4(-629.86, -240.35, 38.16, 110.05), sprite = 527, col = 617, blipTrue = false, model = `S_M_M_HighSec_03`, scenario = "WORLD_HUMAN_CLIPBOARD", },
@@ -107,7 +107,6 @@ Config = {
 		{ coords = vector4(2990.38, 2750.4, 43.46+1.03, 0.0), },
 		{ coords = vector4(2985.77, 2751.19, 43.06+1.03, 0.0), },
 		{ coords = vector4(2980.37, 2748.4, 43.0+1.03, 0.0), },
-		{ coords = vector4(2977.74, 2741.16, 44.54+1.03, 180.0), },
 		{ coords = vector4(2977.74, 2741.16, 44.54+1.03, 180.0), },
 		{ coords = vector4(3004.49, 2761.98, 43.54+1.03, 180.0), },
 		{ coords = vector4(3006.38, 2768.63, 42.59+1.03, 180.0), },

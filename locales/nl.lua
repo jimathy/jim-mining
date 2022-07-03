@@ -1,7 +1,6 @@
 Loc["nl"] = {
     error = {
         ["cancelled"] = "Geannuleerd!",
-        ["no_drill"] = "Je hebt geen boor",
         ["no_drillbit"] = "Je hebt geen boor of boorkop",
         ["no_stone"] = "Je hebt geen steen",
         ["no_pan"] = "You don't a Gold Pan",
