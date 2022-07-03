@@ -187,14 +187,12 @@ RegisterNetEvent('QBCore:Client:OnJobUpdate', function(JobInfo)
 	PlayerJob = JobInfo
 	if Config.Job then if PlayerJob.name == Config.Job then makeJob() else removeJob() end else makeJob() end
 end)
-
 AddEventHandler('onResourceStart', function(resource) if GetCurrentResourceName() ~= resource then return end
 	QBCore.Functions.GetPlayerData(function(PlayerData) PlayerJob = PlayerData.job end)
 	if Config.Job then if PlayerJob.name == Config.Job then makeJob() else removeJob() end else makeJob() end
 end)
 
 --------------------------------------------------------
---Mining Store Opening
 RegisterNetEvent('jim-mining:openShop', function() 
 	if Config.JimShops then event = "jim-shops:ShopOpen" else event = "inventory:server:OpenInventory" end
 	TriggerServerEvent(event, "shop", "mine", Config.Items)
@@ -246,6 +244,7 @@ function getNearestRockCoords()
 	return coords
 end
 function stoneBreak(name, rockcoords)
+	if Config.Debug then print("Debug: Hiding prop and target: '"..name.."' at coords: "..json.encode(rockcoords)) end
 	--Stone CoolDown + Recreation
 	CreateModelHide(rockcoords, 2.0, `cs_x_rubweec`, true)
 	exports['qb-target']:RemoveZone(name) Targets[name] = nil
@@ -320,7 +319,7 @@ RegisterNetEvent('jim-mining:MineOre:Drill', function(data)
 			isMining = false
 		end, "miningdrill")
 	else
-		TriggerEvent('QBCore:Notify', Loc[Config.Lan].error["no_drillbit"], 'error') return
+		TriggerEvent('QBCore:Notify', Loc[Config.Lan].error["no_drillbit"], 'error') isMining = false return
 	end
 end)
 
@@ -552,13 +551,13 @@ end)
 -- Gold Panning Command / Animations
 local Panning = false
 RegisterNetEvent('jim-mining:PanStart', function(data)
-	if Panning then return else Panning = true end
 	if IsEntityInWater(PlayerPedId()) then
+	if Panning then return else Panning = true end
 		local p = promise.new()	QBCore.Functions.TriggerCallback("QBCore:HasItem", function(cb) p:resolve(cb) end, "goldpan")
 		if Citizen.Await(p) then
 			--Create Rock and Attach
 			local isPanning = true
-			local trayCoords = GetOffsetFromEntityInWorldCoords(PlayerPedId(), 0.0, 0.5, -0.85)
+			local trayCoords = GetOffsetFromEntityInWorldCoords(PlayerPedId(), 0.0, 0.5, -0.9)
 			makeProp({ coords = vector4(trayCoords.x, trayCoords.y, trayCoords.z+1.03, GetEntityHeading(PlayerPedId())), prop = `v_res_r_silvrtray`} , "tray")
 			local water
 			CreateThread(function()
@@ -591,7 +590,7 @@ RegisterNetEvent('jim-mining:PanStart', function(data)
 				Panning = false
 			end, "goldpan")
 		else
-			TriggerEvent('QBCore:Notify', Loc[Config.Lan].error["no_pan"], 'error')
+			TriggerEvent('QBCore:Notify', Loc[Config.Lan].error["no_pan"], 'error') Panning = false return
 		end
 	end
 end)
@@ -677,30 +676,25 @@ function itemProgress(data)
 	end, data.item)
 end
 ------------------------------------------------------------
---These also lead to the actual selling commands
-
 --Selling animations are simply a pass item to seller animation
---Sell Animation
 RegisterNetEvent('jim-mining:SellAnim', function(data)
 	local p = promise.new() QBCore.Functions.TriggerCallback("QBCore:HasItem", function(cb) p:resolve(cb) end, data.item)
 	if Citizen.Await(p) == false then TriggerEvent("QBCore:Notify", Loc[Config.Lan].error["dont_have"].." "..QBCore.Shared.Items[data.item].label, "error") return end
-	local pid = PlayerPedId()
 	loadAnimDict("mp_common")
 	TriggerServerEvent('jim-mining:Selling', data) -- Had to slip in the sell command during the animation command
 	for _, v in pairs (Peds) do
-        pCoords = GetEntityCoords(PlayerPedId())
-        ppCoords = GetEntityCoords(v)
-		ppRot = GetEntityRotation(v)
-        dist = #(pCoords - ppCoords)
-        if dist < 2 then 
-			TaskPlayAnim(pid, "mp_common", "givetake2_a", 100.0, 200.0, 0.3, 120, 0.2, 0, 0, 0)
-            TaskPlayAnim(v, "mp_common", "givetake2_a", 100.0, 200.0, 0.3, 120, 0.2, 0, 0, 0)
-            Wait(1500)
-            StopAnimTask(pid, "mp_common", "givetake2_a", 1.0)
-            StopAnimTask(v, "mp_common", "givetake2_a", 1.0)
-            RemoveAnimDict("mp_common")
-			SetEntityRotation(v, 0,0,ppRot.z,0,0,false)		
-			break
+      	if #(GetEntityCoords(PlayerPedId()) - GetEntityCoords(v)) < 2 then
+			ppRot = GetEntityRotation(v)
+			loadAnimDict("mp_common")
+			--Calculate if you're facing the stone--	
+			if not IsPedHeadingTowardsPosition(PlayerPedId(), GetEntityCoords(v), 20.0) then TaskTurnPedToFaceCoord(PlayerPedId(), GetEntityCoords(v), 1500) Wait(1500) end					
+			TaskPlayAnim(PlayerPedId(), "mp_common", "givetake2_a", 100.0, 200.0, 0.3, 120, 0.2, 0, 0, 0)	--Start animations
+            TaskPlayAnim(v, "mp_common", "givetake2_b", 100.0, 200.0, 0.3, 120, 0.2, 0, 0, 0)
+            Wait(2000)
+            StopAnimTask(PlayerPedId(), "mp_common", "givetake2_a", 1.0)
+            StopAnimTask(v, "mp_common", "givetake2_b", 1.0)
+			SetEntityRotation(v, 0, 0, ppRot.z ,0, 0, false) --Reset ped rotation	
+			unloadAnimDict("mp_common")
 		end
 	end
 	if data.sub then TriggerEvent('jim-mining:JewelSell:Sub', { sub = data.sub }) return
@@ -708,8 +702,6 @@ RegisterNetEvent('jim-mining:SellAnim', function(data)
 end)
 
 ------------------------------------------------------------
---Context Menus
---Selling Ore
 RegisterNetEvent('jim-mining:SellOre', function()
 	local list = {"copperore", "ironore", "goldore", "silverore", "carbon"}
 	local sellMenu = {
@@ -761,7 +753,6 @@ RegisterNetEvent('jim-mining:JewelSell:Sub', function(data)
 	end
 	exports['qb-menu']:openMenu(sellMenu)
 end)
-
 --Cutting Jewels
 RegisterNetEvent('jim-mining:JewelCut', function()
     exports['qb-menu']:openMenu({
