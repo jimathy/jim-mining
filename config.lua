@@ -16,7 +16,7 @@ Config = {
 	Job = nil, -- set this to a job role eg "miner" or nil for no job
 	--Lighting for mines
 	HangingLights = false, -- if false, will spawn work lights. if true will spawn hanging lights
-	
+
 	Timings = { -- Time it takes to do things
 		["Cracking"] = math.random(9000, 11500),
 		["Washing"] = math.random(10000, 12000),
@@ -30,7 +30,7 @@ Config = {
 
 	Locations =  {
 		['MineStore'] = {
-			{ name = "Mine", coords = vector4(-594.96, 2091.3, 131.47, 67.65), sprite = 527, col = 81, blipTrue = true, model = `S_M_Y_Construct_01`, scenario = "WORLD_HUMAN_CLIPBOARD",  },		-- The location where you enter the mine 
+			{ name = "Mine", coords = vector4(-594.96, 2091.3, 131.47, 67.65), sprite = 527, col = 81, blipTrue = true, model = `S_M_Y_Construct_01`, scenario = "WORLD_HUMAN_CLIPBOARD",  },		-- The location where you enter the mine
 			{ name = "Quarry", coords = vector4(2960.9, 2754.14, 43.71, 204.58), sprite = 527, col = 81, blipTrue = true, model = `S_M_Y_Construct_01`, scenario = "WORLD_HUMAN_CLIPBOARD",  },
 			{ name = "Foundary Store", coords = vector4(1074.89, -1988.19, 30.89, 235.07), sprite = 436, col = 1, blipTrue = true, model = `S_M_Y_Construct_01`, scenario = "WORLD_HUMAN_CLIPBOARD",  },
 		},
@@ -40,14 +40,14 @@ Config = {
 		["Washing"] = {
 			{ name = "Stone Washing", coords = vector3(1840.18, 412.42, 160.49), sprite = 467, col = 3, blipTrue = true }, -- Mountains
 			{ name = "Stone Washing", coords = vector3(1870.91, 395.1, 160.16), sprite = 467, col = 3, blipTrue = false },
-			
+
 			{ name = "Stone Washing", coords = vector3(-432.59, 2936.84, 13.87), sprite = 467, col = 3, blipTrue = true }, -- Stream Blip
 			{ name = "Stone Washing", coords = vector3(-422.37, 2946.18, 13.77), sprite = 467, col = 3, blipTrue = false },
 			{ name = "Stone Washing", coords = vector3(-443.21, 2926.5, 13.62), sprite = 467, col = 3, blipTrue = false },
 			{ name = "Stone Washing", coords = vector3(-455.48, 2917.16, 13.52), sprite = 467, col = 3, blipTrue = false },
-			
+
 			{ name = "Stone Washing", coords = vector3(2500.64, 6129.4, 162.46), sprite = 467, col = 3, blipTrue = true }, -- Gordo
-			
+
 			{ name = "Stone Washing", coords = vector3(907.06, 4377.66, 30.28), sprite = 467, col = 3, blipTrue = true }, -- Alamo Sea
 			{ name = "Stone Washing", coords = vector3(894.14, 4386.56, 30.24), sprite = 467, col = 3, blipTrue = false },
 			{ name = "Stone Washing", coords = vector3(893.12, 4370.74, 30.35), sprite = 467, col = 3, blipTrue = false },
@@ -56,13 +56,13 @@ Config = {
 		["Panning"] = {
 			{ name = "Gold Panning", coords = vector3(-1656.67, 2074.85, 87.37), sprite = 467, col = 5, blipTrue = true }, -- Vineyard
 			{ name = "Gold Panning", coords = vector3(-1672.06, 2070.89, 91.68), sprite = 467, col = 5, blipTrue = false },
-			
+
 			{ name = "Gold Panning", coords = vector3(-1273.16, 1898.19, 100.82), sprite = 467, col = 5, blipTrue = true }, -- Tongva
-			
+
 			{ name = "Gold Panning", coords = vector3(-1551.31, 1444.15, 116.44), sprite = 467, col = 5, blipTrue = true }, -- Tongva
 			{ name = "Gold Panning", coords = vector3(-1565.47, 1431.46, 117.1), sprite = 467, col = 5, blipTrue = false },
-			{ name = "Gold Panning", coords = vector3(-1578.39, 1419.59, 118.13), sprite = 467, col = 5, blipTrue = false },			
-			
+			{ name = "Gold Panning", coords = vector3(-1578.39, 1419.59, 118.13), sprite = 467, col = 5, blipTrue = false },
+
 			{ name = "Gold Panning", coords = vector3(-850.78, 4433.95, 14.21), sprite = 467, col = 5, blipTrue = true }, -- Wilderness
 		},
 		['Cracking'] = { -- The location of the smelter
@@ -79,7 +79,7 @@ Config = {
 			{ name = "Jewel Cutting", coords = vector4(1075.19, -1985.45, 30.92, 144.89), sprite = 566, col = 81, blipTrue = false, prop = `gr_prop_gr_speeddrill_01c` },
 		},
 		['JewelBuyer'] = { -- The Location of the jewel buyer, I left this as Vangelico, others will proabably change to pawn shops
-			{ name = "Jewel Buyer", coords = vector4(-629.86, -240.35, 38.16, 110.05), sprite = 527, col = 617, blipTrue = false, model = `S_M_M_HighSec_03`, scenario = "WORLD_HUMAN_CLIPBOARD", },
+			{ name = "Jewel Buyer", coords = vector4(-629.86, -240.35, 38.16, 110.05), sprite = 527, col = 617, blipTrue = false, model = `S_M_M_HighSec_03`, scenario = "WORLD_HUMAN_VALET", },
 		},
 	},
 
@@ -121,7 +121,7 @@ Config = {
 		[3] = "ironore",
 		[4] = "metalscrap",
 	},
-	
+
 	WashPool = {
 		[1] = "goldore",
 		[2] = 'uncut_ruby',
@@ -130,7 +130,7 @@ Config = {
 		[5] = 'uncut_sapphire',
 		[6] = "goldore",
 	},
-	
+
 	PanPool = {
 		[1] = "can",
 		[2] = "goldore",
@@ -157,10 +157,10 @@ Config = {
 		['silverore'] = 100,
 		['ironore'] = 100,
 		['carbon'] = 100,
-		
+
 		['goldingot'] = 100,
 		['silveringot'] = 100,
-		
+
 		['uncut_emerald'] = 100,
 		['uncut_ruby'] = 100,
 		['uncut_diamond'] = 100,
@@ -188,7 +188,7 @@ Config = {
 		['emerald_necklace_silver'] = 100,
 		['ruby_necklace_silver'] = 100,
 		['sapphire_necklace_silver'] = 100,
-		
+
 		['diamond_earring'] = 100,
 		['emerald_earring'] = 100,
 		['ruby_earring'] = 100,
@@ -229,7 +229,7 @@ Config = {
 		{ coords = vector4(-549.67, 1994.23, 128.66+1.03, 0.0), },
 		{ coords = vector4(-545.35, 1986.81, 128.63+1.03, 0.0), },
 		{ coords = vector4(-543.0, 1982.82, 128.63+1.03, 0.0), },
-		{ coords = vector4(-534.72, 1981.34, 128.72+1.03, 0.0), },	
+		{ coords = vector4(-534.72, 1981.34, 128.72+1.03, 0.0), },
 		{ coords = vector4(-526.63, 1979.63, 128.64+1.03, 0.0), },
 		{ coords = vector4(-515.62, 1979.07, 128.01+1.03, 0.0), },
 		{ coords = vector4(-506.55, 1979.26, 127.44+1.03, 0.0), },
@@ -281,7 +281,7 @@ Config = {
 			{ name = "water_bottle", price = 0, amount = 100, info = {}, type = "item", slot = 1, },
 			{ name = "sandwich", price = 0, amount = 250, info = {}, type = "item", slot = 2, },
 			{ name = "bandage", price = 0, amount = 100, info = {}, type = "item", slot = 3, },
-			{ name = "weapon_flashlight", price = 0, amount = 100, info = {}, type = "item", slot = 4, }, 
+			{ name = "weapon_flashlight", price = 0, amount = 100, info = {}, type = "item", slot = 4, },
 			{ name = "goldpan", price = 0, amount = 100, info = {}, type = "item", slot = 5, },
 			{ name = "pickaxe",	price = 100, amount = 100, info = {}, type = "item", slot = 6, },
 			{ name = "miningdrill",	price = 10000, amount = 50, info = {}, type = "item", slot = 7, },
@@ -317,7 +317,7 @@ Crafting = {
 		[4] = { ["emerald_ring"] = { ["gold_ring"] = 1, ["emerald"] = 1 }, },
 		[5] = { ["ruby_ring"] = { ["gold_ring"] = 1, ["ruby"] = 1 }, },
 		[6] = { ["sapphire_ring"] = { ["gold_ring"] = 1, ["sapphire"] = 1 }, },
-		
+
 		[7] = { ["diamond_ring_silver"] = { ["silver_ring"] = 1, ["diamond"] = 1 }, },
 		[8] = { ["emerald_ring_silver"] = { ["silver_ring"] = 1, ["emerald"] = 1 }, },
 		[9] = { ["ruby_ring_silver"] = { ["silver_ring"] = 1, ["ruby"] = 1 }, },
@@ -330,7 +330,7 @@ Crafting = {
 		[4] = { ["ruby_necklace"] = { ["goldchain"] = 1, ["ruby"] = 1 }, },
 		[5] = { ["sapphire_necklace"] = { ["goldchain"] = 1, ["sapphire"] = 1 }, },
 		[6] = { ["emerald_necklace"] = { ["goldchain"] = 1, ["emerald"] = 1 }, },
-	
+
 		[7] = { ["diamond_necklace_silver"] = { ["silverchain"] = 1, ["diamond"] = 1 }, },
 		[8] = { ["ruby_necklace_silver"] = { ["silverchain"] = 1, ["ruby"] = 1 }, },
 		[9] = { ["sapphire_necklace_silver"] = { ["silverchain"] = 1, ["sapphire"] = 1 }, },
@@ -343,7 +343,7 @@ Crafting = {
 		[4] = { ["ruby_earring"] = { ["goldearring"] = 1, ["ruby"] = 1 }, },
 		[5] = { ["sapphire_earring"] = { ["goldearring"] = 1, ["sapphire"] = 1 }, },
 		[6] = { ["emerald_earring"] = { ["goldearring"] = 1, ["emerald"] = 1 }, },
-		
+
 		[7] = { ["diamond_earring_silver"] = { ["silverearring"] = 1, ["diamond"] = 1 }, },
 		[8] = { ["ruby_earring_silver"] = { ["silverearring"] = 1, ["ruby"] = 1 }, },
 		[9] = { ["sapphire_earring_silver"] = { ["silverearring"] = 1, ["sapphire"] = 1 }, },
