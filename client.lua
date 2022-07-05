@@ -7,7 +7,7 @@ local Peds = {}
 local Blip = {}
 
 function makePed(data, name)
-	RequestModel(data.model) 
+	RequestModel(data.model)
 	while not HasModelLoaded(data.model) do Wait(0) end
 	Peds[#Peds+1] = CreatePed(0, data.model, data.coords.x, data.coords.y, data.coords.z-1.03, data.coords[4], false, false)
 	SetEntityInvincible(Peds[#Peds], true)
@@ -43,11 +43,11 @@ end
 --Hide the mineshaft doors
 CreateModelHide(vector3(-596.04, 2089.01, 131.41), 10.5, -1241212535, true)
 
---Attempts to disable header icons if JimMenu is enabled 
+--Attempts to disable header icons if JimMenu is enabled
 if Config.JimMenu then Config.img = "" end
 
 function removeJob()
-	for k in pairs(Targets) do exports['qb-target']:RemoveZone(k) end		
+	for k in pairs(Targets) do exports['qb-target']:RemoveZone(k) end
 	for k in pairs(Peds) do DeletePed(Peds[k]) end
 	for i = 1, #Props do DeleteObject(Props[i]) end
 	for i = 1, #Blip do RemoveBlip(Blip[i]) end
@@ -58,12 +58,12 @@ function makeJob()
 		--Quickly add outside lighting
 		makeProp({coords = vector4(-593.29, 2093.22, 131.7, 110.0), prop = `prop_worklight_02a`}, "WorkLight 1") -- Mineshaft door
 		makeProp({coords = vector4(-604.55, 2089.74, 131.15, 300.0), prop = `prop_worklight_02a`}, "WorkLight 2") -- Mineshaft door 2
-		makeProp({coords = vector4(2991.59, 2758.07, 42.68, 250.85), prop = `prop_worklight_02a`}, "WorkLight 3") -- Quarry Light 
-		makeProp({coords = vector4(2991.11, 2758.02, 42.66, 194.6), prop = `prop_worklight_02a`}, "WorkLight 4") -- Quarry Light 
-		makeProp({coords = vector4(2971.78, 2743.33, 43.29, 258.54), prop = `prop_worklight_02a`}, "WorkLight 5") -- Quarry Light 
-		makeProp({coords = vector4(3000.72, 2777.08, 43.08, 211.7), prop = `prop_worklight_02a`}, "WorkLight 6") -- Quarry Light 
-		makeProp({coords = vector4(2998.0, 2767.45, 42.71, 249.22), prop = `prop_worklight_02a`}, "WorkLight 7") -- Quarry Light 
-		makeProp({coords = vector4(2959.93, 2755.26, 43.71, 164.24), prop = `prop_worklight_02a`}, "WorkLight 8") -- Quarry Light 
+		makeProp({coords = vector4(2991.59, 2758.07, 42.68, 250.85), prop = `prop_worklight_02a`}, "WorkLight 3") -- Quarry Light
+		makeProp({coords = vector4(2991.11, 2758.02, 42.66, 194.6), prop = `prop_worklight_02a`}, "WorkLight 4") -- Quarry Light
+		makeProp({coords = vector4(2971.78, 2743.33, 43.29, 258.54), prop = `prop_worklight_02a`}, "WorkLight 5") -- Quarry Light
+		makeProp({coords = vector4(3000.72, 2777.08, 43.08, 211.7), prop = `prop_worklight_02a`}, "WorkLight 6") -- Quarry Light
+		makeProp({coords = vector4(2998.0, 2767.45, 42.71, 249.22), prop = `prop_worklight_02a`}, "WorkLight 7") -- Quarry Light
+		makeProp({coords = vector4(2959.93, 2755.26, 43.71, 164.24), prop = `prop_worklight_02a`}, "WorkLight 8") -- Quarry Light
 		makeProp({coords = vector4(1106.46, -1991.44, 31.49, 185.78), prop = `prop_worklight_02a`}, "WorkLight 9") -- Foundary Light
 		if Config.HangingLights then
 			for k, v in pairs(Config.MineLights) do
@@ -76,12 +76,12 @@ function makeJob()
 			end
 		end
 	end
-	
+
 	for k, v in pairs(Config.Locations["MineStore"]) do
 		local name = "Mine"..k
 		Targets[name] =
-		exports['qb-target']:AddCircleZone(name, vector3(v.coords.x, v.coords.y, v.coords.z), 1.0, { name=name, debugPoly=Config.Debug, useZ=true, }, 
-		{ options = { { event = "jim-mining:openShop", icon = "fas fa-store", label = Loc[Config.Lan].info["browse_store"], job = Config.Job }, }, 
+		exports['qb-target']:AddCircleZone(name, vector3(v.coords.x, v.coords.y, v.coords.z), 1.0, { name=name, debugPoly=Config.Debug, useZ=true, },
+		{ options = { { event = "jim-mining:openShop", icon = "fas fa-store", label = Loc[Config.Lan].info["browse_store"], job = Config.Job }, },
 			distance = 2.0 })
 		if Config.Blips and v.blipTrue then makeBlip(v) end
 		if Config.pedSpawn then makePed(v, "MineStore") end
@@ -90,7 +90,7 @@ function makeJob()
 	for k, v in pairs(Config.Locations["Smelter"]) do
 		local name = "Smelter"..k
 		Targets[name] =
-		exports['qb-target']:AddCircleZone(name, vector3(v.coords.x, v.coords.y, v.coords.z), 3.0, { name=name, debugPoly=Config.Debug, useZ=true, }, 
+		exports['qb-target']:AddCircleZone(name, vector3(v.coords.x, v.coords.y, v.coords.z), 3.0, { name=name, debugPoly=Config.Debug, useZ=true, },
 		{ options = { { event = "jim-mining:CraftMenu", icon = "fas fa-fire-burner", label = Loc[Config.Lan].info["use_smelter"], craftable = Crafting.SmeltMenu, job = Config.Job }, },
 			distance = 10.0
 		})
@@ -99,20 +99,20 @@ function makeJob()
 	--Ore Buying Ped
 	for k, v in pairs(Config.Locations["OreBuyer"]) do
 		local name = "OreBuyer"..k
-		Targets[name] = 
-			exports['qb-target']:AddCircleZone(name, vector3(v.coords.x, v.coords.y, v.coords.z), 0.9, { name=name, debugPoly=Config.Debug, useZ=true, }, 
+		Targets[name] =
+			exports['qb-target']:AddCircleZone(name, vector3(v.coords.x, v.coords.y, v.coords.z), 0.9, { name=name, debugPoly=Config.Debug, useZ=true, },
 			{ options = { { event = "jim-mining:SellOre", icon = "fas fa-sack-dollar", label = Loc[Config.Lan].info["sell_ores"], job = Config.Job }, },
 				distance = 2.0
 			})
 		if Config.pedSpawn then	makePed(v, name) end
 		if Config.Blips and v.blipTrue then makeBlip(v) end
 	end
-	
+
 	--Jewel Cutting Bench
 	for k, v in pairs(Config.Locations["JewelCut"]) do
 		local name = "JewelCut"..k
 		Targets[name] =
-		exports['qb-target']:AddCircleZone(name, vector3(v.coords.x, v.coords.y, v.coords.z), 2.0,{ name=name, debugPoly=Config.Debug, useZ=true, }, 
+		exports['qb-target']:AddCircleZone(name, vector3(v.coords.x, v.coords.y, v.coords.z), 2.0,{ name=name, debugPoly=Config.Debug, useZ=true, },
 		{ options = { { event = "jim-mining:JewelCut", icon = "fas fa-gem", label = Loc[Config.Lan].info["jewelcut"], job = Config.Job }, },
 			distance = 2.0
 		})
@@ -123,7 +123,7 @@ function makeJob()
 	for k, v in pairs(Config.Locations["Cracking"]) do
 		local name = "Cracking"..k
 		Targets[name] =
-			exports['qb-target']:AddCircleZone(name, vector3(v.coords.x, v.coords.y, v.coords.z), 1.2, {name=name, debugPoly=Config.Debug, useZ=true, }, 
+			exports['qb-target']:AddCircleZone(name, vector3(v.coords.x, v.coords.y, v.coords.z), 1.2, {name=name, debugPoly=Config.Debug, useZ=true, },
 			{ options = { { event = "jim-mining:CrackStart", icon = "fas fa-compact-disc", item = "stone", label = Loc[Config.Lan].info["crackingbench"], coords = v.coords }, },
 				distance = 2.0
 			})
@@ -134,17 +134,17 @@ function makeJob()
 	for k, v in pairs(Config.Locations["Washing"]) do
 		local name = "Washing"..k
 		Targets[name] =
-			exports['qb-target']:AddCircleZone(name, vector3(v.coords.x, v.coords.y, v.coords.z), 9.0, {name=name, debugPoly=Config.Debug, useZ=true, }, 
+			exports['qb-target']:AddCircleZone(name, vector3(v.coords.x, v.coords.y, v.coords.z), 9.0, {name=name, debugPoly=Config.Debug, useZ=true, },
 			{ options = { { event = "jim-mining:WashStart", icon = "fas fa-hands-bubbles", item = "stone", label = Loc[Config.Lan].info["washstone"], coords = v.coords }, },
 				distance = 2.0
 			})
 		if Config.Blips and v.blipTrue then makeBlip(v) end
-	end	
+	end
 	--Panning
 	for k, v in pairs(Config.Locations["Panning"]) do
 		local name = "Panning"..k
 		Targets[name] =
-			exports['qb-target']:AddCircleZone(name, vector3(v.coords.x, v.coords.y, v.coords.z), 9.0, {name=name, debugPoly=Config.Debug, useZ=true, }, 
+			exports['qb-target']:AddCircleZone(name, vector3(v.coords.x, v.coords.y, v.coords.z), 9.0, {name=name, debugPoly=Config.Debug, useZ=true, },
 			{ options = { { event = "jim-mining:PanStart", icon = "fas fa-ring", item = "goldpan", label = Loc[Config.Lan].info["goldpan"], coords = v.coords }, },
 				distance = 2.0
 			})
@@ -153,8 +153,8 @@ function makeJob()
 	--Jewel Buyer
 	for k, v in pairs(Config.Locations["JewelBuyer"]) do
 		local name = "JewelBuyer"..k
-		Targets[name] = 
-			exports['qb-target']:AddCircleZone(name, vector3(v.coords.x, v.coords.y, v.coords.z), 1.2, { name=name, debugPoly=Config.Debug, useZ=true, }, 
+		Targets[name] =
+			exports['qb-target']:AddCircleZone(name, vector3(v.coords.x, v.coords.y, v.coords.z), 1.2, { name=name, debugPoly=Config.Debug, useZ=true, },
 			{ options = { { event = "jim-mining:JewelSell", icon = "fas fa-gem", label = Loc[Config.Lan].info["jewelbuyer"], job = Config.Job }, },
 				distance = 2.0
 			})
@@ -164,8 +164,8 @@ function makeJob()
 	for k,v in pairs(Config.OrePositions) do
 		local name = "Ore"..k
 		Targets[name] =
-		exports['qb-target']:AddCircleZone(name, vector3(v.coords.x, v.coords.y, v.coords.z-1.03), 1.2, { name=name, debugPoly=Config.Debug, useZ=true, }, 
-		{ options = { 
+		exports['qb-target']:AddCircleZone(name, vector3(v.coords.x, v.coords.y, v.coords.z-1.03), 1.2, { name=name, debugPoly=Config.Debug, useZ=true, },
+		{ options = {
 			{ event = "jim-mining:MineOre:Pick", icon = "fas fa-hammer", item = "pickaxe", label = Loc[Config.Lan].info["mine_ore"].." ("..QBCore.Shared.Items["pickaxe"].label..")", job = Config.Job, name = name , coords = v.coords },
 			{ event = "jim-mining:MineOre:Drill", icon = "fas fa-screwdriver", item = "miningdrill", label = Loc[Config.Lan].info["mine_ore"].." ("..QBCore.Shared.Items["miningdrill"].label..")", job = Config.Job, name = name , coords = v.coords },
 			{ event = "jim-mining:MineOre:Laser", icon = "fas fa-screwdriver-wrench", item = "mininglaser", label = Loc[Config.Lan].info["mine_ore"].." ("..QBCore.Shared.Items["mininglaser"].label..")", job = Config.Job, name = name , coords = v.coords },
@@ -191,7 +191,7 @@ AddEventHandler('onResourceStart', function(resource) if GetCurrentResourceName(
 end)
 
 --------------------------------------------------------
-RegisterNetEvent('jim-mining:openShop', function() 
+RegisterNetEvent('jim-mining:openShop', function()
 	if Config.JimShops then event = "jim-shops:ShopOpen" else event = "inventory:server:OpenInventory" end
 	TriggerServerEvent(event, "shop", "mine", Config.Items)
 end)
@@ -210,7 +210,7 @@ function unloadPtfxDict(dict) if Config.Debug then print("Debug: Removing Ptfx D
 function unloadAnimDict(dict) if Config.Debug then print("Debug: Removing Anim Dictionary: '"..dict.."'") end RemoveAnimDict(dict) end
 
 local soundId = GetSoundId()
-function loadDrillSound() 
+function loadDrillSound()
 	if Config.Debug then print("Debug: Loading Drill Sound Banks") end
 	RequestAmbientAudioBank("DLC_HEIST_FLEECA_SOUNDSET", 0)
 	RequestAmbientAudioBank("DLC_MPHEIST\\HEIST_FLEECA_DRILL", 0)
@@ -249,9 +249,9 @@ function stoneBreak(name, rockcoords)
 	Wait(Config.Timings["OreRespawn"])
 	--Unhide Stone and create a new target location
 	RemoveModelHide(rockcoords, 2.0, `cs_x_rubweec`, false)
-	Targets[name] = 
-	exports['qb-target']:AddCircleZone(name, vector3(rockcoords.x, rockcoords.y, rockcoords.z), 1.2, { name=name, debugPoly=Config.Debug, useZ=true, }, 
-	{ options = { 
+	Targets[name] =
+	exports['qb-target']:AddCircleZone(name, vector3(rockcoords.x, rockcoords.y, rockcoords.z), 1.2, { name=name, debugPoly=Config.Debug, useZ=true, },
+	{ options = {
 		{ event = "jim-mining:MineOre:Pick", icon = "fas fa-hammer", item = "pickaxe", label = Loc[Config.Lan].info["mine_ore"].." ("..QBCore.Shared.Items["pickaxe"].label..")", job = Config.Job, name = name , coords = rockcoords },
 		{ event = "jim-mining:MineOre:Drill", icon = "fas fa-screwdriver", item = "miningdrill", label = Loc[Config.Lan].info["mine_ore"].." ("..QBCore.Shared.Items["miningdrill"].label..")", job = Config.Job, name = name , coords = rockcoords },
 		{ event = "jim-mining:MineOre:Laser", icon = "fas fa-screwdriver-wrench", item = "mininglaser", label = Loc[Config.Lan].info["mine_ore"].." ("..QBCore.Shared.Items["mininglaser"].label..")", job = Config.Job, name = name , coords = rockcoords },
@@ -284,7 +284,7 @@ RegisterNetEvent('jim-mining:MineOre:Drill', function(data)
 		CreateThread(function() -- Dust/Debris Animation
 			loadPtfxDict("core")
 			while IsDrilling do
-				UseParticleFxAssetNextCall("core") 
+				UseParticleFxAssetNextCall("core")
 				local dust = StartNetworkedParticleFxNonLoopedAtCoord("ent_dst_rocks", rockcoords.x, rockcoords.y, rockcoords.z, 0.0, 0.0, GetEntityHeading(PlayerPedId())-180.0, 1.0, 0.0, 0.0, 0.0)
 				Wait(600)
 			end
@@ -361,7 +361,7 @@ RegisterNetEvent('jim-mining:MineOre:Pick', function(data)
 			PlaySoundFromEntity(breakId, "Drill_Pin_Break", PlayerPedId(), "DLC_HEIST_FLEECA_SOUNDSET", 1, 0)
 			TriggerServerEvent("QBCore:Server:RemoveItem", "pickaxe", 1)
 			TriggerEvent('inventory:client:ItemBox', QBCore.Shared.Items['pickaxe'], 'remove', 1)
-		end		
+		end
 		unloadDrillSound()
 		IsDrilling = false
 		isMining = false
@@ -369,7 +369,7 @@ RegisterNetEvent('jim-mining:MineOre:Pick', function(data)
 	end, function() -- Cancel
 		StopAnimTask(PlayerPedId(), tostring(dict), tostring(anim), 1.0)
 		destroyProp(PickAxe)
-		unloadPtfxDict("core")	
+		unloadPtfxDict("core")
 		unloadAnimDict(dict)
 		unloadDrillSound()
 		IsDrilling = false
@@ -414,7 +414,7 @@ RegisterNetEvent('jim-mining:MineOre:Laser', function(data)
 	QBCore.Functions.Progressbar("open_locker_drill", Loc[Config.Lan].info["drilling_ore"], (Config.Timings["Laser"]), false, true, {
 		disableMovement = true,	disableCarMovement = true, disableMouse = false, disableCombat = true, }, {}, {}, {}, function() -- Done
 		IsDrilling = false
-		isMining = false		
+		isMining = false
 		StopAnimTask(PlayerPedId(), tostring(dict), tostring(anim), 1.0)
 		ReleaseAmbientAudioBank("DLC_HEIST_BIOLAB_DELIVER_EMP_SOUNDS")
 		ReleaseAmbientAudioBank("dlc_xm_silo_laser_hack_sounds")
@@ -460,10 +460,11 @@ RegisterNetEvent('jim-mining:CrackStart', function(data)
 		end
 		--Calculate if you're facing the bench--
 		if not IsPedHeadingTowardsPosition(PlayerPedId(), benchcoords, 20.0) then
-			TaskTurnPedToFaceCoord(PlayerPedId(), benchcoords, 1500) Wait(1500) 
+			TaskTurnPedToFaceCoord(PlayerPedId(), benchcoords, 1500) Wait(1500)
 		end
 		if #(benchcoords - GetEntityCoords(PlayerPedId())) > 1.5 then TaskGoStraightToCoord(PlayerPedId(), benchcoords, 0.5, 400, 0.0, 0) Wait(400) end
-		makeProp({coords = vector4(benchcoords.x, benchcoords.y, benchcoords.z, data.coords[4]+90.0), prop = `prop_rock_5_smash1`}, "tempRock") -- Spawn Stone
+
+		local Rock = CreateObject(`prop_rock_5_smash1`, vector3(benchcoords.x, benchcoords.y, benchcoords.z-1.03), true, true, true)
 		PlaySoundFromCoord(soundId, "Drill", benchcoords, "DLC_HEIST_FLEECA_SOUNDSET", 0, 4.5, 0)
 		loadPtfxDict("core")
 		CreateThread(function()
@@ -481,7 +482,7 @@ RegisterNetEvent('jim-mining:CrackStart', function(data)
 			unloadDrillSound()
 			unloadPtfxDict("core")
 			unloadAnimDict(dict)
-			destroyProp(Props[#Props])
+			destroyProp(Rock)
 			TriggerServerEvent('jim-mining:CrackReward')
 			LocalPlayer.state:set("inv_busy", false, true)
 			isDrilling = false
@@ -491,12 +492,12 @@ RegisterNetEvent('jim-mining:CrackStart', function(data)
 			unloadDrillSound()
 			unloadPtfxDict("core")
 			unloadAnimDict(dict)
-			destroyProp(Props[#Props])
+			destroyProp(Rock)
 			LocalPlayer.state:set("inv_busy", false, true)
 			isDrilling = false
 			Cracking = false
 		end, "stone")
-	else 
+	else
 		TriggerEvent('QBCore:Notify', Loc[Config.Lan].error["no_stone"], 'error')
 	end
 end)
@@ -521,7 +522,7 @@ RegisterNetEvent('jim-mining:WashStart', function(data)
 				UseParticleFxAssetNextCall("core")
 				water = StartNetworkedParticleFxLoopedOnEntity("water_splash_veh_out", PlayerPedId(), 0.0, 1.0, -0.2, 0.0, 0.0, 0.0, 2.0, 0, 0, 0)
 				Wait(500)
-			end		
+			end
 		end)
 		LocalPlayer.state:set("inv_busy", true, true)
 		QBCore.Functions.Progressbar("open_locker_drill", Loc[Config.Lan].info["washing_stone"], Config.Timings["Washing"], false, true, {
@@ -541,9 +542,9 @@ RegisterNetEvent('jim-mining:WashStart', function(data)
 			isWashing = false
 			Washing = false
 		end, "stone")
-	else 
+	else
 		TriggerEvent('QBCore:Notify', Loc[Config.Lan].error["no_stone"], 'error')
-	end	
+	end
 end)
 ------------------------------------------------------------
 -- Gold Panning Command / Animations
@@ -562,7 +563,7 @@ RegisterNetEvent('jim-mining:PanStart', function(data)
 				UseParticleFxAssetNextCall("core")
 				water = StartNetworkedParticleFxLoopedOnEntity("water_splash_veh_out", Props[#Props], 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 3.0, 0, 0, 0)
 				Wait(100)
-			end		
+			end
 		end)
 		--Start Anim
 		TaskStartScenarioInPlace(PlayerPedId(), "CODE_HUMAN_MEDIC_KNEEL", 0, true)
@@ -578,7 +579,7 @@ RegisterNetEvent('jim-mining:PanStart', function(data)
 			isPanning = false
 			Panning = false
 		end, function() -- Cance
-			ClearPedTasksImmediately(PlayerPedId())					
+			ClearPedTasksImmediately(PlayerPedId())
 			TaskGoStraightToCoord(PlayerPedId(), trayCoords, 4.0, 100, GetEntityHeading(PlayerPedId()), 0)
 			destroyProp(Props[#Props])
 			unloadPtfxDict("core")
@@ -590,7 +591,7 @@ RegisterNetEvent('jim-mining:PanStart', function(data)
 end)
 
 RegisterNetEvent('jim-mining:MakeItem', function(data)
-	if data.ret then 
+	if data.ret then
 		local p = promise.new() QBCore.Functions.TriggerCallback("QBCore:HasItem", function(cb) p:resolve(cb) end, "drillbit")
 		if Citizen.Await(p) == false then TriggerEvent('QBCore:Notify', Loc[Config.Lan].error["no_drillbit"], 'error')	TriggerEvent('jim-mining:JewelCut') return end
 	end
@@ -598,10 +599,10 @@ RegisterNetEvent('jim-mining:MakeItem', function(data)
 		if data.item == k then
 			Wait(0) local p = promise.new()
 			QBCore.Functions.TriggerCallback('jim-mining:Check', function(cb) p:resolve(cb) end, data.item, data.craftable[data.tablenumber])
-			if not Citizen.Await(p) then 
+			if not Citizen.Await(p) then
 				TriggerEvent('QBCore:Notify', Loc[Config.Lan].error["no_ingredients"], 'error')
 				TriggerEvent('jim-mining:CraftMenu', data)
-			else itemProgress(data) end		
+			else itemProgress(data) end
 		end
 	end
 end)
@@ -642,8 +643,8 @@ function itemProgress(data)
 		animDictNow = "amb@prop_human_parking_meter@male@idle_a"
 		animNow = "idle_a"
 	end
-	QBCore.Functions.Progressbar('making_food', bartext, Config.Timings["Crafting"], false, true, { disableMovement = true, disableCarMovement = true, disableMouse = false, disableCombat = true, }, 
-	{ animDict = animDictNow, anim = animNow, flags = 8, }, {}, {}, function()  
+	QBCore.Functions.Progressbar('making_food', bartext, Config.Timings["Crafting"], false, true, { disableMovement = true, disableCarMovement = true, disableMouse = false, disableCombat = true, },
+	{ animDict = animDictNow, anim = animNow, flags = 8, }, {}, {}, function()
 		TriggerServerEvent('jim-mining:GetItem', data)
 		if data.ret then
 			if math.random(1,10) >= 8 then
@@ -680,14 +681,14 @@ RegisterNetEvent('jim-mining:SellAnim', function(data)
       	if #(GetEntityCoords(PlayerPedId()) - GetEntityCoords(v)) < 2 then
 			ppRot = GetEntityRotation(v)
 			loadAnimDict("mp_common")
-			--Calculate if you're facing the stone--	
-			if not IsPedHeadingTowardsPosition(PlayerPedId(), GetEntityCoords(v), 20.0) then TaskTurnPedToFaceCoord(PlayerPedId(), GetEntityCoords(v), 1500) Wait(1500) end					
+			--Calculate if you're facing the stone--
+			if not IsPedHeadingTowardsPosition(PlayerPedId(), GetEntityCoords(v), 20.0) then TaskTurnPedToFaceCoord(PlayerPedId(), GetEntityCoords(v), 1500) Wait(1500) end
 			TaskPlayAnim(PlayerPedId(), "mp_common", "givetake2_a", 100.0, 200.0, 0.3, 120, 0.2, 0, 0, 0)	--Start animations
             TaskPlayAnim(v, "mp_common", "givetake2_b", 100.0, 200.0, 0.3, 120, 0.2, 0, 0, 0)
             Wait(2000)
             StopAnimTask(PlayerPedId(), "mp_common", "givetake2_a", 1.0)
             StopAnimTask(v, "mp_common", "givetake2_b", 1.0)
-			SetEntityRotation(v, 0, 0, ppRot.z ,0, 0, false) --Reset ped rotation	
+			SetEntityRotation(v, 0, 0, ppRot.z ,0, 0, false) --Reset ped rotation
 			unloadAnimDict("mp_common")
 		end
 	end
@@ -714,7 +715,7 @@ end)
 --Jewel Selling Main Menu
 RegisterNetEvent('jim-mining:JewelSell', function()
     exports['qb-menu']:openMenu({
-		{ header = Loc[Config.Lan].info["jewel_buyer"], txt = Loc[Config.Lan].info["sell_jewel"], isMenuHeader = true }, 
+		{ header = Loc[Config.Lan].info["jewel_buyer"], txt = Loc[Config.Lan].info["sell_jewel"], isMenuHeader = true },
 		{ icon = "fas fa-circle-xmark", header = "", txt = Loc[Config.Lan].info["close"], params = { event = "jim-mining:CraftMenu:Close" } },
 		{ header = QBCore.Shared.Items["emerald"].label, txt = Loc[Config.Lan].info["see_options"], params = { event = "jim-mining:JewelSell:Sub", args = { sub = "emerald" } } },
 		{ header = QBCore.Shared.Items["ruby"].label, txt = Loc[Config.Lan].info["see_options"], params = { event = "jim-mining:JewelSell:Sub", args = { sub = "ruby" } } },
@@ -761,12 +762,12 @@ end)
 
 RegisterNetEvent('jim-mining:CraftMenu', function(data)
 	local CraftMenu = {}
-	if data.ret then 
+	if data.ret then
 		CraftMenu[#CraftMenu + 1] = { header = Loc[Config.Lan].info["craft_bench"], txt = Loc[Config.Lan].info["req_drill_bit"], isMenuHeader = true }
 		CraftMenu[#CraftMenu + 1] = { icon = "fas fa-circle-arrow-left", header = "", txt = Loc[Config.Lan].info["return"], params = { event = "jim-mining:JewelCut" } }
-	else 
+	else
 		CraftMenu[#CraftMenu + 1] = { header = Loc[Config.Lan].info["smelter"], txt = Loc[Config.Lan].info["smelt_ores"], isMenuHeader = true }
-		CraftMenu[#CraftMenu + 1] = { icon = "fas fa-circle-xmark", header = "", txt = Loc[Config.Lan].info["close"], params = { event = "jim-mining:CraftMenu:Close" } } 
+		CraftMenu[#CraftMenu + 1] = { icon = "fas fa-circle-xmark", header = "", txt = Loc[Config.Lan].info["close"], params = { event = "jim-mining:CraftMenu:Close" } }
 	end
 		for i = 1, #data.craftable do
 			for k in pairs(data.craftable[i]) do
