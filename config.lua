@@ -294,10 +294,10 @@ Crafting = {
 	SmeltMenu = {
 		[1] = { ["copper"] = { ["copperore"] = 1 }, ['amount'] = 4 },
 		[2] = { ["goldingot"] = { ["goldore"] = 1 } },
-		[3] = { ["goldingot"] = { ["goldchain"] = 2 } },
+		[3] = { ["goldingot"] = { ["goldchain"] = 3 } },
 		[4] = { ["goldingot"] = { ["gold_ring"] = 4 } },
 		[5] = { ["silveringot"] = { ["silverore"] = 1 } },
-		[6] = { ["silveringot"] = { ["silverchain"] = 2 } },
+		[6] = { ["silveringot"] = { ["silverchain"] = 3 } },
 		[7] = { ["silveringot"] = { ["silver_ring"] = 4 } },
 		[8] = { ["iron"] = { ["ironore"] = 1 } },
 		[9] = { ["steel"] = { ["ironore"] = 1, ["carbon"] = 1 } },
