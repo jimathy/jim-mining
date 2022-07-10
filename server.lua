@@ -33,6 +33,14 @@ QBCore.Functions.CreateCallback('jim-mining:Check', function(source, cb, item, c
 	if hasitem then cb(true) else cb(false) end
 end)
 
+QBCore.Functions.CreateCallback('jim-mining:ItemCheck', function(source, cb, item, cost)
+	local src = source
+	local Player = QBCore.Functions.GetPlayer(src)
+	local hasitem = false
+	if Player.Functions.GetItemByName(item) then if Player.Functions.GetItemByName(item).amount >= cost then hasitem = true end end
+	cb(hasitem)
+end)
+
 ---Crafting
 RegisterServerEvent('jim-mining:GetItem', function(data)
 	print(json.encode(data.craftable[data.tablenumber]))
@@ -61,10 +69,10 @@ end)
 
 --Stone Cracking Checking Triggers
 --Command here to check if any stone is in inventory
-RegisterServerEvent('jim-mining:CrackReward', function()
+RegisterServerEvent('jim-mining:CrackReward', function(cost)
 	local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    Player.Functions.RemoveItem('stone', 1)
+    Player.Functions.RemoveItem('stone', cost)
     TriggerClientEvent("inventory:client:ItemBox", src, QBCore.Shared.Items["stone"], "remove", 1)
 	for i = 1, math.random(1,3) do
 		local randItem = Config.CrackPool[math.random(1, #Config.CrackPool)]
@@ -76,10 +84,10 @@ end)
 
 --Stone Cracking Checking Triggers
 --Command here to check if any stone is in inventory
-RegisterServerEvent('jim-mining:WashReward', function()
+RegisterServerEvent('jim-mining:WashReward', function(cost)
 	local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    Player.Functions.RemoveItem('stone', 1)
+    Player.Functions.RemoveItem('stone', cost)
     TriggerClientEvent("inventory:client:ItemBox", src, QBCore.Shared.Items["stone"], "remove", 1)
 	for i = 1, math.random(1,2) do
 		local randItem = Config.WashPool[math.random(1, #Config.WashPool)]
