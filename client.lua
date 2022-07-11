@@ -8,29 +8,30 @@ local Blip = {}
 
 ------------------------------------------------------------
 --Loading/Unloading Asset Functions
-function loadModel(model) if Config.Debug then print("Debug: Loading Model: '"..model.."'") end RequestModel(model) while not HasModelLoaded(model) do Wait(0) end end
-function unloadModel(model) if Config.Debug then print("Debug: Removing Model: '"..model.."'") end SetModelAsNoLongerNeeded(model) end
-function loadAnimDict(dict)	if Config.Debug then print("Debug: Loading Anim Dictionary: '"..dict.."'") end while not HasAnimDictLoaded(dict) do RequestAnimDict(dict) Wait(5) end end
-function unloadAnimDict(dict) if Config.Debug then print("Debug: Removing Anim Dictionary: '"..dict.."'") end RemoveAnimDict(dict) end
-function loadPtfxDict(dict)	if Config.Debug then print("Debug: Loading Ptfx Dictionary: '"..dict.."'") end while not HasNamedPtfxAssetLoaded(dict) do RequestNamedPtfxAsset(dict) Wait(5) end end
-function unloadPtfxDict(dict) if Config.Debug then print("Debug: Removing Ptfx Dictionary: '"..dict.."'") end RemoveNamedPtfxAsset(dict) end
+function loadModel(model) if not HasModelLoaded(model) then if Config.Debug then print("^5Debug^7: ^2Loading Model^7: '^6"..model.."^7'") end RequestModel(model) while not HasModelLoaded(model) do Wait(0) end end end
+function unloadModel(model) if Config.Debug then print("^5Debug^7: ^2Removing Model^7: '^6"..model.."^7'") end SetModelAsNoLongerNeeded(model) end
+function loadAnimDict(dict)	if Config.Debug then print("^5Debug^7: ^2Loading Anim Dictionary^7: '^6"..dict.."^7'") end while not HasAnimDictLoaded(dict) do RequestAnimDict(dict) Wait(5) end end
+function unloadAnimDict(dict) if Config.Debug then print("^5Debug^7: ^2Removing Anim Dictionary^7: '^6"..dict.."^7'") end RemoveAnimDict(dict) end
+function loadPtfxDict(dict)	if Config.Debug then print("^5Debug^7: ^2Loading Ptfx Dictionary^7: '^6"..dict.."^7'") end while not HasNamedPtfxAssetLoaded(dict) do RequestNamedPtfxAsset(dict) Wait(5) end end
+function unloadPtfxDict(dict) if Config.Debug then print("^5Debug^7: ^2Removing Ptfx Dictionary^7: '^6"..dict.."^7'") end RemoveNamedPtfxAsset(dict) end
 
 local soundId = GetSoundId()
 function loadDrillSound()
-	if Config.Debug then print("Debug: Loading Drill Sound Banks") end
+	if Config.Debug then print("^5Debug^7: ^2Loading Drill Sound Banks") end
 	RequestAmbientAudioBank("DLC_HEIST_FLEECA_SOUNDSET", 0)
 	RequestAmbientAudioBank("DLC_MPHEIST\\HEIST_FLEECA_DRILL", 0)
 	RequestAmbientAudioBank("DLC_MPHEIST\\HEIST_FLEECA_DRILL_2", 0)
 end
+
 function unloadDrillSound()
-	if Config.Debug then print("Debug: Removing Drill Sound Banks") end
+	if Config.Debug then print("^5Debug^7: ^2Removing Drill Sound Banks") end
 	ReleaseAmbientAudioBank("DLC_HEIST_FLEECA_SOUNDSET")
 	ReleaseAmbientAudioBank("DLC_MPHEIST\\HEIST_FLEECA_DRILL")
 	ReleaseAmbientAudioBank("DLC_MPHEIST\\HEIST_FLEECA_DRILL_2")
 	StopSound(soundId)
 end
 function destroyProp(entity)
-	if Config.Debug then print("Debug: Destroying Prop: '"..entity.."'") end
+	if Config.Debug then print("^5Debug^7: ^2Destroying Prop^7: '^6"..entity.."^7'") end
 	SetEntityAsMissionEntity(entity) Wait(5)
 	DetachEntity(entity, true, true) Wait(5)
 	DeleteObject(entity)
@@ -44,7 +45,7 @@ function makePed(data, name)
 	SetBlockingOfNonTemporaryEvents(Peds[#Peds], true)
 	FreezeEntityPosition(Peds[#Peds], true)
 	TaskStartScenarioInPlace(Peds[#Peds], data.scenario, 0, true)
-	if Config.Debug then print("Ped Created for location: '"..name.."'") end
+	if Config.Debug then print("^5Debug^7: ^6Ped ^2Created for location^7: '^6"..name.."^7'") end
 end
 
 function makeBlip(data)
@@ -58,7 +59,7 @@ function makeBlip(data)
 	if Config.BlipNamer then AddTextComponentString(data.name)
 	else AddTextComponentString(tostring(data.name)) end
 	EndTextCommandSetBlipName(Blip[#Blip])
-	if Config.Debug then print("Blip created for location: '"..data.name.."'") end
+	if Config.Debug then print("^5Debug^7: ^6Blip ^2created for location^7: '^6"..data.name.."^7'") end
 end
 
 function makeProp(data, name)
@@ -66,7 +67,7 @@ function makeProp(data, name)
 	Props[#Props+1] = CreateObject(data.prop, vector3(data.coords.x, data.coords.y, data.coords.z-1.03), false, false, false)
 	SetEntityHeading(Props[#Props], data.coords[4]-180.0)
 	FreezeEntityPosition(Props[#Props], true)
-	if Config.Debug then print("Prop Created for location: '"..name.."'") end
+	if Config.Debug then print("^5Debug^7: ^6Prop ^2Created for location^7: '^6"..name.."^7'") end
 end
 
 --Hide the mineshaft doors
@@ -83,6 +84,7 @@ function removeJob()
 end
 
 function makeJob()
+	removeJob()
 	if Config.propSpawn then
 		--Quickly add outside lighting
 		makeProp({coords = vector4(-593.29, 2093.22, 131.7, 110.0), prop = `prop_worklight_02a`}, "WorkLight 1") -- Mineshaft door
@@ -212,7 +214,7 @@ RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
 end)
 RegisterNetEvent('QBCore:Client:OnJobUpdate', function(JobInfo)
 	PlayerJob = JobInfo
-	if Config.Job then if PlayerJob.name == Config.Job then makeJob() else removeJob() end else makeJob() end
+	if Config.Job then if PlayerJob.name == Config.Job then makeJob() else removeJob() end end
 end)
 AddEventHandler('onResourceStart', function(resource) if GetCurrentResourceName() ~= resource then return end
 	QBCore.Functions.GetPlayerData(function(PlayerData) PlayerJob = PlayerData.job end)
@@ -235,7 +237,7 @@ function getNearestRockCoords()
 	return coords
 end
 function stoneBreak(name, rockcoords)
-	if Config.Debug then print("Debug: Hiding prop and target: '"..name.."' at coords: "..json.encode(rockcoords)) end
+	if Config.Debug then print("^5Debug^7: ^2Hiding prop and target^7: '^6"..name.."^7' ^2at coords^7: ^6"..json.encode(rockcoords)) end
 	--Stone CoolDown + Recreation
 	CreateModelHide(rockcoords, 2.0, `cs_x_rubweec`, true)
 	exports['qb-target']:RemoveZone(name) Targets[name] = nil
@@ -436,17 +438,17 @@ end)
 -- Cracking Command / Animations
 local Cracking = false
 RegisterNetEvent('jim-mining:CrackStart', function(data)
-	if Cracking then return else Cracking = true end
+	if Cracking then return end
 	local cost = 1
 	local p = promise.new()	QBCore.Functions.TriggerCallback("jim-mining:ItemCheck", function(cb) p:resolve(cb) end, "stone", cost)
 	if Citizen.Await(p) then
+		Cracking = true
 		-- Sounds & Anim Loading
 		local dict ="amb@prop_human_parking_meter@male@idle_a"
 		local anim = "idle_a"
 		loadAnimDict(dict)
 		loadDrillSound()
 		local benchcoords
-		local isDrilling = true
 		for _, v in pairs(Props) do
 			if #(GetEntityCoords(v) - GetEntityCoords(PlayerPedId())) <= 2.0 and GetEntityModel(v) == `prop_vertdrill_01` then
 				benchcoords = GetOffsetFromEntityInWorldCoords(v, 0.0, -0.2, 2.08)
@@ -462,7 +464,7 @@ RegisterNetEvent('jim-mining:CrackStart', function(data)
 		PlaySoundFromCoord(soundId, "Drill", benchcoords, "DLC_HEIST_FLEECA_SOUNDSET", 0, 4.5, 0)
 		loadPtfxDict("core")
 		CreateThread(function()
-			while isDrilling do
+			while Cracking do
 				UseParticleFxAssetNextCall("core")
 				local dust = StartNetworkedParticleFxNonLoopedAtCoord("ent_dst_rocks", benchcoords.x, benchcoords.y, benchcoords.z-0.9, 0.0, 0.0, 0.0, 0.2, 0.0, 0.0, 0.0)
 				Wait(400)
@@ -479,7 +481,6 @@ RegisterNetEvent('jim-mining:CrackStart', function(data)
 			destroyProp(Rock)
 			TriggerServerEvent('jim-mining:CrackReward', cost)
 			LocalPlayer.state:set("inv_busy", false, true)
-			isDrilling = false
 			Cracking = false
 		end, function() -- Cancel
 			StopAnimTask(PlayerPedId(), dict, anim, 1.0)
@@ -488,7 +489,6 @@ RegisterNetEvent('jim-mining:CrackStart', function(data)
 			unloadAnimDict(dict)
 			destroyProp(Rock)
 			LocalPlayer.state:set("inv_busy", false, true)
-			isDrilling = false
 			Cracking = false
 		end, "stone")
 	else
@@ -499,21 +499,21 @@ end)
 -- Washing Command / Animations
 local Washing = false
 RegisterNetEvent('jim-mining:WashStart', function(data)
-	if Washing then return else Washing = true end
+	if Washing then return end
 	local cost = 1
 	local p = promise.new()	QBCore.Functions.TriggerCallback("jim-mining:ItemCheck", function(cb) p:resolve(cb) end, "stone", cost)
 	if Citizen.Await(p) then
+		Washing = true
 		--Create Rock and Attach
 		local Rock = CreateObject(`prop_rock_5_smash1`, GetEntityCoords(PlayerPedId()), true, true, true)
 		local rockcoords = GetEntityCoords(Rock)
 		AttachEntityToEntity(Rock, PlayerPedId(), GetPedBoneIndex(PlayerPedId(), 60309), 0.1, 0.0, 0.05, 90.0, -90.0, 90.0, true, true, false, true, 1, true)
-		local isWashing = true
 		TaskStartScenarioInPlace(PlayerPedId(), "PROP_HUMAN_BUM_BIN", 0, true)
 		local water
 		CreateThread(function()
 			Wait(3000)
 			loadPtfxDict("core")
-			while isWashing do
+			while Washing do
 				UseParticleFxAssetNextCall("core")
 				water = StartNetworkedParticleFxLoopedOnEntity("water_splash_veh_out", PlayerPedId(), 0.0, 1.0, -0.2, 0.0, 0.0, 0.0, 2.0, 0, 0, 0)
 				Wait(500)
@@ -527,14 +527,12 @@ RegisterNetEvent('jim-mining:WashStart', function(data)
 			StopParticleFxLooped(water, 0)
 			destroyProp(Rock)
 			unloadPtfxDict("core")
-			isWashing = false
 			Washing = false
 		end, function() -- Cancel
 			LocalPlayer.state:set("inv_busy", false, true)
 			StopParticleFxLooped(water, 0)
 			destroyProp(Rock)
 			unloadPtfxDict("core")
-			isWashing = false
 			Washing = false
 		end, "stone")
 	else

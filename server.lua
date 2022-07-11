@@ -22,11 +22,11 @@ QBCore.Functions.CreateCallback('jim-mining:Check', function(source, cb, item, c
 		testtable[k] = false end
 	for k, v in pairs(crafttable[item]) do
 		if QBCore.Functions.GetPlayer(source).Functions.GetItemByName(k) and QBCore.Functions.GetPlayer(source).Functions.GetItemByName(k).amount >= v then
-			testtable[k] = true if Config.Debug then print(k.." (x"..v..") found") end
+			testtable[k] = true --[[if Config.Debug then print("^5Debug^7: ^2Crafting check ^7'^6"..QBCore.Shared.Items[k].label.." ^7(^2x^6"..v.."^7)' ^2found^7") end ]]
 		end
 	end
 	for k, v in pairs(testtable) do
-		if not v then hasitem = false if Config.Debug then print(QBCore.Shared.Items[k].label.." NOT found") end end
+		if not v then hasitem = false --[[if Config.Debug then print("^5Debug^7: ^2Crafting check ^7'^6"..QBCore.Shared.Items[k].label.."^7' ^1NOT ^2found^7") end]] end
 	end
 	Wait(0)
 	if hasanyitem ~= nil then hasitem = false end
@@ -43,7 +43,6 @@ end)
 
 ---Crafting
 RegisterServerEvent('jim-mining:GetItem', function(data)
-	print(json.encode(data.craftable[data.tablenumber]))
 	local src = source
     local Player = QBCore.Functions.GetPlayer(src)
 	--This grabs the table from client and removes the item requirements
@@ -51,12 +50,12 @@ RegisterServerEvent('jim-mining:GetItem', function(data)
 	for k,v in pairs(data.craftable[data.tablenumber][data.item]) do
 		TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[tostring(k)], "remove", v)
 		Player.Functions.RemoveItem(tostring(k), v)
-		if Config.Debug then print("Removing "..tostring(k)) end
+		if Config.Debug then print("^5Debug^7: ^1Removing ^2from Player^7(^2"..src.."^7) '^6"..QBCore.Shared.Items[k].label.."^7(^2x^6"..v.."^7)'") end
 	end
 	--This should give the item, while the rest removes the requirements
 	Player.Functions.AddItem(data.item, amount)
 	TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[data.item], "add", amount)
-	if Config.Debug then print("Giving Player "..tostring(data.item).." x"..amount) end
+	if Config.Debug then print("^5Debug^7: ^4Giving ^2Player^7(^2"..src.."^7) '^6"..QBCore.Shared.Items[data.item].label.."^7(^2x^6"..amount.."^7)'") end
 	TriggerClientEvent("jim-mining:CraftMenu", src, data)
 end)
 

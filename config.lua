@@ -1,4 +1,4 @@
-print("Jim-Mining v2.0 - Mining Script by Jimathy")
+print("^2Jim-Mining ^7v^52.1 ^7- ^2Mining Script by ^1Jimathy^7")
 
 Loc = {}
 
