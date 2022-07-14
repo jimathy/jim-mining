@@ -443,6 +443,7 @@ RegisterNetEvent('jim-mining:CrackStart', function(data)
 	local p = promise.new()	QBCore.Functions.TriggerCallback("jim-mining:ItemCheck", function(cb) p:resolve(cb) end, "stone", cost)
 	if Citizen.Await(p) then
 		Cracking = true
+		LocalPlayer.state:set("inv_busy", true, true)
 		-- Sounds & Anim Loading
 		local dict ="amb@prop_human_parking_meter@male@idle_a"
 		local anim = "idle_a"
@@ -471,7 +472,6 @@ RegisterNetEvent('jim-mining:CrackStart', function(data)
 			end
 		end)
 		TaskPlayAnim(PlayerPedId(), dict, anim, 3.0, 3.0, -1, 1, 0, false, false, false)
-		LocalPlayer.state:set("inv_busy", true, true)
 		QBCore.Functions.Progressbar("open_locker_drill", Loc[Config.Lan].info["cracking_stone"], Config.Timings["Cracking"], false, true, {
 			disableMovement = true,	disableCarMovement = true, disableMouse = false, disableCombat = true, }, {}, {}, {}, function() -- Done
 			StopAnimTask(PlayerPedId(), dict, anim, 1.0)
@@ -504,6 +504,7 @@ RegisterNetEvent('jim-mining:WashStart', function(data)
 	local p = promise.new()	QBCore.Functions.TriggerCallback("jim-mining:ItemCheck", function(cb) p:resolve(cb) end, "stone", cost)
 	if Citizen.Await(p) then
 		Washing = true
+		LocalPlayer.state:set("inv_busy", true, true)
 		--Create Rock and Attach
 		local Rock = CreateObject(`prop_rock_5_smash1`, GetEntityCoords(PlayerPedId()), true, true, true)
 		local rockcoords = GetEntityCoords(Rock)
@@ -519,7 +520,6 @@ RegisterNetEvent('jim-mining:WashStart', function(data)
 				Wait(500)
 			end
 		end)
-		LocalPlayer.state:set("inv_busy", true, true)
 		QBCore.Functions.Progressbar("open_locker_drill", Loc[Config.Lan].info["washing_stone"], Config.Timings["Washing"], false, true, {
 			disableMovement = true,	disableCarMovement = true, disableMouse = false, disableCombat = true, }, {}, {}, {}, function() -- Done
 			TriggerServerEvent('jim-mining:WashReward', cost)
@@ -545,14 +545,14 @@ local Panning = false
 RegisterNetEvent('jim-mining:PanStart', function(data)
 	if IsEntityInWater(PlayerPedId()) then
 		if Panning then return else Panning = true end
+		LocalPlayer.state:set("inv_busy", true, true)
 		--Create Rock and Attach
-		local isPanning = true
 		local trayCoords = GetOffsetFromEntityInWorldCoords(PlayerPedId(), 0.0, 0.5, -0.9)
-		makeProp({ coords = vector4(trayCoords.x, trayCoords.y, trayCoords.z+1.03, GetEntityHeading(PlayerPedId())), prop = `v_res_r_silvrtray`} , "tray")
+		makeProp({ coords = vector4(trayCoords.x, trayCoords.y, trayCoords.z+1.03, GetEntityHeading(PlayerPedId())), prop = `bkr_prop_meth_tray_01b`} , "tray")
 		local water
 		CreateThread(function()
 			loadPtfxDict("core")
-			while isPanning do
+			while Panning do
 				UseParticleFxAssetNextCall("core")
 				water = StartNetworkedParticleFxLoopedOnEntity("water_splash_veh_out", Props[#Props], 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 3.0, 0, 0, 0)
 				Wait(100)
@@ -560,7 +560,6 @@ RegisterNetEvent('jim-mining:PanStart', function(data)
 		end)
 		--Start Anim
 		TaskStartScenarioInPlace(PlayerPedId(), "CODE_HUMAN_MEDIC_KNEEL", 0, true)
-		LocalPlayer.state:set("inv_busy", true, true)
 		QBCore.Functions.Progressbar("open_locker_drill", Loc[Config.Lan].info["goldpanning"], Config.Timings["Panning"], false, true, {
 			disableMovement = true,	disableCarMovement = true, disableMouse = false, disableCombat = true, }, {}, {}, {}, function() -- Done
 			TriggerServerEvent('jim-mining:PanReward')
@@ -569,7 +568,6 @@ RegisterNetEvent('jim-mining:PanStart', function(data)
 			destroyProp(Props[#Props])
 			unloadPtfxDict("core")
 			LocalPlayer.state:set("inv_busy", false, true)
-			isPanning = false
 			Panning = false
 		end, function() -- Cance
 			ClearPedTasksImmediately(PlayerPedId())
@@ -577,7 +575,6 @@ RegisterNetEvent('jim-mining:PanStart', function(data)
 			destroyProp(Props[#Props])
 			unloadPtfxDict("core")
 			LocalPlayer.state:set("inv_busy", false, true)
-			isPanning = false
 			Panning = false
 		end, "goldpan")
 	end
