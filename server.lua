@@ -1,17 +1,5 @@
 local QBCore = exports['qb-core']:GetCoreObject()
-
-AddEventHandler('onResourceStart', function(resource) if GetCurrentResourceName() ~= resource then return end
-	for k, v in pairs(Config.SellItems) do if not QBCore.Shared.Items[k] then print("Selling: Missing Item from QBCore.Shared.Items: '"..k.."'") end end
-	for i = 1, #Config.CrackPool do if not QBCore.Shared.Items[Config.CrackPool[i]] then print("CrackPool: Missing Item from QBCore.Shared.Items: '"..Config.CrackPool[i].."'") end end
-	for i = 1, #Config.WashPool do if not QBCore.Shared.Items[Config.WashPool[i]] then print("WashPool: Missing Item from QBCore.Shared.Items: '"..Config.WashPool[i].."'") end end
-	for i = 1, #Config.PanPool do if not QBCore.Shared.Items[Config.PanPool[i]] then print("PanPool: Missing Item from QBCore.Shared.Items: '"..Config.PanPool[i].."'") end end
-	for i = 1, #Config.Items.items do if not QBCore.Shared.Items[Config.Items.items[i].name] then print("Shop: Missing Item from QBCore.Shared.Items: '"..Config.Items.items[i].name.."'") end end
-	local itemcheck = {}
-	for _, v in pairs(Crafting) do for _, b in pairs(v) do for k, l in pairs(b) do if k ~= "amount" then itemcheck[k] = {} for j in pairs(l) do itemcheck[j] = {} end end end end end
-	for k in pairs(itemcheck) do
-		if not QBCore.Shared.Items[k] then print("Crafting recipe couldn't find item '"..k.."' in the shared") end
-	end
-end)
+RegisterNetEvent('QBCore:Server:UpdateObject', function() if source ~= '' then return false end QBCore = exports['qb-core']:GetCoreObject() end)
 
 QBCore.Functions.CreateCallback('jim-mining:Check', function(source, cb, item, crafttable)
 	local src = source
@@ -76,8 +64,9 @@ RegisterServerEvent('jim-mining:CrackReward', function(cost)
 	for i = 1, math.random(1,3) do
 		local randItem = Config.CrackPool[math.random(1, #Config.CrackPool)]
 		amount = math.random(1, 2)
-		Player.Functions.AddItem(randItem, amount)
-		TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[randItem], 'add', amount)
+		if Player.Functions.AddItem(randItem, amount) then
+			TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[randItem], 'add', amount)
+		else print("error, no space") end
 	end
 end)
 
@@ -87,7 +76,7 @@ RegisterServerEvent('jim-mining:WashReward', function(cost)
 	local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     Player.Functions.RemoveItem('stone', cost)
-    TriggerClientEvent("inventory:client:ItemBox", src, QBCore.Shared.Items["stone"], "remove", 1)
+    TriggerClientEvent("inventory:client:ItemBox", src, QBCore.Shared.Items["stone"], "remove", cost)
 	for i = 1, math.random(1,2) do
 		local randItem = Config.WashPool[math.random(1, #Config.WashPool)]
 		amount = 1
@@ -121,4 +110,30 @@ RegisterNetEvent("jim-mining:Selling", function(data)
     else
         TriggerClientEvent("QBCore:Notify", src, Loc[Config.Lan].error["dont_have"].." "..QBCore.Shared.Items[data.item].label, "error")
     end
+end)
+
+RegisterNetEvent('jim-mining:server:toggleItem', function(give, item, amount)
+	local src = source
+	if give == 0 or give == false then
+		if QBCore.Functions.GetPlayer(src).Functions.RemoveItem(item, amount or 1) then
+			TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[item], "remove", amount or 1)
+		end
+	else
+		if QBCore.Functions.GetPlayer(src).Functions.AddItem(item, amount or 1) then
+			TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[item], "add", amount or 1)
+		end
+	end
+end)
+
+AddEventHandler('onResourceStart', function(resource) if GetCurrentResourceName() ~= resource then return end
+	for k, v in pairs(Config.SellItems) do if not QBCore.Shared.Items[k] then print("Selling: Missing Item from QBCore.Shared.Items: '"..k.."'") end end
+	for i = 1, #Config.CrackPool do if not QBCore.Shared.Items[Config.CrackPool[i]] then print("CrackPool: Missing Item from QBCore.Shared.Items: '"..Config.CrackPool[i].."'") end end
+	for i = 1, #Config.WashPool do if not QBCore.Shared.Items[Config.WashPool[i]] then print("WashPool: Missing Item from QBCore.Shared.Items: '"..Config.WashPool[i].."'") end end
+	for i = 1, #Config.PanPool do if not QBCore.Shared.Items[Config.PanPool[i]] then print("PanPool: Missing Item from QBCore.Shared.Items: '"..Config.PanPool[i].."'") end end
+	for i = 1, #Config.Items.items do if not QBCore.Shared.Items[Config.Items.items[i].name] then print("Shop: Missing Item from QBCore.Shared.Items: '"..Config.Items.items[i].name.."'") end end
+	local itemcheck = {}
+	for _, v in pairs(Crafting) do for _, b in pairs(v) do for k, l in pairs(b) do if k ~= "amount" then itemcheck[k] = {} for j in pairs(l) do itemcheck[j] = {} end end end end end
+	for k in pairs(itemcheck) do
+		if not QBCore.Shared.Items[k] then print("Crafting recipe couldn't find item '"..k.."' in the shared") end
+	end
 end)

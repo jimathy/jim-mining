@@ -1,4 +1,4 @@
-print("^2Jim-Mining ^7v^52.1 ^7- ^2Mining Script by ^1Jimathy^7")
+print("^2Jim-Mining ^7v^42^7.^42 ^7- ^2Mining Script by ^1Jimathy^7")
 
 Loc = {}
 
@@ -6,14 +6,16 @@ Config = {
 	Debug = false, -- enable debug mode
 	Blips = true, -- Enable Blips?
 	BlipNamer = false, -- Enable to Name Blips different things, disable if you already have too many blips as this will group them together
-	propSpawn = true, -- Enable Ore Props
-	pedSpawn = true, -- Do you want to spawn peds for main locations?
 	img = "qb-inventory/html/images/", --Set this to the image directory of your inventory script or "nil" if using newer qb-menu
 	CheckMarks = true, -- shows checkmarks if user has the materials to craft an item, set false if causing lag.
 	Lan = "en", -- Pick your language here
 	JimMenu = false, -- Set this to true if using update qb-menu with icons
-	JimShops = false, -- Set this to true if using jim-shops
+	JimShops = true, -- Set this to true if using jim-shops
 	Job = nil, -- set this to a job role eg "miner" or nil for no job
+	Notify = "qb",
+	K4MB1 = false,
+	K4MB1Only = false,
+
 	--Lighting for mines
 	HangingLights = false, -- if false, will spawn work lights. if true will spawn hanging lights
 
@@ -77,7 +79,7 @@ Config = {
 			{ name = "Jewel Cutting", coords = vector4(1075.19, -1985.45, 30.92, 144.89), sprite = 566, col = 81, blipTrue = false, prop = `gr_prop_gr_speeddrill_01c` },
 		},
 		['JewelBuyer'] = { -- The Location of the jewel buyer, I left this as Vangelico, others will proabably change to pawn shops
-			{ name = "Jewel Buyer", coords = vector4(-629.86, -240.35, 38.16, 110.05), sprite = 527, col = 617, blipTrue = false, model = `S_M_M_HighSec_03`, scenario = "WORLD_HUMAN_VALET", },
+			{ name = "Jewel Buyer", coords = vector4(-629.86, -240.35, 38.16, 110.05), sprite = 527, col = 617, blipTrue = false, model = `S_M_M_HighSec_03`, scenario = "WORLD_HUMAN_CLIPBOARD", },
 		},
 	},
 
@@ -347,4 +349,61 @@ Crafting = {
 		{ ["sapphire_earring_silver"] = { ["silverearring"] = 1, ["sapphire"] = 1 }, },
 		{ ["emerald_earring_silver"] = { ["silverearring"] = 1, ["emerald"] = 1 }, },
 	},
+}
+
+K4MB1 = {
+	['MineStore'] = {
+		{ name = "Cave Shop", coords = vector4(2908.8, 2643.6, 43.26, 328.32), sprite = 527, col = 81, blipTrue = true, model = `G_M_M_ChemWork_01`, scenario = "WORLD_HUMAN_CLIPBOARD",  },		-- The location where you enter the mine
+	},
+	['Smelter'] = {	 -- The location of the smelter
+		{ name = "Smelter", coords = vector3(2921.81, 2653.42, 43.15), sprite = 436, col = 1, blipTrue = false, },
+	},
+	['Cracking'] = { -- The location of the smelter
+		{ name = "Stone Cracking", coords = vector4(2914.9, 2650.78, 43.08, 231.77), sprite = 566, col = 81, blipTrue = false, prop = `prop_vertdrill_01` }, -- Foundary
+		{ name = "Stone Cracking", coords = vector4(2914.61, 2649.06, 43.19, 272.74), sprite = 566, col = 81, blipTrue = false, prop = `prop_vertdrill_01` }, -- Foundary
+	},
+	['OreBuyer'] = { -- The Locations of the ore buyers
+		{ name = "Ore Buyer", coords = vector4(2917.79, 2646.26, 43.17, 6.14), sprite = 568, col = 81, blipTrue = false, model = `G_M_M_ChemWork_01`, scenario = "WORLD_HUMAN_CLIPBOARD", },
+	},
+	['JewelCut'] = { -- The Location of the jewel cutting bench. Couldn't decide so left in smeltery
+		{ name = "Jewel Cutting", coords = vector4(2917.45, 2654.24, 43.03, 229.61), sprite = 566, col = 81, blipTrue = false, prop = `gr_prop_gr_speeddrill_01c` },
+		{ name = "Jewel Cutting", coords = vector4(2919.89, 2656.36, 43.15, 199.99), sprite = 566, col = 81, blipTrue = false, prop = `gr_prop_gr_speeddrill_01c` },
+	},
+	["OrePositions"] = {
+		vector4(2906.33, 2736.05, 44.85, 56.09),
+		vector4(2906.98, 2732.64, 43.97+1.03, 228.42),
+		vector4(2895.52, 2718.07, 44.55+1.03, 102.59),
+		vector4(2909.66, 2707.41, 45.23, 118.57),
+		vector4(2930.71, 2693.23, 45.59+1.03, 246.69),
+		vector4(2908.31, 2696.03, 47.1+1.03, 58.8),
+		vector4(2908.64, 2692.78, 47.07+1.03, 121.55),
+		vector4(2903.67, 2676.71, 45.94, 306.38),
+		vector4(2890.67, 2679.4, 44.65+1, 105.51),
+		vector4(2892.87, 2701.2, 49.69+1, 283.39),
+		vector4(2876.53, 2707.35, 49.2+1, 31.29),
+		vector4(2866.6, 2677.91, 47.55+1, 238.85),
+		vector4(2859.34, 2668.93, 46.27, 260.51),
+		vector4(2858.56, 2663.24, 46.0, 256.02),
+		vector4(2865.12, 2664.62, 48.21+1.03, 0.18),
+		vector4(2868.6, 2669.71, 48.78, 5.38),
+		vector4(2901.05, 2684.32, 47.24, 313.73),
+		vector4(2878.87, 2686.39, 47.72+1.03, 0),
+
+		vector4(2888.54, 2634.12, 42.84, 207.17),
+		vector4(2879.55, 2650.4, 43.69+1, 30.79),
+		vector4(2896.32, 2648.31, 40.75+1, 301.66),
+		vector4(2808.16, 2650.5, 38.6+1, 44.41),
+		vector4(2792.43, 2640.55, 39.25+1, 77.72),
+		vector4(2793.12, 2632.56, 38.74+1, 128.98),
+		vector4(2799.6, 2629.53, 40.69+1, 189.92),
+		vector4(2812.47, 2633.02, 41.19+0.6, 168.98),
+
+		vector4(2817.65, 2590.74, 32.84+0.5, 121.44),
+		vector4(2835.04, 2600.4, 35.23+0.2, 215.07),
+		vector4(2837.77, 2605.3, 35.67+0.6, 296.09),
+
+		vector4(2819.55, 2606.31, 37.98+0.5, 59.71),
+		vector4(2823.73, 2611.07, 38.6+0.5, 49.71),
+		vector4(2827.98, 2611.26, 34.45+0.5, 40.74),
+	}
 }
