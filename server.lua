@@ -115,14 +115,24 @@ end)
 RegisterNetEvent('jim-mining:server:toggleItem', function(give, item, amount)
 	local src = source
 	if give == 0 or give == false then
-		if QBCore.Functions.GetPlayer(src).Functions.RemoveItem(item, amount or 1) then
-			TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[item], "remove", amount or 1)
-		end
+		if QBCore.Functions.HasItem(src, item, amount or 1) then -- check if you still have the item
+			if QBCore.Functions.GetPlayer(src).Functions.RemoveItem(item, amount or 1) then
+				TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[item], "remove", amount or 1)
+			end
+		else TriggerEvent("jim-mining:server:DupeWarn", item, src) end -- if not boot the player
 	else
 		if QBCore.Functions.GetPlayer(src).Functions.AddItem(item, amount or 1) then
 			TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[item], "add", amount or 1)
 		end
 	end
+end)
+
+RegisterNetEvent("jim-mining:server:DupeWarn", function(item, newsrc)
+	local src = newsrc or source
+	local P = QBCore.Functions.GetPlayer(src)
+	print("^5DupeWarn: ^1"..P.PlayerData.charinfo.firstname.." "..P.PlayerData.charinfo.lastname.."^7(^1"..tostring(src).."^7) ^2Tried to remove item ^7('^3"..item.."^7')^2 but it wasn't there^7")
+	DropPlayer(src, "Kicked for attempting to duplicate items")
+	print("^5DupeWarn: ^1"..P.PlayerData.charinfo.firstname.." "..P.PlayerData.charinfo.lastname.."^7(^1"..tostring(src).."^7) ^2Dropped from server for item duplicating^7")
 end)
 
 AddEventHandler('onResourceStart', function(resource) if GetCurrentResourceName() ~= resource then return end
