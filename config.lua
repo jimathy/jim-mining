@@ -1,4 +1,4 @@
-print("^2Jim-Mining ^7v^42^7.^43 ^7- ^2Mining Script by ^1Jimathy^7")
+print("^2Jim-Mining ^7v^42^7.^42 ^7- ^2Mining Script by ^1Jimathy^7")
 
 Loc = {}
 
@@ -9,7 +9,7 @@ Config = {
 	img = "qb-inventory/html/images/", --Set this to the image directory of your inventory script or "nil" if using newer qb-menu
 	CheckMarks = true, -- shows checkmarks if user has the materials to craft an item, set false if causing lag.
 	Lan = "en", -- Pick your language here
-	JimMenu = true, -- Set this to true if using update qb-menu with icons
+	JimMenu = false, -- Set this to true if using update qb-menu with icons
 	JimShops = false, -- Set this to true if using jim-shops
 	Job = nil, -- set this to a job role eg "miner" or nil for no job
 	Notify = "qb",

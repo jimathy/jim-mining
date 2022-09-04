@@ -122,33 +122,3 @@ end
 function countTable(table) local i = 0 for keys in pairs(table) do i = i + 1 end return i end
 
 function toggleItem(give, item, amount) TriggerServerEvent("jim-mining:server:toggleItem", give, item, amount) end
-
-function HasItem(items, amount)
-    local isTable = type(items) == 'table'
-    local isArray = isTable and table.type(items) == 'array' or false
-    local totalItems = #items
-    local count = 0
-    local kvIndex = 2
-    if isTable and not isArray then totalItems = 0
-        for _ in pairs(items) do totalItems += 1 end
-        kvIndex = 1
-    end
-    for _, itemData in pairs(QBCore.PlayerData.items) do
-        if isTable then
-            for k, v in pairs(items) do
-                local itemKV = {k, v}
-                if itemData and itemData.name == itemKV[kvIndex] and ((amount and itemData.amount >= amount) or (not isArray and itemData.amount >= v) or (not amount and isArray)) then
-                    count += 1
-                end
-            end
-            if count == totalItems then
-                return true
-            end
-        else -- Single item as string
-            if itemData and itemData.name == items and (not amount or (itemData and amount and itemData.amount >= amount)) then
-                return true
-            end
-        end
-    end
-    return false
-end
