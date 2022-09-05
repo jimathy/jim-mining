@@ -482,8 +482,7 @@ local Washing = false
 RegisterNetEvent('jim-mining:WashStart', function(data)
 	if Washing then return end
 	local cost = 1
-	local p = promise.new()	QBCore.Functions.TriggerCallback("jim-mining:ItemCheck", function(cb) p:resolve(cb) end, "stone", cost)
-	if Citizen.Await(p) then
+	if HasItem("stone", cost) then
 		Washing = true
 		LocalPlayer.state:set("inv_busy", true, true) TriggerEvent('inventory:client:busy:status', true) TriggerEvent('canUseInventoryAndHotbar:toggle', false)
 		--Create Rock and Attach
@@ -562,13 +561,11 @@ end)
 
 RegisterNetEvent('jim-mining:MakeItem', function(data)
 	if data.ret then
-		if HasItem("drillbit", 1) == false then triggerNotify(nil, Loc[Config.Lan].error["no_drillbit"], 'error') TriggerEvent('jim-mining:JewelCut') return end
+		if not HasItem("drillbit", 1) then triggerNotify(nil, Loc[Config.Lan].error["no_drillbit"], 'error') TriggerEvent('jim-mining:JewelCut') return end
 	end
 	for k in pairs(data.craftable[data.tablenumber]) do
 		if data.item == k then
-			Wait(0) local p = promise.new()
-			QBCore.Functions.TriggerCallback('jim-mining:Check', function(cb) p:resolve(cb) end, data.item, data.craftable[data.tablenumber])
-			if not Citizen.Await(p) then
+			if not HasItem(data.craftable[data.tablenumber][data.item]) then
 				triggerNotify(nil, Loc[Config.Lan].error["no_ingredients"], 'error')
 				TriggerEvent('jim-mining:CraftMenu', data)
 			else itemProgress(data) end
@@ -643,7 +640,7 @@ end
 ------------------------------------------------------------
 --Selling animations are simply a pass item to seller animation
 RegisterNetEvent('jim-mining:SellAnim', function(data)
-	if HasItem(data.item, 1) == false then triggerNotify(nil, Loc[Config.Lan].error["dont_have"].." "..QBCore.Shared.Items[data.item].label, "error") return end
+	if not HasItem(data.item, 1) then triggerNotify(nil, Loc[Config.Lan].error["dont_have"].." "..QBCore.Shared.Items[data.item].label, "error") return end
 	loadAnimDict("mp_common")
 	TriggerServerEvent('jim-mining:Selling', data) -- Had to slip in the sell command during the animation command
 	loadAnimDict("mp_common")
@@ -666,8 +663,9 @@ RegisterNetEvent('jim-mining:SellOre', function(data)
 		{ icon = "fas fa-circle-xmark", header = "", txt = Loc[Config.Lan].info["close"], params = { event = "jim-mining:CraftMenu:Close" } } }
 	for _, v in pairs(list) do
 		local setheader = "<img src=nui://"..Config.img..QBCore.Shared.Items[v].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items[v].label
-		if HasItem(v, 1) then setheader = setheader.." 💰" end
-			sellMenu[#sellMenu+1] = { icon = v, disabled = not HasItem(v, 1), header = setheader, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems[v].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim", args = { item = v, ped = data.ped } } }
+		local disable = true
+		if HasItem(v, 1) then setheader = setheader.." 💰" disable = false end
+			sellMenu[#sellMenu+1] = { icon = v, disabled = disable, header = setheader, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems[v].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim", args = { item = v, ped = data.ped } } }
 		Wait(0)
 	end
 	exports['qb-menu']:openMenu(sellMenu)
@@ -692,7 +690,7 @@ RegisterNetEvent('jim-mining:JewelSell:Sub', function(data)
 	local list = {}
 	local sellMenu = {
 		{ header = Loc[Config.Lan].info["jewel_buyer"], txt = Loc[Config.Lan].info["sell_jewel"], isMenuHeader = true },
-		{ icon = "fas fa-circle-arrow-left", header = "", txt = Loc[Config.Lan].info["return"], params = { event = "jim-mining:JewelSell", } }, }
+		{ icon = "fas fa-circle-arrow-left", header = "", txt = Loc[Config.Lan].info["return"], params = { event = "jim-mining:JewelSell", args = data } }, }
 	if data.sub == "emerald" then list = {"emerald", "uncut_emerald"} end
 	if data.sub == "ruby" then list = {"ruby", "uncut_ruby"} end
 	if data.sub == "diamond" then list = {"diamond", "uncut_diamond"} end
@@ -701,9 +699,10 @@ RegisterNetEvent('jim-mining:JewelSell:Sub', function(data)
 	if data.sub == "necklaces" then list = {"goldchain", "silverchain", "diamond_necklace", "emerald_necklace", "ruby_necklace", "sapphire_necklace", "diamond_necklace_silver", "emerald_necklace_silver", "ruby_necklace_silver", "sapphire_necklace_silver"} end
 	if data.sub == "earrings" then list = {"goldearring", "silverearring", "diamond_earring", "emerald_earring", "ruby_earring", "sapphire_earring", "diamond_earring_silver", "emerald_earring_silver", "ruby_earring_silver", "sapphire_earring_silver"} end
 	for _, v in pairs(list) do
+		local disable = true
 		local setheader = "<img src=nui://"..Config.img..QBCore.Shared.Items[v].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items[v].label
-		if HasItem(v, 1) then setheader = setheader.." 💰" end
-		sellMenu[#sellMenu+1] = { icon = v, header = setheader, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems[v].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim", args = { item = v, sub = data.sub, ped = data.ped } } }
+		if HasItem(v, 1) then setheader = setheader.." 💰" disable = false end
+		sellMenu[#sellMenu+1] = { disabled = disable, icon = v, header = setheader, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellItems[v].." "..Loc[Config.Lan].info["sell_each"], params = { event = "jim-mining:SellAnim", args = { item = v, sub = data.sub, ped = data.ped } } }
 		Wait(0)
 	end
 	exports['qb-menu']:openMenu(sellMenu)
@@ -736,17 +735,14 @@ RegisterNetEvent('jim-mining:CraftMenu', function(data)
 					if data.craftable[i]["amount"] then amount = " x"..data.craftable[i]["amount"] else amount = "" end
 					setheader = "<img src=nui://"..Config.img..QBCore.Shared.Items[k].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items[k].label..tostring(amount)
 					if Config.CheckMarks then
-						Wait(0)
-						local p = promise.new()
-						QBCore.Functions.TriggerCallback('jim-mining:Check', function(cb) p:resolve(cb) end, tostring(k), data.craftable[i])
-						if Citizen.Await(p) then setheader = setheader.." ✅" end
+						if HasItem(data.craftable[i][k]) then setheader = setheader.." ✅" end
 					end
 					for l, b in pairs(data.craftable[i][tostring(k)]) do
 						if b == 1 then number = "" else number = " x"..b end
 						text = text.."- "..QBCore.Shared.Items[l].label..number.."<br>"
 						settext = text
 					end
-					CraftMenu[#CraftMenu + 1] = { icon = k, header = setheader, txt = settext, params = { event = "jim-mining:MakeItem", args = { item = k, tablenumber = i, craftable = data.craftable, ret = data.ret } } }
+					CraftMenu[#CraftMenu + 1] = { isMenuHeader = not HasItem(data.craftable[i][k]), icon = k, header = setheader, txt = settext, params = { event = "jim-mining:MakeItem", args = { item = k, tablenumber = i, craftable = data.craftable, ret = data.ret } } }
 					settext, amount, setheader = nil
 				end
 			end

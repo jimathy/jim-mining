@@ -129,26 +129,30 @@ function HasItem(items, amount)
     local totalItems = #items
     local count = 0
     local kvIndex = 2
+	if Config.Debug then print("^5Debug^7: ^3HasItem^7: ^2Checking if player has required items") end
     if isTable and not isArray then totalItems = 0
         for _ in pairs(items) do totalItems += 1 end
         kvIndex = 1
     end
-    for _, itemData in pairs(QBCore.PlayerData.items) do
+    for _, itemData in pairs(QBCore.Functions.GetPlayerData().items) do
         if isTable then
-            for k, v in pairs(items) do
+			for k, v in pairs(items) do
                 local itemKV = {k, v}
                 if itemData and itemData.name == itemKV[kvIndex] and ((amount and itemData.amount >= amount) or (not isArray and itemData.amount >= v) or (not amount and isArray)) then
                     count += 1
                 end
             end
             if count == totalItems then
-                return true
+				if Config.Debug then print("^5Debug^7: ^3HasItem^7: ^2Items ^2FOUND^7") end
+				return true
             end
         else -- Single item as string
             if itemData and itemData.name == items and (not amount or (itemData and amount and itemData.amount >= amount)) then
+				if Config.Debug then print("^5Debug^7: ^3HasItem^7: ^2Item^7: '^3"..tostring(items).."^7' ^2FOUND^7") end
                 return true
             end
         end
     end
+	if Config.Debug then print("^5Debug^7: ^3HasItem^7: ^2Items ^1NOT FOUND^7") end
     return false
 end
