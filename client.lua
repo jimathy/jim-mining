@@ -563,14 +563,7 @@ RegisterNetEvent('jim-mining:MakeItem', function(data)
 	if data.ret then
 		if not HasItem("drillbit", 1) then triggerNotify(nil, Loc[Config.Lan].error["no_drillbit"], 'error') TriggerEvent('jim-mining:JewelCut') return end
 	end
-	for k in pairs(data.craftable[data.tablenumber]) do
-		if data.item == k then
-			if not HasItem(data.craftable[data.tablenumber][data.item]) then
-				triggerNotify(nil, Loc[Config.Lan].error["no_ingredients"], 'error')
-				TriggerEvent('jim-mining:CraftMenu', data)
-			else itemProgress(data) end
-		end
-	end
+	itemProgress(data)
 end)
 
 function itemProgress(data)
@@ -734,15 +727,17 @@ RegisterNetEvent('jim-mining:CraftMenu', function(data)
 					local text = ""
 					if data.craftable[i]["amount"] then amount = " x"..data.craftable[i]["amount"] else amount = "" end
 					setheader = "<img src=nui://"..Config.img..QBCore.Shared.Items[k].image.." width=30px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items[k].label..tostring(amount)
-					if Config.CheckMarks then
-						if HasItem(data.craftable[i][k]) then setheader = setheader.." ✅" end
-					end
+					local disable = false
+					local checktable = {}
 					for l, b in pairs(data.craftable[i][tostring(k)]) do
 						if b == 1 then number = "" else number = " x"..b end
 						text = text.."- "..QBCore.Shared.Items[l].label..number.."<br>"
 						settext = text
+						checktable[l] = HasItem(l, b)
 					end
-					CraftMenu[#CraftMenu + 1] = { isMenuHeader = not HasItem(data.craftable[i][k]), icon = k, header = setheader, txt = settext, params = { event = "jim-mining:MakeItem", args = { item = k, tablenumber = i, craftable = data.craftable, ret = data.ret } } }
+					for _, v in pairs(checktable) do if v == false then disable = true break end end
+					if not disable then setheader = setheader.." ✔️" end
+					CraftMenu[#CraftMenu + 1] = { isMenuHeader = disable, icon = k, header = setheader, txt = settext, params = { event = "jim-mining:MakeItem", args = { item = k, tablenumber = i, craftable = data.craftable, ret = data.ret } } }
 					settext, amount, setheader = nil
 				end
 			end
