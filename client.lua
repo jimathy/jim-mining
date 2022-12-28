@@ -26,7 +26,7 @@ end
 function makeJob()
 	removeJob()
 	if not Config.K4MB1Only then
-		if Config.propSpawn then
+		if Config.SpawnLights then
 			--Quickly add outside lighting
 			Props[#Props+1] = makeProp({coords = vector4(-593.29, 2093.22, 131.7, 110.0), prop = `prop_worklight_02a`}, 1, false) -- Mineshaft door
 			Props[#Props+1] = makeProp({coords = vector4(-604.55, 2089.74, 131.15, 300.0), prop = `prop_worklight_02a`}, 1, false) -- Mineshaft door 2
@@ -39,12 +39,12 @@ function makeJob()
 			Props[#Props+1] = makeProp({coords = vector4(1106.46, -1991.44, 31.49, 185.78), prop = `prop_worklight_02a`}, 1, false) -- Foundary Light
 			if Config.HangingLights then
 				for k, v in pairs(Config.MineLights) do
-					if Config.propSpawn then Props[#Props+1] = makeProp({coords = v, prop = `xs_prop_arena_lights_ceiling_l_c`}, 1, false) end
+					Props[#Props+1] = makeProp({coords = v, prop = `xs_prop_arena_lights_ceiling_l_c`}, 1, false)
 				end
 			end
 			if not Config.HangingLights then
 				for k, v in pairs(Config.WorkLights) do
-					if Config.propSpawn then Props[#Props+1] = makeProp({coords = v, prop = `prop_worklight_03a`}, 1, false) end
+					Props[#Props+1] = makeProp({coords = v, prop = `prop_worklight_03a`}, 1, false)
 				end
 			end
 		end
