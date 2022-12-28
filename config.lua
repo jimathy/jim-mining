@@ -17,6 +17,7 @@ Config = {
 	K4MB1Only = false,
 
 	--Lighting for mines
+	SpawnLights = true, -- if false, lights below will not spawn
 	HangingLights = false, -- if false, will spawn work lights. if true will spawn hanging lights
 
 	Timings = { -- Time it takes to do things
