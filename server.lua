@@ -9,7 +9,7 @@ RegisterServerEvent('jim-mining:GetItem', function(data)
 	if data.craftable[data.tablenumber]["amount"] then amount = data.craftable[data.tablenumber]["amount"] else amount = 1 end
 	for k,v in pairs(data.craftable[data.tablenumber][data.item]) do TriggerEvent("jim-mining:server:toggleItem", false, tostring(k), v, src) end
 	--This should give the item, while the rest removes the requirements
-	TriggerEvent("jim-henhouse:server:toggleItem", true, ItemMake, amount, src)
+	TriggerEvent("jim-mining:server:toggleItem", true, ItemMake, amount, src)
 end)
 
 RegisterServerEvent('jim-mining:MineReward', function()
