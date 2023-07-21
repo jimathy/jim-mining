@@ -279,7 +279,7 @@ RegisterNetEvent('jim-mining:MineOre:Drill', function(data)
 			unloadAnimDict(dict)
 			TriggerServerEvent('jim-mining:MineReward')
 			--Destroy drill bit chances
-			if math.random(1,10) >= 8 then
+			if math.random(1, 1000) <= 75 then
 				local breakId = GetSoundId()
 				PlaySoundFromEntity(breakId, "Drill_Pin_Break", PlayerPedId(), "DLC_HEIST_FLEECA_SOUNDSET", 1, 0)
 				toggleItem(0, "drillbit", 1)
@@ -339,7 +339,7 @@ RegisterNetEvent('jim-mining:MineOre:Pick', function(data)
 		unloadPtfxDict("core")
 		unloadAnimDict(dict)
 		TriggerServerEvent('jim-mining:MineReward')
-		if math.random(1,10) >= 9 then
+		if math.random(1, 1000) <= 75 then
 			local breakId = GetSoundId()
 			PlaySoundFromEntity(breakId, "Drill_Pin_Break", PlayerPedId(), "DLC_HEIST_FLEECA_SOUNDSET", 1, 0)
 			toggleItem(false, "pickaxe", 1)
