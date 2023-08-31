@@ -116,7 +116,7 @@ Config.Locations = {
                 sprite = 527,
                 col = 81,
             },
-            Stores = {
+            Store = {
                 { name = "Mine", coords = vec4(-594.96, 2091.3, 131.47, 67.65), model = `G_M_M_ChemWork_01`, scenario = "WORLD_HUMAN_CLIPBOARD",  },
             },
             Lights = {
