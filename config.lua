@@ -15,6 +15,8 @@ Config = {
 	ProgressBar = "qb",		--"qb" or "ox"
 	Notify = "qb",			--"qb" or "ox"
 
+	Job = "miner", -- set this to a job role eg "miner" or nil for no job
+
 	DrillSound = true,		-- disable drill sounds
 
 	MultiCraft = true,		-- Enable multicraft
