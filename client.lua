@@ -251,7 +251,7 @@ RegisterNetEvent('jim-mining:MineOre:Pick', function(data) local Ped = PlayerPed
 	isMining = false
 end)
 
-RegisterNetEvent('jim-mining:MineOre:Drill', function(data) local Ped = PlayerPedID()
+RegisterNetEvent('jim-mining:MineOre:Drill', function(data) local Ped = PlayerPedId()
 	if isMining then return else isMining = true end -- Stop players from doubling up the event
 	if HasItem("drillbit", 1) then
 		-- Sounds & Anim loading
