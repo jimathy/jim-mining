@@ -97,7 +97,7 @@ function makeJob()
 			if loc["OreBuyer"] then
 				for i = 1, #loc["OreBuyer"] do local name = "OreBuyer".."_"..mine.."_"..i
 					Peds[#Peds+1] = makePed(loc["OreBuyer"][i].model, loc["OreBuyer"][i].coords, 1, 1, loc["OreBuyer"][i].scenario)
-					if loc["OreBuyer"][i].blipEnable then Blip[#Blip+1] = makeBlip(loc["Cracking"][i]) end
+					if loc["OreBuyer"][i].blipEnable then Blip[#Blip+1] = makeBlip(loc["OreBuyer"][i]) end
 					Targets[name] =
 						exports['qb-target']:AddCircleZone(name, loc["OreBuyer"][i].coords.xyz, 0.9, { name=name, debugPoly=Config.Debug, useZ=true, },
 						{ options = { { event = "jim-mining:SellOre", icon = "fas fa-sack-dollar", label = Loc[Config.Lan].info["sell_ores"], ped = Peds[#Peds], job = Config.Job }, },
