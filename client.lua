@@ -168,8 +168,8 @@ RegisterNetEvent('QBCore:Client:OnJobUpdate', function(JobInfo)
 	if Config.Job then if PlayerJob.name == Config.Job then makeJob() else removeJob() end end
 end)
 AddEventHandler('onResourceStart', function(resource) if GetCurrentResourceName() ~= resource then return end
-QBCore.Functions.GetPlayerData(function(PlayerData) PlayerJob = PlayerData.job end)
-if Config.Job then if PlayerJob.name == Config.Job then makeJob() else removeJob() end else makeJob() end
+	QBCore.Functions.GetPlayerData(function(PlayerData) PlayerJob = PlayerData.job end)
+	if Config.Job then if PlayerJob.name == Config.Job then makeJob() else removeJob() end else makeJob() end
 end)
 
 --------------------------------------------------------
@@ -596,7 +596,7 @@ RegisterNetEvent('jim-mining:CraftMenu', function(data)
 		if Config.Menu == "qb" then
 			CraftMenu[#CraftMenu + 1] = { header = Loc[Config.Lan].info["craft_bench"], txt = Loc[Config.Lan].info["req_drill_bit"], isMenuHeader = true }
 		end
-			CraftMenu[#CraftMenu + 1] = { icon = "fas fa-circle-arrow-left", header = "", txt = Loc[Config.Lan].info["return"], title = Loc[Config.Lan].info["return"], event = "jim-mining:JewelCut", params = { event = "jim-mining:JewelCut" } }
+		CraftMenu[#CraftMenu + 1] = { icon = "fas fa-circle-arrow-left", header = "", txt = Loc[Config.Lan].info["return"], title = Loc[Config.Lan].info["return"], event = "jim-mining:JewelCut", args = data, params = { event = "jim-mining:JewelCut", args = data } }
 	else
 		if Config.Menu == "qb" then
 			CraftMenu[#CraftMenu + 1] = { header = Loc[Config.Lan].info["smelter"], txt = Loc[Config.Lan].info["smelt_ores"], isMenuHeader = true }
