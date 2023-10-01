@@ -1,4 +1,4 @@
-print("^2Jim-Mining ^7v^42^7.^44 ^7- ^2Mining Script by ^1Jimathy^7")
+print("^2Jim-Mining ^7v^42^7.^44^7.^42 ^7- ^2Mining Script by ^1Jimathy^7")
 
 Loc = {}
 
@@ -20,7 +20,7 @@ Config = {
 	MultiCraft = true,		-- Enable multicraft
 	MultiCraftAmounts = { [1], [5], [10] },
 
-	K4MB1Prop = false, -- Enable this to make use of K4MB1's ore props provided with their Mining Cave MLO
+	K4MB1Prop = true, -- Enable this to make use of K4MB1's ore props provided with their Mining Cave MLO
 
 	Timings = { -- Time it takes to do things
 		["Cracking"] = math.random(5000, 10000),

@@ -281,7 +281,7 @@ RegisterNetEvent('jim-mining:MineOre:Drill', function(data) local Ped = PlayerPe
 		if progressBar({label = Loc[Config.Lan].info["drilling_ore"], time = Config.Debug and 1000 or Config.Timings["Pickaxe"], cancel = true, icon = "pickaxe"}) then
 			TriggerServerEvent('jim-mining:Reward', { mine = true, cost = nil })
 			--Destroy drill bit chances
-			if math.random(1,10) >= 8 then
+			if math.random(1, 10) >= 8 then
 				local breakId = GetSoundId()
 				PlaySoundFromEntity(breakId, "Drill_Pin_Break", Ped, "DLC_HEIST_FLEECA_SOUNDSET", 1, 0)
 				toggleItem(0, "drillbit", 1)
@@ -355,7 +355,7 @@ RegisterNetEvent('jim-mining:CrackStart', function(data) local Ped = PlayerPedId
 	local cost = 1
 	if HasItem("stone", cost) then
 		Cracking = true
-		LocalPlayer.state:set("inv_busy", true, true) TriggerEvent('inventory:client:busy:status', true) TriggerEvent('canUseInventoryAndHotbar:toggle', false)
+		lockInv(true)
 		-- Sounds & Anim Loading
 		local dict ="amb@prop_human_parking_meter@male@idle_a"
 		local anim = "idle_a"
@@ -385,7 +385,7 @@ RegisterNetEvent('jim-mining:CrackStart', function(data) local Ped = PlayerPedId
 		unloadPtfxDict("core")
 		unloadAnimDict(dict)
 		destroyProp(Rock)
-		LocalPlayer.state:set("inv_busy", false, true) TriggerEvent('inventory:client:busy:status', false) TriggerEvent('canUseInventoryAndHotbar:toggle', true)
+		lockInv(false)
 		Cracking = false
 	else
 		triggerNotify(nil, Loc[Config.Lan].error["no_stone"], 'error')
@@ -399,7 +399,7 @@ RegisterNetEvent('jim-mining:WashStart', function(data) local Ped = PlayerPedId(
 	local cost = 1
 	if HasItem("stone", cost) then
 		Washing = true
-		LocalPlayer.state:set("inv_busy", true, true) TriggerEvent('inventory:client:busy:status', true) TriggerEvent('canUseInventoryAndHotbar:toggle', false)
+		lockInv(true)
 		--Create Rock and Attach
 		local Rock = makeProp({ prop = "prop_rock_5_smash1", coords = vec4(0,0,0,0)}, 0, 1)
 		AttachEntityToEntity(Rock, Ped, GetPedBoneIndex(Ped, 60309), 0.1, 0.0, 0.05, 90.0, -90.0, 90.0, true, true, false, true, 1, true)
@@ -417,7 +417,7 @@ RegisterNetEvent('jim-mining:WashStart', function(data) local Ped = PlayerPedId(
 		if progressBar({label = Loc[Config.Lan].info["washing_stone"], time = Config.Debug and 1000 or Config.Timings["Washing"], cancel = true, icon = "stone"}) then
 			TriggerServerEvent('jim-mining:Reward', { wash = true, cost = cost })
 		end
-		LocalPlayer.state:set("inv_busy", false, true) TriggerEvent('inventory:client:busy:status', false) TriggerEvent('canUseInventoryAndHotbar:toggle', true)
+		lockInv(false)
 		StopParticleFxLooped(water, 0)
 		destroyProp(Rock)
 		unloadPtfxDict("core")
@@ -432,7 +432,7 @@ end)
 local Panning = false
 RegisterNetEvent('jim-mining:PanStart', function(data) local Ped = PlayerPedId()
 	if Panning then return else Panning = true end
-	LocalPlayer.state:set("inv_busy", true, true) TriggerEvent('inventory:client:busy:status', true) TriggerEvent('canUseInventoryAndHotbar:toggle', false)
+	lockInv(true)
 	--Create Rock and Attach
 	local trayCoords = GetOffsetFromEntityInWorldCoords(Ped, 0.0, 0.5, -0.9)
 	Props[#Props+1] = makeProp({ coords = vec4(trayCoords.x, trayCoords.y, trayCoords.z+1.03, GetEntityHeading(Ped)), prop = `bkr_prop_meth_tray_01b`} , 1, 1)
@@ -452,7 +452,7 @@ RegisterNetEvent('jim-mining:PanStart', function(data) local Ped = PlayerPedId()
 	ClearPedTasksImmediately(Ped)
 	destroyProp(Props[#Props])
 	unloadPtfxDict("core")
-	LocalPlayer.state:set("inv_busy", false, true) TriggerEvent('inventory:client:busy:status', false) TriggerEvent('canUseInventoryAndHotbar:toggle', true)
+	lockInv(false)
 	Panning = false
 end)
 
@@ -499,8 +499,8 @@ RegisterNetEvent('jim-mining:SellOre', function(data)
 		}
 		Wait(0)
 	end
-	if Config.Menu == "ox" then	exports.ox_lib:registerContext({id = 'sellMenu', title = Loc[Config.Lan].info["header_oresell"], position = 'top-right', options = sellMenu })	exports.ox_lib:showContext("sellMenu")
-	elseif Config.Menu == "qb" then	exports['qb-menu']:openMenu(sellMenu) end
+	if Config.Menu == "ox" then exports.ox_lib:registerContext({id = 'sellMenu', title = Loc[Config.Lan].info["header_oresell"], position = 'top-right', options = sellMenu })	exports.ox_lib:showContext("sellMenu")
+	elseif Config.Menu == "qb" then exports['qb-menu']:openMenu(sellMenu) end
 	lookEnt(data.ped)
 end)
 ------------------------
@@ -526,8 +526,8 @@ RegisterNetEvent('jim-mining:JewelSell', function(data)
 			title = table[i].title, description = Loc[Config.Lan].info["see_options"], event = "jim-mining:JewelSell:Sub", args = { sub = table[i].sub, ped = data.ped }
 		}
 	end
-	if Config.Menu == "ox" then	exports.ox_lib:registerContext({id = 'sellMenu', title = Loc[Config.Lan].info["jewel_buyer"], position = 'top-right', options = sellMenu })	exports.ox_lib:showContext("sellMenu")
-	elseif Config.Menu == "qb" then	exports['qb-menu']:openMenu(sellMenu) end
+	if Config.Menu == "ox" then exports.ox_lib:registerContext({id = 'sellMenu', title = Loc[Config.Lan].info["jewel_buyer"], position = 'top-right', options = sellMenu })	exports.ox_lib:showContext("sellMenu")
+	elseif Config.Menu == "qb" then exports['qb-menu']:openMenu(sellMenu) end
 	lookEnt(data.ped)
 end)
 --Jewel Selling - Sub Menu Controller
@@ -563,8 +563,8 @@ RegisterNetEvent('jim-mining:JewelSell:Sub', function(data)
 		}
 		Wait(0)
 	end
-	if Config.Menu == "ox" then	exports.ox_lib:registerContext({id = 'sellMenu', title = Loc[Config.Lan].info["jewel_buyer"], position = 'top-right', options = sellMenu })	exports.ox_lib:showContext("sellMenu")
-	elseif Config.Menu == "qb" then	exports['qb-menu']:openMenu(sellMenu) end
+	if Config.Menu == "ox" then exports.ox_lib:registerContext({id = 'sellMenu', title = Loc[Config.Lan].info["jewel_buyer"], position = 'top-right', options = sellMenu })	exports.ox_lib:showContext("sellMenu")
+	elseif Config.Menu == "qb" then exports['qb-menu']:openMenu(sellMenu) end
 	lookEnt(data.ped)
 end)
 --Cutting Jewels
@@ -586,20 +586,20 @@ RegisterNetEvent('jim-mining:JewelCut', function(data)
 			title = table[i].header, description = table[i].txt, event = "jim-mining:CraftMenu", args = { craftable = table[i].craftable, ret = true, bench = data.bench },
 		}
 	end
-	if Config.Menu == "ox" then	exports.ox_lib:registerContext({id = 'cutMenu', title = Loc[Config.Lan].info["craft_bench"], position = 'top-right', options = cutMenu })	exports.ox_lib:showContext("cutMenu")
-	elseif Config.Menu == "qb" then	exports['qb-menu']:openMenu(cutMenu) end
+	if Config.Menu == "ox" then exports.ox_lib:registerContext({id = 'cutMenu', title = Loc[Config.Lan].info["craft_bench"], position = 'top-right', options = cutMenu })	exports.ox_lib:showContext("cutMenu")
+	elseif Config.Menu == "qb" then exports['qb-menu']:openMenu(cutMenu) end
 end)
 
 RegisterNetEvent('jim-mining:CraftMenu', function(data)
-	local CraftMenu = {}
+	local CraftMenu = {} local header = (data and data.ret) and Loc[Config.Lan].info["craft_bench"] or Loc[Config.Lan].info["smelter"]
 	if data.ret then
 		if Config.Menu == "qb" then
-			CraftMenu[#CraftMenu + 1] = { header = Loc[Config.Lan].info["craft_bench"], txt = Loc[Config.Lan].info["req_drill_bit"], isMenuHeader = true }
+			CraftMenu[#CraftMenu + 1] = { header = header, txt = Loc[Config.Lan].info["req_drill_bit"], isMenuHeader = true }
 		end
 		CraftMenu[#CraftMenu + 1] = { icon = "fas fa-circle-arrow-left", header = "", txt = Loc[Config.Lan].info["return"], title = Loc[Config.Lan].info["return"], event = "jim-mining:JewelCut", args = data, params = { event = "jim-mining:JewelCut", args = data } }
 	else
 		if Config.Menu == "qb" then
-			CraftMenu[#CraftMenu + 1] = { header = Loc[Config.Lan].info["smelter"], txt = Loc[Config.Lan].info["smelt_ores"], isMenuHeader = true }
+			CraftMenu[#CraftMenu + 1] = { header = header, txt = Loc[Config.Lan].info["smelt_ores"], isMenuHeader = true }
 			CraftMenu[#CraftMenu + 1] = { icon = "fas fa-circle-xmark", header = "", txt = Loc[Config.Lan].info["close"], params = { event = "jim-mining:CraftMenu:Close" } }
 		end
 	end
@@ -627,16 +627,16 @@ RegisterNetEvent('jim-mining:CraftMenu', function(data)
 						icon = "nui://"..Config.img..QBCore.Shared.Items[tostring(k)].image,
 						header = setheader, txt = settext, --qb-menu
 						title = setheader, description = settext, -- ox_lib
-						event = event, args = { item = k, craft = data.craftable[i], craftable = data.craftable, header = data.header, ret = data.ret, bench = data.bench }, -- ox_lib
-						params = { event = event, args = { item = k, craft = data.craftable[i], craftable = data.craftable, header = data.header, ret = data.ret, bench = data.bench } } -- qb-menu
+						event = event, args = { item = k, craft = data.craftable[i], craftable = data.craftable, header = header, ret = data.ret, bench = data.bench }, -- ox_lib
+						params = { event = event, args = { item = k, craft = data.craftable[i], craftable = data.craftable, header = header, ret = data.ret, bench = data.bench } } -- qb-menu
 					}
 					settext, setheader = nil
 				end
 			end
 		end
 
-	if Config.Menu == "ox" then	exports.ox_lib:registerContext({id = 'CraftMenu', title = data.ret and Loc[Config.Lan].info["craft_bench"] or Loc[Config.Lan].info["smelter"], position = 'top-right', options = CraftMenu })	exports.ox_lib:showContext("CraftMenu")
-	elseif Config.Menu == "qb" then	exports['qb-menu']:openMenu(CraftMenu) end
+	if Config.Menu == "ox" then exports.ox_lib:registerContext({id = 'CraftMenu', title = data.ret and Loc[Config.Lan].info["craft_bench"] or Loc[Config.Lan].info["smelter"], position = 'top-right', options = CraftMenu })	exports.ox_lib:showContext("CraftMenu")
+	elseif Config.Menu == "qb" then exports['qb-menu']:openMenu(CraftMenu) end
 	lookEnt(data.coords)
 end)
 
@@ -646,53 +646,59 @@ RegisterNetEvent('jim-mining:Crafting:MultiCraft', function(data)
         for l, b in pairs(data.craft[data.item]) do
             local has = HasItem(l, (b * k)) if not has then success[k] = false break else success[k] = true end
 		end end
-    if Config.Menu == "qb" then Menu[#Menu+1] = { header = data.header, txt = "", isMenuHeader = true } end
+	if Config.Menu == "qb" then Menu[#Menu+1] = { header = data.header, txt = "", isMenuHeader = true } end
 	Menu[#Menu+1] = { icon = "fas fa-arrow-left", title = Loc[Config.Lan].info["return"], header = "", txt = Loc[Config.Lan].info["return"], params = { event = "jim-mining:CraftMenu", args = data }, event = "jim-mining:CraftMenu", args = data }
 	for k in pairsByKeys(success) do
 		Menu[#Menu+1] = {
 			disabled = not success[k],
-			icon = "nui://"..Config.img..QBCore.Shared.Items[data.item].image, header = QBCore.Shared.Items[data.item].label.." [x"..k.."]", title = QBCore.Shared.Items[data.item].label.." [x"..k.."]",
+			icon = "nui://"..Config.img..QBCore.Shared.Items[data.item].image, header = QBCore.Shared.Items[data.item].label.." (x"..k * (data.craft.amount or 1)..")", title = QBCore.Shared.Items[data.item].label.." (x"..k * (data.craft.amount or 1)..")",
 			event = "jim-mining:Crafting:MakeItem", args = { item = data.item, craft = data.craft, craftable = data.craftable, header = data.header, anim = data.anim, amount = k, ret = data.ret, bench = data.bench },
 			params = { event = "jim-mining:Crafting:MakeItem", args = { item = data.item, craft = data.craft, craftable = data.craftable, header = data.header, anim = data.anim, amount = k, ret = data.ret, bench = data.bench } }
 		}
 	end
-	if Config.Menu == "ox" then	exports.ox_lib:registerContext({id = 'Crafting', title = data.ret and Loc[Config.Lan].info["craft_bench"] or Loc[Config.Lan].info["smelter"], position = 'top-right', options = Menu })	exports.ox_lib:showContext("Crafting")
-	elseif Config.Menu == "qb" then	exports['qb-menu']:openMenu(Menu) end
+	if Config.Menu == "ox" then exports.ox_lib:registerContext({id = 'Crafting', title = data.ret and Loc[Config.Lan].info["craft_bench"] or Loc[Config.Lan].info["smelter"], position = 'top-right', options = Menu })	exports.ox_lib:showContext("Crafting")
+	elseif Config.Menu == "qb" then exports['qb-menu']:openMenu(Menu) end
 end)
 
-
-RegisterNetEvent('jim-mining:Crafting:MakeItem', function(data) local bartext, animDictNow, animNow, Ped = "", nil, nil, PlayerPedId()
+RegisterNetEvent('jim-mining:Crafting:MakeItem', function(data) local bartext, animDictNow, animNow, scene, Ped = "", "nil", "nil", nil, PlayerPedId()
 	if not data.ret then bartext = Loc[Config.Lan].info["smelting"]..QBCore.Shared.Items[data.item].label
 	else bartext = Loc[Config.Lan].info["cutting"]..QBCore.Shared.Items[data.item].label end
 	local bartime = Config.Timings["Crafting"]
-	if (data.amount and data.amount ~= 1) then data.craft["amount"] = data.amount
-		for k, v in pairs(data.craft[data.item]) do	data.craft[data.item][k] *= data.amount	end
+	if (data.amount and data.amount ~= 1) then data.craft.amount = data.craft.amount or 1 data.craft["amount"] *= data.amount
+		for k in pairs(data.craft[data.item]) do data.craft[data.item][k] *= data.amount end
 		bartime *= data.amount bartime *= 0.9
 	end
-	LocalPlayer.state:set("inv_busy", true, true) TriggerEvent('inventory:client:busy:status', true) TriggerEvent('canUseInventoryAndHotbar:toggle', false)
+	lockInv(true)
 	local isDrilling = true
 	if data.ret then -- If jewelcutting
-		if not HasItem("drillbit", 1) then triggerNotify(nil, Loc[Config.Lan].error["no_drillbit"], 'error') TriggerEvent('jim-mining:JewelCut') return end
-		local scene
-		local dict = "anim@amb@machinery@speed_drill@"
-		local anim = "operate_02_hi_amy_skater_01"
-		loadAnimDict(tostring(dict))
-		FreezeEntityPosition(Ped, true)
-		loadDrillSound()
-		if Config.DrillSound then PlaySoundFromEntity(soundId, "Drill", data.bench, "DLC_HEIST_FLEECA_SOUNDSET", 0.5, 0) end
-		local drillcoords = GetOffsetFromEntityInWorldCoords(data.bench, 0.0, -0.15, 1.1)
-		scene = NetworkCreateSynchronisedScene(GetEntityCoords(data.bench), GetEntityRotation(data.bench), 2, false, false, 1065353216, 0, 1.3)
-		NetworkAddPedToSynchronisedScene(Ped, scene, tostring(dict), tostring(anim), 0, 0, 0, 16, 1148846080, 0)
-		NetworkStartSynchronisedScene(scene)
-		CreateThread(function()
-			loadPtfxDict("core")
-			while isDrilling do
-				UseParticleFxAssetNextCall("core")
-				local dust = StartNetworkedParticleFxNonLoopedAtCoord("glass_side_window", drillcoords.x, drillcoords.y, drillcoords.z, 0.0, 0.0, GetEntityHeading(Ped)+math.random(0, 359), 0.2, 0.0, 0.0, 0.0)
-				Wait(100)
+		if not HasItem("drillbit", 1) then
+			triggerNotify(nil, Loc[Config.Lan].error["no_drillbit"], 'error')
+			TriggerEvent('jim-mining:JewelCut', data)
+			lockInv(false)
+			return
+		else
+			local dict = "anim@amb@machinery@speed_drill@"
+			local anim = "operate_02_hi_amy_skater_01"
+			loadAnimDict(tostring(dict))
+			lockInv(true)
+			loadDrillSound()
+			if Config.DrillSound then
+				PlaySoundFromEntity(soundId, "Drill", PlayerPedId(), "DLC_HEIST_FLEECA_SOUNDSET", 0.5, 0)
 			end
-			unloadAnimDict(dict)
-		end)
+			local drillcoords = GetOffsetFromEntityInWorldCoords(data.bench, 0.0, -0.15, 1.1)
+			scene = NetworkCreateSynchronisedScene(GetEntityCoords(data.bench), GetEntityRotation(data.bench), 2, false, false, 1065353216, 0, 1.3)
+			NetworkAddPedToSynchronisedScene(Ped, scene, tostring(dict), tostring(anim), 0, 0, 0, 16, 1148846080, 0)
+			NetworkStartSynchronisedScene(scene)
+			CreateThread(function()
+				loadPtfxDict("core")
+				while isDrilling do
+					UseParticleFxAssetNextCall("core")
+					local dust = StartNetworkedParticleFxNonLoopedAtCoord("glass_side_window", drillcoords.x, drillcoords.y, drillcoords.z, 0.0, 0.0, GetEntityHeading(Ped)+math.random(0, 359), 0.2, 0.0, 0.0, 0.0)
+					Wait(100)
+				end
+				unloadAnimDict(dict)
+			end)
+		end
 	else -- If not Jewel Cutting, you'd be smelting (need to work out what is possible for this)
 		animDictNow = "amb@prop_human_parking_meter@male@idle_a"
 		animNow = "idle_a"
@@ -709,12 +715,13 @@ RegisterNetEvent('jim-mining:Crafting:MakeItem', function(data) local bartext, a
 		Wait(500)
 		TriggerEvent("jim-mining:CraftMenu", data)
 	end
-	LocalPlayer.state:set("inv_busy", false, true) TriggerEvent('inventory:client:busy:status', false) TriggerEvent('canUseInventoryAndHotbar:toggle', true)
+	lockInv(false)
+	StopSound(soundId)
+	unloadDrillSound()
+	lockInv(false)
 	NetworkStopSynchronisedScene(scene)
 	unloadPtfxDict("core")
 	isDrilling = false
-	unloadDrillSound()
-	StopSound(soundId)
 	StopAnimTask(Ped, animDictNow, animNow, 1.0)
 	FreezeEntityPosition(Ped, false)
 end)
