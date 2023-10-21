@@ -660,7 +660,7 @@ RegisterNetEvent('jim-mining:Crafting:MultiCraft', function(data)
 	elseif Config.Menu == "qb" then exports['qb-menu']:openMenu(Menu) end
 end)
 
-RegisterNetEvent('jim-mining:Crafting:MakeItem', function(data) local bartext, animDictNow, animNow, scene, Ped = "", "nil", "nil", nil, PlayerPedId()
+RegisterNetEvent('jim-mining:Crafting:MakeItem', function(data) local bartext, animDictNow, animNow, scene, Ped = "", nil, nil, nil, PlayerPedId()
 	if not data.ret then bartext = Loc[Config.Lan].info["smelting"]..QBCore.Shared.Items[data.item].label
 	else bartext = Loc[Config.Lan].info["cutting"]..QBCore.Shared.Items[data.item].label end
 	local bartime = Config.Timings["Crafting"]
