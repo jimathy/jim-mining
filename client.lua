@@ -88,9 +88,9 @@ function makeJob()
 					if loc["Cracking"][i].blipEnable then Blip[#Blip+1] = makeBlip(loc["Cracking"][i]) end
 					Props[#Props+1] = makeProp(loc["Cracking"][i], 1, false)
 					Targets[name] =
-						exports['qb-target']:AddCircleZone(name, loc["Cracking"][i].coords.xyz, 1.2, {name=name, debugPoly=Config.Debug, useZ=true, },
-						{ options = { { event = "jim-mining:CrackStart", icon = "fas fa-compact-disc", item = "stone", label = Loc[Config.Lan].info["crackingbench"], bench = Props[#Props] }, },
-							distance = 2.0 })
+						exports['qb-target']:AddTargetEntity(Props[#Props], { options = {
+							{ event = "jim-mining:CrackStart", icon = "fas fa-compact-disc", item = "stone", label = Loc[Config.Lan].info["crackingbench"], bench = Props[#Props] },
+					}, distance = 2.0 })
 				end
 			end
 		--[[Ore Buyer]]--
@@ -110,9 +110,9 @@ function makeJob()
 					if loc["JewelCut"][i].blipEnable then Blip[#Blip+1] = makeBlip(loc["JewelCut"][i]) end
 					Props[#Props+1] = makeProp(loc["JewelCut"][i], 1, false)
 					Targets[name] =
-						exports['qb-target']:AddCircleZone(name, loc["JewelCut"][i].coords.xyz, 1.2, {name=name, debugPoly=Config.Debug, useZ=true, },
-						{ options = { { event = "jim-mining:JewelCut", icon = "fas fa-gem", label = Loc[Config.Lan].info["jewelcut"], bench = Props[#Props], job = Config.Job }, },
-							distance = 2.0 })
+						exports['qb-target']:AddTargetEntity(Props[#Props], { options = {
+							{ event = "jim-mining:JewelCut", icon = "fas fa-gem", label = Loc[Config.Lan].info["jewelcut"], bench = Props[#Props], job = Config.Job },
+						}, distance = 2.0 })
 				end
 			end
 		end

@@ -1,9 +1,9 @@
-print("^2Jim-Mining ^7v^42^7.^44^7.^42 ^7- ^2Mining Script by ^1Jimathy^7")
+print("^2Jim-Mining ^7v^4"..GetResourceMetadata(GetCurrentResourceName(), 'version', nil):gsub("%.", "^7.^4").."^7 - ^2Mining Script by ^1Jimathy^7")
 
 Loc = {}
 
 Config = {
-	Debug = false, -- enable debug mode
+	Debug = true, -- enable debug mode
 	img = "qb-inventory/html/images/", --Set this to the image directory of your inventory script or "nil" if using newer qb-menu
 
 	Lan = "en", -- Pick your language here
