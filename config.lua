@@ -3,7 +3,7 @@ print("^2Jim-Mining ^7v^4"..GetResourceMetadata(GetCurrentResourceName(), 'versi
 Loc = {}
 
 Config = {
-	Debug = true, -- enable debug mode
+	Debug = false, -- enable debug mode
 	img = "qb-inventory/html/images/", --Set this to the image directory of your inventory script or "nil" if using newer qb-menu
 
 	Lan = "en", -- Pick your language here
