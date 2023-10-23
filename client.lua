@@ -175,7 +175,7 @@ end)
 --------------------------------------------------------
 RegisterNetEvent('jim-mining:openShop', function(data)
 	local event = "inventory:server:OpenInventory"
-	if Config.JimShop then event = "jim-shops:ShopOpen"
+	if Config.JimShops then event = "jim-shops:ShopOpen"
 	elseif Config.Inv == "ox" then  exports.ox_inventory:openInventory('shop', { type = 'miningShop' }) end
 	TriggerServerEvent(event, "shop", "miningShop", Config.Items)
 	lookEnt(data.ped)
