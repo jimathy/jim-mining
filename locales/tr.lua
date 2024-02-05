@@ -1,3 +1,5 @@
+Loc = Loc or {}
+
 Loc["tr"] = {
     error = {
         ["cancelled"] = "İptal edildi!",

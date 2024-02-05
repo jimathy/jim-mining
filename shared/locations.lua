@@ -1,4 +1,4 @@
-Config.Locations = {
+Locations = {
     ["Washing"] = {
         Enable = true,
         positions = {
