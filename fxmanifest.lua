@@ -33,3 +33,5 @@ client_scripts {
 }
 
 server_script 'server.lua'
+
+dependancy 'jim_bridge'
