@@ -1,14 +1,34 @@
 local Props, Targets, Peds, Blip, soundId = {}, {}, {}, {}, GetSoundId()
-------------------------------------------------------------
 
 --Hide the mineshaft doors
-CreateModelHide(vec3(-596.04, 2089.01, 131.41), 10.5, -1241212535, true)
-
+if Locations["Mines"]["MineShaft"].Enable then
+	CreateModelHide(vec3(-596.04, 2089.01, 131.41), 10.5, -1241212535, true)
+end
 function removeJob()
 	for k in pairs(Targets) do removeZoneTarget(k) end
 	for _, v in pairs(Peds) do DeletePed(v) end
 	for i = 1, #Props do DeleteObject(Props[i]) end
 	for i = 1, #Blip do RemoveBlip(Blip[i]) end
+end
+
+local propTable = {
+	{ full = "cs_x_rubweec", empty = "prop_rock_5_a" },
+}
+if Config.General.K4MB1Prop then
+	propTable = {
+		{ full = "cs_x_rubweec", empty = "prop_rock_5_a" },
+		{ full = "k4mb1_crystalblue", empty = "k4mb1_crystalempty" },
+		{ full = "k4mb1_crystalgreen", empty = "k4mb1_crystalempty" },
+		{ full = "k4mb1_crystalred", empty = "k4mb1_crystalempty" },
+		{ full = "k4mb1_bauxiteore2", empty = "k4mb1_emptyore2" },
+		{ full = "k4mb1_coal2", },
+		{ full = "k4mb1_copperore2", empty = "k4mb1_emptyore2" },
+		{ full = "k4mb1_ironore2", empty = "k4mb1_emptyore2" },
+		{ full = "k4mb1_goldore2", empty = "k4mb1_emptyore2" },
+		{ full = "k4mb1_leadore2", empty = "k4mb1_emptyore2" },
+		{ full = "k4mb1_tinore2", empty = "k4mb1_emptyore2" },
+		{ full = "k4mb1_diamond", },
+	}
 end
 
 function makeJob()
@@ -23,43 +43,71 @@ function makeJob()
 			if loc["OrePositions"] then
 				for i = 1, #loc["OrePositions"] do local name = "Ore".."_"..mine.."_"..i
 					local coords = loc["OrePositions"][i]
-					local propTable = {
-						{ full = "cs_x_rubweec", empty = "prop_rock_5_a" },
-					}
-					if Config.General.K4MB1Prop then
-						propTable = {
-							{ full = "k4mb1_crystalblue", empty = "k4mb1_crystalempty" },
-							{ full = "k4mb1_crystalgreen", empty = "k4mb1_crystalempty" },
-							{ full = "k4mb1_crystalred", empty = "k4mb1_crystalempty" },
-							{ full = "k4mb1_copperore2", empty = "k4mb1_emptyore2" },
-							{ full = "k4mb1_ironore2", empty = "k4mb1_emptyore2" },
-							{ full = "k4mb1_goldore2", empty = "k4mb1_emptyore2" },
-							{ full = "k4mb1_leadore2", empty = "k4mb1_emptyore2" },
-							{ full = "k4mb1_tinore2", empty = "k4mb1_emptyore2" },
-						}
+					local prop = nil
+					local rot = nil
+					local propPick = nil
+					local setReward = nil
+					if Config.General.AltMining then
+						local totalWeight = 0
+						local weightedTable = {}
+						local chosenProp = nil
+						for _, item in ipairs(Config.setMiningTable) do
+							if item.rarity == "common" then item.weight = 5
+							elseif item.rarity == "rare" then item.weight = 3
+							elseif item.rarity == "ultra_rare" then item.weight = 1 end
+							totalWeight = totalWeight + (item.weight or 1)
+							table.insert(weightedTable, {name = item.name, rarity = item.rarity, weight = totalWeight, prop = item.prop })
+						end
+						local randomValue = math.random(1, totalWeight)
+						for _, item in ipairs(weightedTable) do
+							if randomValue <= item.weight then
+								setReward = item.name
+								chosenProp = item.prop
+								break
+							end
+						end
+						if Config.General.K4MB1Prop then
+							for i = 1, #propTable do
+								if propTable[i].full == chosenProp then
+									propPick = propTable[i]
+									break
+								end
+							end
+						else
+							propPick = propTable[math.random(1,#propTable)]
+						end
+					else
+						propPick = propTable[math.random(1,#propTable)]
 					end
-					local propPick = propTable[math.random(1,#propTable)]
+
 					Props[#Props+1] = makeProp({coords = vec4(coords.x, coords.y, coords.z + (not Config.General.K4MB1Prop and 1.10 or 0.8), coords.a), prop = propPick.full}, 1, false)
-					local rot = GetEntityRotation(Props[#Props])
+					prop = Props[#Props]
+					rot = GetEntityRotation(prop)
 					rot = vec3(rot.x - math.random(60,100), rot.y, rot.z)
-					SetEntityRotation(Props[#Props], rot.x, rot.y, rot.z, 0, 0)
+					SetEntityRotation(prop, rot.x, rot.y, rot.z, 0, 0)
+					-- Empty Version
+					local emptyProp = nil
+					if propPick.empty then
+						Props[#Props+1] = makeProp({coords = vec4(coords.x, coords.y, coords.z + (not Config.General.K4MB1Prop and 1.1 or 0.8), coords.a), prop = propPick.empty}, 1, false)
+						emptyProp = Props[#Props]
+						SetEntityRotation(emptyProp, rot.x, rot.y, rot.z, 0, 0)
+					end
 					Targets[name] =
 						createCircleTarget({name, vec3(coords.x, coords.y, coords.z), 1.2, { name=name, debugPoly=Config.System.Debug, useZ=true, }, }, {
 							{ 	action = function()
-									TriggerEvent("jim-mining:MineOre:Pick", { stone = Props[#Props], name = name })
+									TriggerEvent("jim-mining:MineOre:Pick", { stone = prop, name = name, coords = coords, rot = rot, emptyProp = emptyProp, setReward = setReward })
+									print(rot)
 								end,
 								icon = "fas fa-hammer", item = "pickaxe", label = Loc[Config.Lan].info["mine_ore"].." ("..Items["pickaxe"].label..")", job = loc.Job, },
 							{ 	action = function()
-									TriggerEvent("jim-mining:MineOre:Drill", { stone = Props[#Props], name = name })
+									TriggerEvent("jim-mining:MineOre:Drill", { stone = prop, name = name, coords = coords, rot = rot, emptyProp = emptyProp, setReward = setReward })
 								end,
 								icon = "fas fa-screwdriver", item = "miningdrill", label = Loc[Config.Lan].info["mine_ore"].." ("..Items["miningdrill"].label..")", job = loc.Job, },
 							{ 	action = function()
-									TriggerEvent("jim-mining:MineOre:Laser", { stone = Props[#Props], name = name })
+									TriggerEvent("jim-mining:MineOre:Laser", { stone = prop, name = name, coords = coords, rot = rot, emptyProp = emptyProp, setReward = setReward })
 								end,
 								icon = "fas fa-screwdriver-wrench", item = "mininglaser", label = Loc[Config.Lan].info["mine_ore"].." ("..Items["mininglaser"].label..")", job = loc.Job, },
 						}, 1.7)
-					Props[#Props+1] = makeProp({coords = vec4(coords.x, coords.y, coords.z + (not Config.General.K4MB1Prop and 1.1 or 0.8), coords.a), prop = propPick.empty}, 1, false)
-					SetEntityRotation(Props[#Props], rot.x, rot.y, rot.z, 0, 0)
 				end
 			end
 		--[[LIGHTS]]--
@@ -82,6 +130,13 @@ function makeJob()
 								end,
 								icon = "fas fa-store", label = Loc[Config.Lan].info["browse_store"], job = loc.Job,
 							},
+							((mine == "K4MB1Shaft" and Config.General.K4MB1Cart) and
+							{	action = function()
+									mineCartMenu(true)
+								end,
+								icon = "fas fa-wheelchair", label = "Minecart", job = loc.Job,
+							} or nil
+						),
 						}, 2.0)
 				end
 			end
@@ -146,6 +201,28 @@ function makeJob()
 									TriggerEvent("jim-mining:JewelCut", {bench = bench})
 								end,
 								icon = "fas fa-gem", label = Loc[Config.Lan].info["jewelcut"], job = Config.General.Job,
+							},
+						}, 2.0)
+				end
+			end
+			if (mine == "K4MB1Shaft" and Config.General.K4MB1Cart) then
+				local cartCoords = {
+					{ 	coords = vec4(-471.6, 2090.23, 120.08, 103.49),
+						right = false,
+					},
+					{ 	coords = vec4(-564.39, 1885.17, 123.04, 22.38),
+						right = true,
+					},
+				}
+				for i = 1, #cartCoords do
+					local name = GetCurrentResourceName()..":Cart:"..mine..":"..i
+					Peds[#Peds+1] = makePed("G_M_M_ChemWork_01", cartCoords[i].coords, 1, 1, "WORLD_HUMAN_CLIPBOARD")
+					Targets[name] =
+						createCircleTarget({name, cartCoords[i].coords.xyz, 1.0, { name=name, debugPoly=Config.System.Debug, useZ=true, }, }, {
+							{	action = function()
+									mineCartMenu(false, cartCoords[i].right)
+								end,
+								icon = "fas fa-wheelchair", label = "Minecart", job = loc.Job,
 							},
 						}, 2.0)
 				end
@@ -217,42 +294,90 @@ RegisterNetEvent('QBCore:Client:OnJobUpdate', function()
 	else makeJob() end
 end)
 AddEventHandler('onResourceStart', function(r) if GetCurrentResourceName() ~= r then return end
-if Config.General.job then
-	if hasJob(Config.General.job) then makeJob() else removeJob() end
-else makeJob() end
+	if Config.General.job then
+		if hasJob(Config.General.job) then makeJob() else removeJob() end
+	else makeJob() end
 end)
 
 --------------------------------------------------------
 
-function stoneBreak(name, stone)
+function stoneBreak(name, stone, coords, job, rot, empty)
 	CreateThread(function()
-		local rockcoords = GetEntityCoords(stone)
-		if Config.System.Debug then print("^5Debug^7: ^2Hiding prop and target^7: '^6"..name.."^7' ^2at coords^7: ^6"..rockcoords) end
+		local prop = stone
+		local emptyProp = empty
 		--Stone CoolDown + Recreation
-		SetEntityAlpha(stone, 0)
-		removeZoneTarget(name) Targets[name] = nil
-		Wait(Config.System.Debug and 2000 or Config.Timings["OreRespawn"])
-		--Unhide Stone and create a new target location
-		SetEntityAlpha(stone, 255)
+		local setReward = nil
+		if Config.General.AltMining then
+			local propPick = nil
+			removeZoneTarget(Targets[name])
+			destroyProp(prop)
+			Targets[name] = nil
+			Wait(Config.System.Debug and 2000 or Config.Timings["OreRespawn"])
+
+			local totalWeight = 0
+			local weightedTable = {}
+			local chosenProp = nil
+			for _, item in ipairs(Config.setMiningTable) do
+				if item.rarity == "common" then item.weight = 5
+				elseif item.rarity == "rare" then item.weight = 3
+				elseif item.rarity == "ultra_rare" then item.weight = 1 end
+				totalWeight = totalWeight + (item.weight or 1)
+				table.insert(weightedTable, {name = item.name, rarity = item.rarity, weight = totalWeight, prop = item.prop })
+			end
+			local randomValue = math.random(1, totalWeight)
+			for _, item in ipairs(weightedTable) do
+				if randomValue <= item.weight then
+					setReward = item.name
+					chosenProp = item.prop
+					break
+				end
+			end
+			for i = 1, #propTable do
+				if propTable[i].full == chosenProp then
+					propPick = propTable[i]
+					break
+				end
+			end
+
+			--Unhide Stone and create a new target location
+			Props[#Props+1] = makeProp({coords = vec4(coords.x, coords.y, coords.z + (not Config.General.K4MB1Prop and 1.10 or 0.8), coords.a), prop = propPick.full}, 1, false)
+			prop = Props[#Props]
+			SetEntityRotation(prop, rot.x, rot.y, rot.z, 0, 0)
+
+			-- Empty Version
+			destroyProp(emptyProp)
+			if propPick.empty then
+				Props[#Props+1] = makeProp({coords = vec4(coords.x, coords.y, coords.z + (not Config.General.K4MB1Prop and 1.1 or 0.8), coords.a), prop = propPick.empty}, 1, false)
+				emptyProp = Props[#Props]
+				SetEntityRotation(emptyProp, rot.x, rot.y, rot.z, 0, 0)
+			end
+		else
+			if Config.System.Debug then print("^5Debug^7: ^2Hiding prop and target^7: '^6"..name.."^7' ^2at coords^7: ^6"..coords) end
+			SetEntityAlpha(prop, 0)
+			removeZoneTarget(Targets[name]) Targets[name] = nil
+			Wait(Config.System.Debug and 2000 or Config.Timings["OreRespawn"])
+			--Unhide Stone and create a new target location
+			SetEntityAlpha(prop, 255)
+		end
 		Targets[name] =
-			createCircleTarget({ name, rockcoords.xyz, 1.2, { name = name, debugPolu = Config.System.Debug, }, }, {
+			createCircleTarget({name, vec3(coords.x, coords.y, coords.z), 1.2, { name=name, debugPoly=Config.System.Debug, useZ=true, }, }, {
 				{ 	action = function()
-						TriggerEvent("jim-mining:MineOre:Pick", { stone = stone, name = name })
+						TriggerEvent("jim-mining:MineOre:Pick", { stone = prop, name = name, coords = coords, rot = rot, emptyProp = emptyProp, setReward = setReward })
 					end,
-					icon = "fas fa-hammer", item = "pickaxe", label = Loc[Config.Lan].info["mine_ore"].." ("..Items["pickaxe"].label..")", job = loc.Job,
+					icon = "fas fa-hammer", item = "pickaxe", label = Loc[Config.Lan].info["mine_ore"].." ("..Items["pickaxe"].label..")", job = job,
 				},
 				{ 	action = function()
-						TriggerEvent("jim-mining:MineOre:Drill", { stone = stone, name = name })
+						TriggerEvent("jim-mining:MineOre:Drill", { stone = prop, name = name,coords = coords, rot = rot, emptyProp = emptyProp, setReward = setReward })
 					end,
-					icon = "fas fa-screwdriver", item = "minindrill", label = Loc[Config.Lan].info["mine_ore"].." ("..Items["miningdrill"].label..")", job = loc.Job,
+					icon = "fas fa-screwdriver", item = "minindrill", label = Loc[Config.Lan].info["mine_ore"].." ("..Items["miningdrill"].label..")", job = job,
 				},
 				{ 	action = function()
-						TriggerEvent("jim-mining:MineOre:Laser", { stone = stone, name = name })
+						TriggerEvent("jim-mining:MineOre:Laser", { stone = prop, name = name,  coords = coords, rot = rot, emptyProp = emptyProp, setReward = setReward })
 					end,
-					icon = "fas fa-screwdriver-wrench", item = "mininglaser", label = Loc[Config.Lan].info["mine_ore"].." ("..Items["mininglaser"].label..")", job = loc.Job,
+					icon = "fas fa-screwdriver-wrench", item = "mininglaser", label = Loc[Config.Lan].info["mine_ore"].." ("..Items["mininglaser"].label..")", job = job,
 				},
 			}, 1.3)
-		if Config.System.Debug then print("^5Debug^7: ^2Remaking Prop and Target^7: '^6"..name.."^7' ^2at coords^7: ^6"..rockcoords) end
+		if Config.System.Debug then print("^5Debug^7: ^2Remaking Prop and Target^7: '^6"..name.."^7' ^2at coords^7: ^6"..coords) end
 	end)
 end
 
@@ -284,13 +409,13 @@ RegisterNetEvent('jim-mining:MineOre:Pick', function(data) local Ped = PlayerPed
 		end
 	end)
 	if progressBar({label = Loc[Config.Lan].info["drilling_ore"], time = Config.Timings["Pickaxe"], cancel = true, icon = "pickaxe"}) then
-		TriggerServerEvent('jim-mining:Reward', { mine = true, cost = nil })
+		TriggerServerEvent('jim-mining:Reward', { mine = true, cost = nil, setReward = data.setReward })
 		if math.random(1,10) >= 9 then
 			local breakId = GetSoundId()
 			PlaySoundFromEntity(breakId, "Drill_Pin_Break", Ped, "DLC_HEIST_FLEECA_SOUNDSET", 1, 0)
 			removeItem("pickaxe", 1)
 		end
-		stoneBreak(data.name, data.stone)
+		stoneBreak(data.name, data.stone, data.coords, data.job, data.rot, data.emptyProp)
 	end
 	stopAnim(dict, anim)
 	destroyProp(PickAxe)
@@ -332,7 +457,7 @@ RegisterNetEvent('jim-mining:MineOre:Drill', function(data) local Ped = PlayerPe
 				local breakId = GetSoundId()
 				PlaySoundFromEntity(breakId, "Drill_Pin_Break", Ped, "DLC_HEIST_FLEECA_SOUNDSET", 1, 0)
 				removeItem("drillbit", 1)
-				stoneBreak(data.name, data.stone)
+				stoneBreak(data.name, data.stone, data.coords, data.job, data.rot, data.emptyProp)
 			end
 		end
 		stopAnim(dict, anim)
@@ -379,7 +504,7 @@ RegisterNetEvent('jim-mining:MineOre:Laser', function(data) local Ped = PlayerPe
 	end)
 	if progressBar({label = Loc[Config.Lan].info["drilling_ore"], time = Config.Timings["Laser"], cancel = true, icon = "mininglaser"}) then
 		TriggerServerEvent('jim-mining:Reward', { mine = true, cost = nil })
-		stoneBreak(data.name, data.stone)
+		stoneBreak(data.name, data.stone, data.coords, data.job, data.rot, data.emptyProp)
 	end
 	IsDrilling, isMining = false, false
 	stopAnim(dict, anim)

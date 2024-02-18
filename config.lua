@@ -1,9 +1,9 @@
-print("^2Jim-Mining ^7v^42^7.^44^7.^42 ^7- ^2Mining Script by ^1Jimathy^7")
+print("^2Jim-Mining ^7v^4"..GetResourceMetadata(GetCurrentResourceName(), 'version', nil):gsub("%.", "^7.^4").."^7 - ^2Mining Script by ^1Jimathy^7")
 
 Config = {
 	Lan = "en", -- Pick your language here
 	System = {
-		Debug = trfalseue, -- enable debug mode
+		Debug = false, -- enable debug mode
 		Menu = "ox",			--"qb" or "ox"
 		ProgressBar = "gta",		--"qb" or "ox"
 		Notify = "gta",			--"qb" or "ox"
@@ -13,7 +13,15 @@ Config = {
 		JimShops = false, 		-- Set this to true if using jim-shops
 		DrillSound = true,		-- disable drill sounds
 
-		K4MB1Prop = true, -- Enable this to make use of K4MB1's ore props provided with their Mining Cave MLO
+		K4MB1Prop = false, 		-- Enable this to make use of K4MB1's ore props provided with their Mining Cave MLO
+
+		AltMining = true,		-- Enables Alternate mining (enhanced with k4mb1's mining ore props)
+								-- Changes system to one based on rarity of ores specified in setMiningTable below
+								-- Every ore that spawns will give specific ores
+
+		K4MB1Cart = false,		-- If using k4mb1's shaftcave mlo + caveprops
+								-- Allow players to use a minecart to get to the chambers faster
+								-- Add's target option to the store ped at the mine shaft
 	},
 	Crafting = {
 		craftCam = true,
@@ -28,7 +36,7 @@ Config = {
 		["Pickaxe"] = math.random(15000, 18000),
 		["Mining"] = math.random(10000, 15000),
 		["Laser"] = math.random(7000, 10000),
-		["OreRespawn"] = math.random(55000, 75000),
+		["OreRespawn"] = math.random(1800000),
 		["Crafting"] = 5000,
 	},
 
@@ -48,7 +56,7 @@ Config = {
 		"goldore",
 	},
 
-	PanPool = {		-- Rewards from panning
+	PanPool = { 	-- Rewards from panning
 		"can",
 		"goldore",
 		"can",
@@ -65,6 +73,20 @@ Config = {
 		"stone",
 		"silverore",
 		"bottle",
+	},
+
+	setMiningTable = {	-- Set rarity of ore spawn for AltMining
+		{ name = "carbon", rarity = "common", prop = "k4mb1_coal2", },
+		{ name = "copperore", rarity = "common", prop = "k4mb1_copperore2", },
+		{ name = "ironore", rarity = "common", prop = "k4mb1_ironore2", },
+		{ name = "metalscrap", rarity = "common", prop = "k4mb1_leadore2" },
+		{ name = "goldore", rarity = "rare", prop = "k4mb1_goldore2" },
+		{ name = "silverore", rarity = "rare", prop = "k4mb1_tinore2" },
+		{ name = "uncut_ruby", rarity = "ultra_rare", prop = "k4mb1_crystalred" },
+		{ name = "uncut_emerald", rarity = "ultra_rare", prop = "k4mb1_crystalgreen" },
+		{ name = "uncut_diamond", rarity = "ultra_rare", prop = "k4mb1_diamond" },
+		{ name = "uncut_sapphire", rarity = "ultra_rare", prop = "k4mb1_crystalblue" },
+		{ name = "stone", rarity = "common", prop = "cs_x_rubweec" },
 	},
 
 ------------------------------------------------------------
