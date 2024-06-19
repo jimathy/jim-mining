@@ -1,5 +1,4 @@
-QBCore = exports['qb-core']:GetCoreObject()
-
+Bridge = {}
 local time = 1000
 function loadModel(model) if not HasModelLoaded(model) then
 	if Config.Debug then print("^5Debug^7: ^2Loading Model^7: '^6"..model.."^7'") end
@@ -97,22 +96,22 @@ function makeBlip(data)
 end
 
 function triggerNotify(title, message, type, src)
-	if Config.Notify == "okok" then
+	if GetResourceState('okokNotify') == "started" then
 		if not src then exports['okokNotify']:Alert(title, message, 6000, type)
 		else TriggerClientEvent('okokNotify:Alert', src, title, message, 6000, type) end
-	elseif Config.Notify == "qb" then
+	elseif GetResourceState('qb-core') == "started" then
 		if not src then	TriggerEvent("QBCore:Notify", message, type)
 		else TriggerClientEvent("QBCore:Notify", src, message, type) end
-	elseif Config.Notify == "t" then
+	elseif GetResourceState('t-notify') == "started" then
 		if not src then exports['t-notify']:Custom({title = title, style = type, message = message, sound = true})
 		else TriggerClientEvent('t-notify:client:Custom', src, { style = type, duration = 6000, title = title, message = message, sound = true, custom = true}) end
-	elseif Config.Notify == "infinity" then
+	elseif GetResourceState('infinity-notify') == "started" then
 		if not src then TriggerEvent('infinity-notify:sendNotify', message, type)
 		else TriggerClientEvent('infinity-notify:sendNotify', src, message, type) end
-	elseif Config.Notify == "rr" then
+	elseif GetResourceState('rr_uilib') == "started" then
 		if not src then exports.rr_uilib:Notify({msg = message, type = type, style = "dark", duration = 6000, position = "top-right", })
 		else TriggerClientEvent("rr_uilib:Notify", src, {msg = message, type = type, style = "dark", duration = 6000, position = "top-right", }) end
-	elseif Config.Notify == "ox" then
+	elseif GetResourceState('ox_lib') == "started" then
 		if not src then exports.ox_lib:notify({title = title, description = message, type = type or "success"})
 		else TriggerClientEvent('ox_lib:notify', src, { type = type or "success", title = title, description = message }) end
 	end
@@ -137,7 +136,7 @@ if Config.Inv == "ox" then
 	end
 else
     function HasItem(items, amount) local amount, count = amount or 1, 0
-        for _, itemData in pairs(QBCore.Functions.GetPlayerData().items) do
+        for _, itemData in pairs(Bridge.GetPlayerData().items) do
             if itemData and (itemData.name == items) then
                 if Config.Debug then print("^5Debug^7: ^3HasItem^7: ^2Item^7: '^3"..tostring(items).."^7' ^2Slot^7: ^3"..itemData.slot.." ^7x(^3"..tostring(itemData.amount).."^7)") end
                 count += (itemData.amount or 1)
@@ -148,11 +147,20 @@ else
     end
 end
 
-function lockInv(toggle) FreezeEntityPosition(PlayerPedId(), toggle) LocalPlayer.state:set("inv_busy", toggle, true) TriggerEvent('inventory:client:busy:status', toggle) TriggerEvent('canUseInventoryAndHotbar:toggle', not toggle) end
+function lockInv(toggle) -- updated to accomodate ox_inventory
+	FreezeEntityPosition(PlayerPedId(), toggle) 
+	if GetResourceState('ox_inventory') == 'started' then 
+		LocalPlayer.state.invBusy = toggle
+	else
+		LocalPlayer.state:set("inv_busy", toggle, true) 
+		TriggerEvent('inventory:client:busy:status', toggle) 
+		TriggerEvent('canUseInventoryAndHotbar:toggle', not toggle) 
+	end
+end
 
-function progressBar(data)
+function progressBar(data) -- updated to accomodate ESX/QB
 	local result = nil
-	if Config.ProgressBar == "ox" then
+	if GetResourceState('ox_lib') == "started" then
 		if exports.ox_lib:progressBar({	duration = Config.Debug and 1000 or data.time, label = data.label, useWhileDead = data.dead or false, canCancel = data.cancel or true,
 			anim = { dict = data.dict, clip = data.anim, flag = (data.flag == 8 and 32 or data.flag) or nil, scenario = data.task }, disable = { combat = true }, }) then
 			result = true
@@ -162,15 +170,7 @@ function progressBar(data)
 			lockInv(false)
 		end
 	else
-		QBCore.Functions.Progressbar("mechbar",	data.label,	Config.Debug and 1000 or data.time, data.dead, data.cancel or true,
-		{ disableMovement = true, disableCarMovement = true, disableMouse = false, disableCombat = true, },
-		{ animDict = data.dict, anim = data.anim, flags = (data.flag == 8 and 32 or data.flag) or nil, task = data.task }, {}, {}, function()
-			result = true
-			lockInv(false)
-		end, function()
-			result = false
-			lockInv(false)
-		end, data.icon)
+		result = Bridge.f_Progressbar(data)
 	end
 	while result == nil do Wait(10) end
 	return result

@@ -10,7 +10,15 @@ function removeJob()
 	for i = 1, #Props do unloadModel(GetEntityModel(Props[i])) DeleteObject(Props[i]) end
 	for i = 1, #Blip do RemoveBlip(Blip[i]) end
 end
-
+function GetItem(item_name)
+	local item
+	if GetResourceState('ox_inventory') == 'started' then 
+		item = exports.ox_inventory:Items(item_name)
+	else
+		item = Bridge.GetItem(item_name)
+	end
+	return item
+end
 function makeJob()
 	removeJob()
 	--Ore Spawning
@@ -46,9 +54,9 @@ function makeJob()
 					Targets[name] =
 						exports['qb-target']:AddCircleZone(name, vec3(coords.x, coords.y, coords.z), 1.2, { name=name, debugPoly=Config.Debug, useZ=true, },
 						{ options = {
-							{ event = "jim-mining:MineOre:Pick", icon = "fas fa-hammer", item = "pickaxe", label = Loc[Config.Lan].info["mine_ore"].." ("..QBCore.Shared.Items["pickaxe"].label..")", job = loc.Job, name = name, stone = Props[#Props] },
-							{ event = "jim-mining:MineOre:Drill", icon = "fas fa-screwdriver", item = "miningdrill", label = Loc[Config.Lan].info["mine_ore"].." ("..QBCore.Shared.Items["miningdrill"].label..")", job = loc.Job, name = name, stone = Props[#Props] },
-							{ event = "jim-mining:MineOre:Laser", icon = "fas fa-screwdriver-wrench", item = "mininglaser", label = Loc[Config.Lan].info["mine_ore"].." ("..QBCore.Shared.Items["mininglaser"].label..")", job = loc.Job, name = name, stone = Props[#Props] },
+							{ event = "jim-mining:MineOre:Pick", icon = "fas fa-hammer", item = "pickaxe", label = Loc[Config.Lan].info["mine_ore"].." ("..GetItem("pickaxe").label..")", job = loc.Job, name = name, stone = Props[#Props] },
+							{ event = "jim-mining:MineOre:Drill", icon = "fas fa-screwdriver", item = "miningdrill", label = Loc[Config.Lan].info["mine_ore"].." ("..GetItem("miningdrill").label..")", job = loc.Job, name = name, stone = Props[#Props] },
+							{ event = "jim-mining:MineOre:Laser", icon = "fas fa-screwdriver-wrench", item = "laserdrill", label = Loc[Config.Lan].info["mine_ore"].." ("..GetItem("laserdrill").label..")", job = loc.Job, name = name, stone = Props[#Props] },
 						}, distance = 1.7 })
 					Props[#Props+1] = makeProp({coords = vec4(coords.x, coords.y, coords.z + (not Config.K4MB1Prop and 1.1 or 0.8), coords.a), prop = propPick.empty}, 1, false)
 					SetEntityRotation(Props[#Props], rot.x, rot.y, rot.z, 0, 0)
@@ -158,25 +166,29 @@ function makeJob()
 		end
 	end
 end
-
-RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
-	QBCore.Functions.GetPlayerData(function(PlayerData)	PlayerJob = PlayerData.job end)
-	if Config.Job then if PlayerJob.name == Config.Job then makeJob() else removeJob() end else makeJob() end
-end)
-RegisterNetEvent('QBCore:Client:OnJobUpdate', function(JobInfo)
-	PlayerJob = JobInfo
-	if Config.Job then if PlayerJob.name == Config.Job then makeJob() else removeJob() end end
-end)
+-- moved to framework files
+--RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
+--	QBCore.Functions.GetPlayerData(function(PlayerData)	PlayerJob = PlayerData.job end)
+--	if Config.Job then if PlayerJob.name == Config.Job then makeJob() else removeJob() end else makeJob() end
+--end)
+--RegisterNetEvent('QBCore:Client:OnJobUpdate', function(JobInfo)
+--	PlayerJob = JobInfo
+--	if Config.Job then if PlayerJob.name == Config.Job then makeJob() else removeJob() end end
+--end)
 AddEventHandler('onResourceStart', function(resource) if GetCurrentResourceName() ~= resource then return end
-	QBCore.Functions.GetPlayerData(function(PlayerData) PlayerJob = PlayerData.job end)
+	while Bridge == nil do Wait(10) end
+	Bridge.GetPlayerData(function(PlayerData) PlayerJob = PlayerData.job end)
 	if Config.Job then if PlayerJob.name == Config.Job then makeJob() else removeJob() end else makeJob() end
 end)
 
 --------------------------------------------------------
 RegisterNetEvent('jim-mining:openShop', function(data)
 	local event = "inventory:server:OpenInventory"
-	if Config.JimShops then event = "jim-shops:ShopOpen"
-	elseif Config.Inv == "ox" then  exports.ox_inventory:openInventory('shop', { type = 'miningShop' }) end
+	if GetResourceState('jim-shops') == "started" then  
+		event = "jim-shops:ShopOpen"
+	elseif GetResourceState('ox_inventory') == "started" then  
+		exports.ox_inventory:openInventory('shop', { type = 'miningShop' }) 
+	end
 	TriggerServerEvent(event, "shop", "miningShop", Config.Items)
 	lookEnt(data.ped)
 end)
@@ -194,9 +206,9 @@ function stoneBreak(name, stone)
 		Targets[name] =
 			exports['qb-target']:AddCircleZone(name, vec3(rockcoords.x, rockcoords.y, rockcoords.z), 1.2, { name=name, debugPoly=Config.Debug, useZ=true, },
 				{ options = {
-					{ event = "jim-mining:MineOre:Pick", icon = "fas fa-hammer", item = "pickaxe", label = Loc[Config.Lan].info["mine_ore"].." ("..QBCore.Shared.Items["pickaxe"].label..")", job = Config.Job, name = name, stone = stone },
-					{ event = "jim-mining:MineOre:Drill", icon = "fas fa-screwdriver", item = "miningdrill", label = Loc[Config.Lan].info["mine_ore"].." ("..QBCore.Shared.Items["miningdrill"].label..")", job = Config.Job, name = name, stone = stone },
-					{ event = "jim-mining:MineOre:Laser", icon = "fas fa-screwdriver-wrench", item = "mininglaser", label = Loc[Config.Lan].info["mine_ore"].." ("..QBCore.Shared.Items["mininglaser"].label..")", job = Config.Job, name = name, stone = stone },
+					{ event = "jim-mining:MineOre:Pick", icon = "fas fa-hammer", item = "pickaxe", label = Loc[Config.Lan].info["mine_ore"].." ("..GetItem("pickaxe").label..")", job = Config.Job, name = name, stone = stone },
+					{ event = "jim-mining:MineOre:Drill", icon = "fas fa-screwdriver", item = "miningdrill", label = Loc[Config.Lan].info["mine_ore"].." ("..GetItem("miningdrill").label..")", job = Config.Job, name = name, stone = stone },
+					{ event = "jim-mining:MineOre:Laser", icon = "fas fa-screwdriver-wrench", item = "laserdrill", label = Loc[Config.Lan].info["mine_ore"].." ("..GetItem("laserdrill").label..")", job = Config.Job, name = name, stone = stone },
 				}, distance = 1.3 })
 
 		if Config.Debug then print("^5Debug^7: ^2Remaking Prop and Target^7: '^6"..name.."^7' ^2at coords^7: ^6"..rockcoords) end
@@ -333,7 +345,7 @@ RegisterNetEvent('jim-mining:MineOre:Laser', function(data) local Ped = PlayerPe
 			Wait(60)
 		end
 	end)
-	if progressBar({label = Loc[Config.Lan].info["drilling_ore"], time = Config.Debug and 1000 or Config.Timings["Laser"], cancel = true, icon = "mininglaser"}) then
+	if progressBar({label = Loc[Config.Lan].info["drilling_ore"], time = Config.Debug and 1000 or Config.Timings["Laser"], cancel = true, icon = "laserdrill"}) then
 		TriggerServerEvent('jim-mining:Reward', { mine = true, cost = nil })
 		stoneBreak(data.name, data.stone)
 	end
@@ -459,7 +471,7 @@ end)
 ------------------------------------------------------------
 --Selling animations are simply a pass item to seller animation
 RegisterNetEvent('jim-mining:SellAnim', function(data) local Ped = PlayerPedId()
-	if not HasItem(data.item, 1) then triggerNotify(nil, Loc[Config.Lan].error["dont_have"].." "..QBCore.Shared.Items[data.item].label, "error") return end
+	if not HasItem(data.item, 1) then triggerNotify(nil, Loc[Config.Lan].error["dont_have"].." "..GetItem(data.item).label, "error") return end
 	for k, v in pairs(GetGamePool('CObject')) do
 		for _, model in pairs({`p_cs_clipboard`}) do
 			if GetEntityModel(v) == model then	if IsEntityAttachedToEntity(data.ped, v) then DeleteObject(v) DetachEntity(v, 0, 0) SetEntityAsMissionEntity(v, true, true)	Wait(100) DeleteEntity(v) end end
@@ -482,16 +494,16 @@ end)
 ------------------------------------------------------------
 RegisterNetEvent('jim-mining:SellOre', function(data)
 	local sellMenu = {}
-	if Config.Menu == "qb" then
+	if GetResourceState('qb-menu') == 'started' then 
 		sellMenu[#sellMenu+1] = { header = Loc[Config.Lan].info["header_oresell"], txt = Loc[Config.Lan].info["oresell_txt"], isMenuHeader = true }
 		sellMenu[#sellMenu+1] = { icon = "fas fa-circle-xmark", header = "", txt = Loc[Config.Lan].info["close"], params = { event = "jim-mining:CraftMenu:Close" } }
 	end
 	for _, v in pairs(Config.OreSell) do
-		local setheader = QBCore.Shared.Items[v].label
+		local setheader = GetItem(v).label
 		local disable = true
 		if HasItem(v, 1) then setheader = setheader.." 💰" disable = false end
 		sellMenu[#sellMenu+1] = {
-			icon = "nui://"..Config.img..QBCore.Shared.Items[v].image, disabled = disable,
+			icon = "nui://"..Config.img..GetItem(v).image, disabled = disable,
 			header = setheader,	txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellingPrices[v].." "..Loc[Config.Lan].info["sell_each"],
 			params = { event = "jim-mining:SellAnim", args = { item = v, ped = data.ped } },
 			title = setheader, description = Loc[Config.Lan].info["sell_all"].." "..Config.SellingPrices[v].." "..Loc[Config.Lan].info["sell_each"],
@@ -499,23 +511,23 @@ RegisterNetEvent('jim-mining:SellOre', function(data)
 		}
 		Wait(0)
 	end
-	if Config.Menu == "ox" then exports.ox_lib:registerContext({id = 'sellMenu', title = Loc[Config.Lan].info["header_oresell"], position = 'top-right', options = sellMenu })	exports.ox_lib:showContext("sellMenu")
-	elseif Config.Menu == "qb" then exports['qb-menu']:openMenu(sellMenu) end
+	if GetResourceState('ox_lib') == 'started' then  exports.ox_lib:registerContext({id = 'sellMenu', title = Loc[Config.Lan].info["header_oresell"], position = 'top-right', options = sellMenu })	exports.ox_lib:showContext("sellMenu")
+	elseif GetResourceState('qb-menu') == 'started' then  exports['qb-menu']:openMenu(sellMenu) end
 	lookEnt(data.ped)
 end)
 ------------------------
 --Jewel Selling Main Menu
 RegisterNetEvent('jim-mining:JewelSell', function(data)
 	local sellMenu = {}
-	if Config.Menu == "qb" then
+	if GetResourceState('qb-menu') == 'started' then 
 		sellMenu[#sellMenu+1] = { header = Loc[Config.Lan].info["jewel_buyer"], txt = Loc[Config.Lan].info["sell_jewel"], isMenuHeader = true }
 		sellMenu[#sellMenu+1] = { icon = "fas fa-circle-xmark", header = "", txt = Loc[Config.Lan].info["close"], params = { event = "jim-mining:CraftMenu:Close" } }
 	end
 	local table = {
-		{ title = QBCore.Shared.Items["emerald"].label, sub = "emerald" },
-		{ title = QBCore.Shared.Items["ruby"].label, sub = "ruby" },
-		{ title = QBCore.Shared.Items["diamond"].label, sub = "diamond" },
-		{ title = QBCore.Shared.Items["sapphire"].label, sub = "sapphire" },
+		{ title = GetItem("emerald").label, sub = "emerald" },
+		{ title = GetItem("ruby").label, sub = "ruby" },
+		{ title = GetItem("diamond").label, sub = "diamond" },
+		{ title = GetItem("sapphire").label, sub = "sapphire" },
 		{ title = Loc[Config.Lan].info["rings"], sub = "rings" },
 		{ title = Loc[Config.Lan].info["necklaces"], sub = "necklaces" },
 		{ title = Loc[Config.Lan].info["earrings"], sub = "earrings" },
@@ -526,15 +538,15 @@ RegisterNetEvent('jim-mining:JewelSell', function(data)
 			title = table[i].title, description = Loc[Config.Lan].info["see_options"], event = "jim-mining:JewelSell:Sub", args = { sub = table[i].sub, ped = data.ped }
 		}
 	end
-	if Config.Menu == "ox" then exports.ox_lib:registerContext({id = 'sellMenu', title = Loc[Config.Lan].info["jewel_buyer"], position = 'top-right', options = sellMenu })	exports.ox_lib:showContext("sellMenu")
-	elseif Config.Menu == "qb" then exports['qb-menu']:openMenu(sellMenu) end
+	if GetResourceState('ox_lib') == 'started' then exports.ox_lib:registerContext({id = 'sellMenu', title = Loc[Config.Lan].info["jewel_buyer"], position = 'top-right', options = sellMenu })	exports.ox_lib:showContext("sellMenu")
+	elseif GetResourceState('qb-menu') == 'started' then  exports['qb-menu']:openMenu(sellMenu) end
 	lookEnt(data.ped)
 end)
 --Jewel Selling - Sub Menu Controller
 RegisterNetEvent('jim-mining:JewelSell:Sub', function(data)
 	local list = {}
 	local sellMenu = {}
-	if Config.Menu == "qb" then
+	if GetResourceState('qb-menu') == 'started' then 
 		sellMenu[#sellMenu+1] = { header = Loc[Config.Lan].info["jewel_buyer"], txt = Loc[Config.Lan].info["sell_jewel"], isMenuHeader = true }
 	end
 	sellMenu[#sellMenu+1] = { icon = "fas fa-circle-arrow-left",
@@ -553,9 +565,9 @@ RegisterNetEvent('jim-mining:JewelSell:Sub', function(data)
 	}
 	for _, v in pairs(table[data.sub]) do
 		local disable = true
-		local setheader = QBCore.Shared.Items[v].label
+		local setheader = GetItem(v).label
 		if HasItem(v, 1) then setheader = setheader.." 💰" disable = false end
-		sellMenu[#sellMenu+1] = { disabled = disable, icon = "nui://"..Config.img..QBCore.Shared.Items[v].image,
+		sellMenu[#sellMenu+1] = { disabled = disable, icon = "nui://"..Config.img..GetItem(v).image,
 			header = setheader, txt = Loc[Config.Lan].info["sell_all"].." "..Config.SellingPrices[v].." "..Loc[Config.Lan].info["sell_each"],
 			params = { event = "jim-mining:SellAnim", args = { item = v, sub = data.sub, ped = data.ped } },
 			title = setheader, description = Loc[Config.Lan].info["sell_all"].." "..Config.SellingPrices[v].." "..Loc[Config.Lan].info["sell_each"],
@@ -563,14 +575,14 @@ RegisterNetEvent('jim-mining:JewelSell:Sub', function(data)
 		}
 		Wait(0)
 	end
-	if Config.Menu == "ox" then exports.ox_lib:registerContext({id = 'sellMenu', title = Loc[Config.Lan].info["jewel_buyer"], position = 'top-right', options = sellMenu })	exports.ox_lib:showContext("sellMenu")
-	elseif Config.Menu == "qb" then exports['qb-menu']:openMenu(sellMenu) end
+	if GetResourceState('ox_lib') == 'started' then exports.ox_lib:registerContext({id = 'sellMenu', title = Loc[Config.Lan].info["jewel_buyer"], position = 'top-right', options = sellMenu })	exports.ox_lib:showContext("sellMenu")
+	elseif GetResourceState('qb-menu') == 'started' then  exports['qb-menu']:openMenu(sellMenu) end
 	lookEnt(data.ped)
 end)
 --Cutting Jewels
 RegisterNetEvent('jim-mining:JewelCut', function(data)
 	local cutMenu = {}
-	if Config.Menu == "qb" then
+	if GetResourceState('qb-menu') == 'started' then 
 		cutMenu[#cutMenu+1] = { header = Loc[Config.Lan].info["craft_bench"], txt = Loc[Config.Lan].info["req_drill_bit"], isMenuHeader = true }
 		cutMenu[#cutMenu+1] = { icon = "fas fa-circle-xmark", header = "", txt = Loc[Config.Lan].info["close"], params = { event = "jim-mining:CraftMenu:Close" } }
 	end
@@ -586,19 +598,19 @@ RegisterNetEvent('jim-mining:JewelCut', function(data)
 			title = table[i].header, description = table[i].txt, event = "jim-mining:CraftMenu", args = { craftable = table[i].craftable, ret = true, bench = data.bench },
 		}
 	end
-	if Config.Menu == "ox" then exports.ox_lib:registerContext({id = 'cutMenu', title = Loc[Config.Lan].info["craft_bench"], position = 'top-right', options = cutMenu })	exports.ox_lib:showContext("cutMenu")
-	elseif Config.Menu == "qb" then exports['qb-menu']:openMenu(cutMenu) end
+	if GetResourceState('ox_lib') == 'started' then exports.ox_lib:registerContext({id = 'cutMenu', title = Loc[Config.Lan].info["craft_bench"], position = 'top-right', options = cutMenu })	exports.ox_lib:showContext("cutMenu")
+	elseif GetResourceState('qb-menu') == 'started' then  exports['qb-menu']:openMenu(cutMenu) end
 end)
 
 RegisterNetEvent('jim-mining:CraftMenu', function(data)
 	local CraftMenu = {} local header = (data and data.ret) and Loc[Config.Lan].info["craft_bench"] or Loc[Config.Lan].info["smelter"]
 	if data.ret then
-		if Config.Menu == "qb" then
+		if GetResourceState('qb-menu') == 'started' then 
 			CraftMenu[#CraftMenu + 1] = { header = header, txt = Loc[Config.Lan].info["req_drill_bit"], isMenuHeader = true }
 		end
 		CraftMenu[#CraftMenu + 1] = { icon = "fas fa-circle-arrow-left", header = "", txt = Loc[Config.Lan].info["return"], title = Loc[Config.Lan].info["return"], event = "jim-mining:JewelCut", args = data, params = { event = "jim-mining:JewelCut", args = data } }
 	else
-		if Config.Menu == "qb" then
+		if GetResourceState('qb-menu') == 'started' then 
 			CraftMenu[#CraftMenu + 1] = { header = header, txt = Loc[Config.Lan].info["smelt_ores"], isMenuHeader = true }
 			CraftMenu[#CraftMenu + 1] = { icon = "fas fa-circle-xmark", header = "", txt = Loc[Config.Lan].info["close"], params = { event = "jim-mining:CraftMenu:Close" } }
 		end
@@ -607,15 +619,15 @@ RegisterNetEvent('jim-mining:CraftMenu', function(data)
 		for k in pairs(data.craftable[i]) do
 			if k ~= "amount" then
 					local text = ""
-					setheader = QBCore.Shared.Items[tostring(k)].label
+					setheader = GetItem(tostring(k)).label
 					if data.craftable[i]["amount"] ~= nil then setheader = setheader.." x"..data.craftable[i]["amount"] end
 					local disable = false
 					local checktable = {}
 					for l, b in pairs(data.craftable[i][tostring(k)]) do
 						if b == 0 or b == 1 then number = "" else number = " x"..b end
-						if not QBCore.Shared.Items[l] then print("^3Error^7: ^2Script can't find ingredient item in QB-Core items.lua - ^1"..l.."^7") return end
-						if Config.Menu == "ox" then text = text..QBCore.Shared.Items[l].label..number.."\n" end
-						if Config.Menu == "qb" then text = text.."- "..QBCore.Shared.Items[l].label..number.."<br>" end
+						if not GetItem(l) then print("^3Error^7: ^2Script can't find ingredient item in QB-Core items.lua - ^1"..l.."^7") return end
+						if GetResourceState('ox_lib') == 'started' then text = text..GetItem(l).label..number.."\n" end
+						if GetResourceState('qb-menu') == 'started' then  text = text.."- "..GetItem(l).label..number.."<br>" end
 						settext = text
 						checktable[l] = HasItem(l, b)
 					end
@@ -624,7 +636,7 @@ RegisterNetEvent('jim-mining:CraftMenu', function(data)
 					local event = Config.MultiCraft and "jim-mining:Crafting:MultiCraft" or "jim-mining:Crafting:MakeItem"
 					CraftMenu[#CraftMenu + 1] = {
 						disabled = disable,
-						icon = "nui://"..Config.img..QBCore.Shared.Items[tostring(k)].image,
+						icon = "nui://"..Config.img..GetItem(tostring(k)).image,
 						header = setheader, txt = settext, --qb-menu
 						title = setheader, description = settext, -- ox_lib
 						event = event, args = { item = k, craft = data.craftable[i], craftable = data.craftable, header = header, ret = data.ret, bench = data.bench }, -- ox_lib
@@ -635,8 +647,8 @@ RegisterNetEvent('jim-mining:CraftMenu', function(data)
 			end
 		end
 
-	if Config.Menu == "ox" then exports.ox_lib:registerContext({id = 'CraftMenu', title = data.ret and Loc[Config.Lan].info["craft_bench"] or Loc[Config.Lan].info["smelter"], position = 'top-right', options = CraftMenu })	exports.ox_lib:showContext("CraftMenu")
-	elseif Config.Menu == "qb" then exports['qb-menu']:openMenu(CraftMenu) end
+	if GetResourceState('ox_lib') == 'started' then exports.ox_lib:registerContext({id = 'CraftMenu', title = data.ret and Loc[Config.Lan].info["craft_bench"] or Loc[Config.Lan].info["smelter"], position = 'top-right', options = CraftMenu })	exports.ox_lib:showContext("CraftMenu")
+	elseif GetResourceState('qb-menu') == 'started' then  exports['qb-menu']:openMenu(CraftMenu) end
 	lookEnt(data.coords)
 end)
 
@@ -646,23 +658,23 @@ RegisterNetEvent('jim-mining:Crafting:MultiCraft', function(data)
         for l, b in pairs(data.craft[data.item]) do
             local has = HasItem(l, (b * k)) if not has then success[k] = false break else success[k] = true end
 		end end
-	if Config.Menu == "qb" then Menu[#Menu+1] = { header = data.header, txt = "", isMenuHeader = true } end
+	if GetResourceState('qb-menu') == 'started' then  Menu[#Menu+1] = { header = data.header, txt = "", isMenuHeader = true } end
 	Menu[#Menu+1] = { icon = "fas fa-arrow-left", title = Loc[Config.Lan].info["return"], header = "", txt = Loc[Config.Lan].info["return"], params = { event = "jim-mining:CraftMenu", args = data }, event = "jim-mining:CraftMenu", args = data }
 	for k in pairsByKeys(success) do
 		Menu[#Menu+1] = {
 			disabled = not success[k],
-			icon = "nui://"..Config.img..QBCore.Shared.Items[data.item].image, header = QBCore.Shared.Items[data.item].label.." (x"..k * (data.craft.amount or 1)..")", title = QBCore.Shared.Items[data.item].label.." (x"..k * (data.craft.amount or 1)..")",
+			icon = "nui://"..Config.img..GetItem(data.item).image, header = GetItem(data.item).label.." (x"..k * (data.craft.amount or 1)..")", title = GetItem(data.item).label.." (x"..k * (data.craft.amount or 1)..")",
 			event = "jim-mining:Crafting:MakeItem", args = { item = data.item, craft = data.craft, craftable = data.craftable, header = data.header, anim = data.anim, amount = k, ret = data.ret, bench = data.bench },
 			params = { event = "jim-mining:Crafting:MakeItem", args = { item = data.item, craft = data.craft, craftable = data.craftable, header = data.header, anim = data.anim, amount = k, ret = data.ret, bench = data.bench } }
 		}
 	end
-	if Config.Menu == "ox" then exports.ox_lib:registerContext({id = 'Crafting', title = data.ret and Loc[Config.Lan].info["craft_bench"] or Loc[Config.Lan].info["smelter"], position = 'top-right', options = Menu })	exports.ox_lib:showContext("Crafting")
-	elseif Config.Menu == "qb" then exports['qb-menu']:openMenu(Menu) end
+	if GetResourceState('ox_lib') == 'started' then exports.ox_lib:registerContext({id = 'Crafting', title = data.ret and Loc[Config.Lan].info["craft_bench"] or Loc[Config.Lan].info["smelter"], position = 'top-right', options = Menu })	exports.ox_lib:showContext("Crafting")
+	elseif GetResourceState('qb-menu') == 'started' then  exports['qb-menu']:openMenu(Menu) end
 end)
 
 RegisterNetEvent('jim-mining:Crafting:MakeItem', function(data) local bartext, animDictNow, animNow, scene, Ped = "", nil, nil, nil, PlayerPedId()
-	if not data.ret then bartext = Loc[Config.Lan].info["smelting"]..QBCore.Shared.Items[data.item].label
-	else bartext = Loc[Config.Lan].info["cutting"]..QBCore.Shared.Items[data.item].label end
+	if not data.ret then bartext = Loc[Config.Lan].info["smelting"]..GetItem(data.item).label
+	else bartext = Loc[Config.Lan].info["cutting"]..GetItem(data.item).label end
 	local bartime = Config.Timings["Crafting"]
 	if (data.amount and data.amount ~= 1) then data.craft.amount = data.craft.amount or 1 data.craft["amount"] *= data.amount
 		for k in pairs(data.craft[data.item]) do data.craft[data.item][k] *= data.amount end
