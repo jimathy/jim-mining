@@ -4,16 +4,16 @@ Loc = {}
 
 Config = {
 	Debug = false, -- enable debug mode
-	img = "qb-inventory/html/images/", --Set this to the image directory of your inventory script or "nil" if using newer qb-menu
+	img = "ox_inventory/web/images", --Set this to the image directory of your inventory script or "nil" if using newer qb-menu
 
 	Lan = "en", -- Pick your language here
 
-	JimShops = false, 		-- Set this to true if using jim-shops
+	JimShops = false, 		-- Set this to true if using jim-shops -- I've made this automatically detected.
 
-	Inv = "qb",				--"qb" or "ox"
-	Menu = "qb",			--"qb" or "ox"
-	ProgressBar = "qb",		--"qb" or "ox"
-	Notify = "qb",			--"qb" or "ox"
+	Inv = "ox",				--"qb" or "ox" -- I've made this automatically detected.
+	Menu = "ox",			--"qb" or "ox" -- I've made this automatically detected.
+	ProgressBar = "ox",		--"qb" or "ox" -- I've made this automatically detected.
+	Notify = "ox",			--"qb" or "ox" -- I've made this automatically detected.
 
 	DrillSound = true,		-- disable drill sounds
 
@@ -37,7 +37,7 @@ Config = {
 		"carbon",
 		"copperore",
 		"ironore",
-		"metalscrap",
+		"scrap_metal",
 	},
 
 	WashPool = {	-- Rewards from washing stone
@@ -50,22 +50,22 @@ Config = {
 	},
 
 	PanPool = {		-- Rewards from panning
-		"can",
+		--"can",
 		"goldore",
-		"can",
+		--"can",
 		"goldore",
-		"bottle",
-		"stone",
+		--"bottle",
+		--"stone",
 		"goldore",
-		"bottle",
-		"can",
+		--"bottle",
+		--"can",
 		"silverore",
-		"can",
+		--"can",
 		"silverore",
-		"bottle",
-		"stone",
+		--"bottle",
+		--"stone",
 		"silverore",
-		"bottle",
+		--"bottle",
 	},
 
 ------------------------------------------------------------
@@ -139,14 +139,10 @@ Config = {
 	Items = {
 		label = "Mining Store",  slots = 9,
 		items = {
-			{ name = "water_bottle", price = 0, amount = 100, info = {}, type = "item", slot = 1, },
-			{ name = "sandwich", price = 0, amount = 250, info = {}, type = "item", slot = 2, },
-			{ name = "bandage", price = 0, amount = 100, info = {}, type = "item", slot = 3, },
-			{ name = "weapon_flashlight", price = 0, amount = 100, info = {}, type = "item", slot = 4, },
-			{ name = "goldpan", price = 0, amount = 100, info = {}, type = "item", slot = 5, },
+			{ name = "washpan", price = 0, amount = 100, info = {}, type = "item", slot = 5, },
 			{ name = "pickaxe",	price = 100, amount = 100, info = {}, type = "item", slot = 6, },
 			{ name = "miningdrill",	price = 10000, amount = 50, info = {}, type = "item", slot = 7, },
-			{ name = "mininglaser",	price = 60000, amount = 5, info = {}, type = "item", slot = 8, },
+			{ name = "laserdrill",	price = 60000, amount = 5, info = {}, type = "item", slot = 8, },
 			{ name = "drillbit", price = 0, amount = 100, info = {}, type = "item", slot = 9, },
 		},
 	},
@@ -162,8 +158,8 @@ Crafting = {
 		{ ["silveringot"] = { ["silver_ring"] = 4 } },
 		{ ["iron"] = { ["ironore"] = 1 } },
 		{ ["steel"] = { ["ironore"] = 1, ["carbon"] = 1 } },
-		{ ["aluminum"] = { ["can"] = 2, }, ['amount'] = 3 },
-		{ ["glass"] = { ["bottle"] = 2, }, ['amount'] = 2 },
+		--{ ["aluminum"] = { ["can"] = 2, }, ['amount'] = 3 },
+		--{ ["glass"] = { ["bottle"] = 2, }, ['amount'] = 2 },
 	},
 	GemCut = {
 		{ ["emerald"] = { ["uncut_emerald"] = 1, } },
