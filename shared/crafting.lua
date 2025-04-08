@@ -1,7 +1,11 @@
 Crafting = {
 	SmeltMenu = {
+		Header = Loc[Config.Lan].info["use_smelter"],
+		progressBar = { label = Loc[Config.Lan].info["smelting"], time = Config.Timings["Crafting"], },
 		Recipes = {
 			{ ["copper"] = { ["copperore"] = 1 }, ['amount'] = 4 },
+			{ ["brass_ingot"] = { ["copper"] = 3 , ["zincore"] = 3 }, ['amount'] = 4 },
+			{ ["lead_ingot"] = { ["leadore"] = 1 }, ['amount'] = 2 },
 			{ ["goldingot"] = { ["goldore"] = 1 } },
 			{ ["goldingot"] = { ["goldchain"] = 3 } },
 			{ ["goldingot"] = { ["gold_ring"] = 4 } },
@@ -12,9 +16,14 @@ Crafting = {
 			{ ["steel"] = { ["ironore"] = 1, ["carbon"] = 1 } },
 			{ ["aluminum"] = { ["can"] = 2, }, ['amount'] = 3 },
 			{ ["glass"] = { ["bottle"] = 2, }, ['amount'] = 2 },
+			{ ["steel_ingot"] = { ["steel"] = 2 } },
+			{ ["reinforced_steel_ingot"] = { ["steel_ingot"] = 3, ["carbon"] = 1  } },
 		},
 	},
 	GemCut = {
+		Header = Loc[Config.Lan].info["gem_cut"],
+		progressBar = { label = Loc[Config.Lan].info["cutting"], time = Config.Timings["Crafting"], },
+		anims = { anim = "operate_02_hi_amy_skater_01", animDict = "anim@amb@machinery@speed_drill@" },
 		Recipes = {
 			{
 				["emerald"] = {
@@ -39,6 +48,9 @@ Crafting = {
 		},
 	},
 	RingCut = {
+		Header = Loc[Config.Lan].info["rings"],
+		progressBar = { label = Loc[Config.Lan].info["cutting"], time = Config.Timings["Crafting"], },
+		anims = { anim = "operate_02_hi_amy_skater_01", animDict = "anim@amb@machinery@speed_drill@" },
 		Recipes = {
 			{ ["gold_ring"] = { ["goldingot"] = 1 }, ['amount'] = 3 },
 			{ ["silver_ring"] = { ["silveringot"] = 1 }, ['amount'] = 3 },
@@ -54,6 +66,9 @@ Crafting = {
 		},
 	},
 	NeckCut = {
+		Header = Loc[Config.Lan].info["gem_necklacescut"],
+		progressBar = { label = Loc[Config.Lan].info["cutting"], time = Config.Timings["Crafting"], },
+		anims = { anim = "operate_02_hi_amy_skater_01", animDict = "anim@amb@machinery@speed_drill@" },
 		Recipes = {
 			{ ["goldchain"] = { ["goldingot"] = 1 }, ['amount'] = 3  },
 			{ ["silverchain"] = { ["silveringot"] = 1 }, ['amount'] = 3  },
@@ -69,6 +84,9 @@ Crafting = {
 		},
 	},
 	EarCut = {
+		Header = Loc[Config.Lan].info["earrings"],
+		progressBar = { label = Loc[Config.Lan].info["cutting"], time = Config.Timings["Crafting"], },
+		anims = { anim = "operate_02_hi_amy_skater_01", animDict = "anim@amb@machinery@speed_drill@" },
 		Recipes = {
 			{ ["goldearring"] = { ["goldingot"] = 1 }, ['amount'] = 3  },
 			{ ["silverearring"] = { ["silveringot"] = 1 }, ['amount'] = 3  },

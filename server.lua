@@ -1,37 +1,68 @@
-RegisterServerEvent("jim-mining:Reward", function(data)
+local function GetRandItemFromTable(table)
+	::start::
+	local randNum = math.random(1, 100)
+	local items = {}
+	for _, item in ipairs(table) do
+		if randNum <= tonumber(item.rarity) then
+			items[#items+1] = item.item
+		end
+	end
+	if #items == 0 then goto start end
+	local rand = math.random(1, #items)
+	local selectedItem = items[rand]
+	debugPrint("Selected item "..selectedItem.." - rand: "..rand.." leng: "..#items)
+	return selectedItem
+end
+
+RegisterServerEvent(getScript()..":Reward", function(data)
 	local src = source
 	local amount = 1
-	if data.setReward then
-		TriggerEvent("jim-mining:server:toggleItem", true, data.setReward, math.random(1, 3), src)
-		TriggerEvent("jim-mining:server:toggleItem", true, "stone", math.random(1, 2), src)
-	else
-		if data.mine then
-			TriggerEvent("jim-mining:server:toggleItem", true, "stone", math.random(1, 3), src)
-		elseif data.crack then
-			TriggerEvent("jim-mining:server:toggleItem", false, "stone", data.cost, src)
-			for i = 1, math.random(1,3) do
-				amount = math.random(1, 2)
-				TriggerEvent("jim-mining:server:toggleItem", true, Config.CrackPool[math.random(1, #Config.CrackPool)], amount, src)
+	if data.mine then
+		addItem("stone", math.random(1, 3),  nil, src)
+		--[[if math.random(1, 100) > 50 then
+			TriggerEvent(getScript()..":server:toggleItem", true, "sulphur", math.random(1, 3), src)
+		end]]
+
+	elseif data.crack then
+			local selectedItem = GetRandItemFromTable(Config.CrackPool)
+			amount = math.random(1, 3)
+			local canCarryCheck = canCarry({ [selectedItem] = amount }, src)
+			if selectedItem and canCarryCheck[selectedItem] then
+				removeItem("stone", data.cost, src)
+				addItem(selectedItem, amount, nil, src)
+			else
+				triggerNotify(nil, Loc[Config.Lan].error["full"], "error")
 			end
-		elseif data.wash then
-			TriggerEvent("jim-mining:server:toggleItem", false, "stone", data.cost, src)
-			for i = 1, math.random(1,2) do
-				TriggerEvent("jim-mining:server:toggleItem", true, Config.WashPool[math.random(1, #Config.WashPool)], amount, src)
+	elseif data.wash then
+		for i = 1, math.random(1, 2) do
+			local selectedItem = GetRandItemFromTable(Config.WashPool)
+			amount = math.random(1, 3)
+			local canCarryCheck = canCarry({ [selectedItem] = amount }, src)
+
+			if selectedItem and canCarryCheck[selectedItem] then
+				removeItem("stone", data.cost, src)
+				addItem(selectedItem, amount, nil, src)
+			else
+				triggerNotify(nil, Loc[Config.Lan].error["full"], "error")
 			end
-		elseif data.pan then
-			for i = 1, math.random(1,3) do
-				TriggerEvent("jim-mining:server:toggleItem", true, Config.PanPool[math.random(1, #Config.PanPool)], amount, src)
+		end
+	elseif data.pan then
+		for i = 1, math.random(1, 3) do
+			local selectedItem = GetRandItemFromTable(Config.PanPool)
+			amount = math.random(1, 3)
+			local canCarryCheck = canCarry({ [selectedItem] = amount }, src)
+
+			if selectedItem and canCarryCheck[selectedItem] then
+				addItem(selectedItem, amount, nil, src)
 			end
 		end
 	end
 end)
 
-if GetResourceState(OXInv):find("start") then
-	exports[OXInv]:RegisterShop("miningShop", { name = Config.Items.label, inventory = Config.Items.items })
-end
+registerShop("miningShop", Config.Items.label, Config.Items.items)
 
-AddEventHandler('onResourceStart', function(resource) if GetCurrentResourceName() ~= resource then return end
-Wait(1000)
+onResourceStart(function()
+	Wait(1000)
 	for k in pairs(Selling) do
 		if Selling[k].Items then
 			for b in pairs(Selling[k].Items) do
@@ -47,9 +78,9 @@ Wait(1000)
 			end
 		end
 	end
-	for i = 1, #Config.CrackPool do if not Items[Config.CrackPool[i]] then print("CrackPool: Missing Item from Items: '"..Config.CrackPool[i].."'") end end
-	for i = 1, #Config.WashPool do if not Items[Config.WashPool[i]] then print("WashPool: Missing Item from Items: '"..Config.WashPool[i].."'") end end
-	for i = 1, #Config.PanPool do if not Items[Config.PanPool[i]] then print("PanPool: Missing Item from Items: '"..Config.PanPool[i].."'") end end
+	for i = 1, #Config.CrackPool do if not Items[Config.CrackPool[i].item] then print("CrackPool: Missing Item from Items: '"..Config.CrackPool[i].item.."'") end end
+	for i = 1, #Config.WashPool do if not Items[Config.WashPool[i].item] then print("WashPool: Missing Item from Items: '"..Config.WashPool[i].item.."'") end end
+	for i = 1, #Config.PanPool do if not Items[Config.PanPool[i].item] then print("PanPool: Missing Item from Items: '"..Config.PanPool[i].item.."'") end end
 	for i = 1, #Config.Items.items do if not Items[Config.Items.items[i].name] then print("Shop: Missing Item from Items: '"..Config.Items.items[i].name.."'") end end
 	local itemcheck = {}
 	for _, v in pairs(Crafting) do
