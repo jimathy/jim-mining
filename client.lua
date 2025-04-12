@@ -104,7 +104,6 @@ Mining.Functions.makeJob = function()
 
 	--Ore Spawning
 	for mine, loc in pairs(Locations["Mines"]) do
-		print(mine)
 		if loc.Enable then
 
 			if loc["OrePositions"] then
@@ -169,7 +168,6 @@ Mining.Functions.makeJob = function()
 			end
 		--[[Smelting]]--
 			if loc["Smelting"] then
-				print("test")
 				for i = 1, #loc["Smelting"] do
 					local name = getScript()..":Smelting:"..i
 					if loc["Smelting"][i].Enable then
@@ -267,21 +265,21 @@ Mining.Functions.makeJob = function()
 	end
 	--[[Stone Washing]]--
 	if Locations["Washing"].Enable then
-			for k, v in pairs(Locations["Washing"].positions) do
-				local name = getScript()..":Washing:"..k
-				Targets[name] =
-					createCircleTarget({ name, v.coords.xyz, 9.0, { name = name, debugPoly = debugMode, usez = true, }, }, {
-						{	action = function()
-								Mining.Other.washStart({ coords = v.coords })
-							end,
-							icon = "fas fa-hands-bubbles", item = "stone", label = Loc[Config.Lan].info["washstone"]..(debugMode and " ["..name.."]" or ""),
-						},
-					}, 2.0)
-				if v.Enable then
-					Blip[#Blip+1] = makeBlip(v)
-				end
+		for k, v in pairs(Locations["Washing"].positions) do
+			local name = getScript()..":Washing:"..k
+			Targets[name] =
+				createCircleTarget({ name, v.coords.xyz, 9.0, { name = name, debugPoly = debugMode, usez = true, }, }, {
+					{	action = function()
+							Mining.Other.washStart({ coords = v.coords })
+						end,
+						icon = "fas fa-hands-bubbles", item = "stone", label = Loc[Config.Lan].info["washstone"]..(debugMode and " ["..name.."]" or ""),
+					},
+				}, 2.0)
+			if v.blipEnable then
+				Blip[#Blip+1] = makeBlip(v)
 			end
 		end
+	end
 	--[[Panning]]--
 	if Locations["Panning"].Enable then
 		for location in pairs(Locations["Panning"].positions) do
