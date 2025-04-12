@@ -33,38 +33,56 @@ Config = {
 	},
 
 	Timings = { -- Time it takes to do things
-		["Cracking"] = { 15000, 25000 }, -- 15 - 25 seconds
-		["Washing"] = { 15000, 25000 }, -- 15 - 25 seconds
-		["Panning"] = { 45000, 50000 },-- 45 - 50 seconds
-		["Pickaxe"] = { 30000, 45000 }, --  30 - 45 seconds
-		["Mining"] = { 45000, 50000 }, -- 45 - 50 seconds
-		["Laser"] = { 7000, 10000 },
-		["OreRespawn"] = math.random(55000, 75000),
-		["Crafting"] = 5000, -- 5 seconds
+		Cracking = { 15000, 25000 }, -- 15 - 25 seconds
+		Washing = { 15000, 25000 }, -- 15 - 25 seconds
+		Panning = { 45000, 50000 },-- 45 - 50 seconds
+		Pickaxe = { 30000, 45000 }, --  30 - 45 seconds
+		Mining = { 45000, 50000 }, -- 45 - 50 seconds
+		Laser = { 7000, 10000 },
+		OreRespawn = math.random(55000, 75000),
+		Crafting = 5000, -- 5 seconds
+	},
+
+	PoolAmounts = {
+		Mining = {
+			AmountPerSuccess = { 1, 3 }		-- Per success, this will give 1 - 3 of the selected item
+		},
+		Cracking = {
+			AmountPerSuccess = { 1, 3 }		-- Per success, this will give 1 - 3 of the selected item
+		},
+		Panning = {
+			Successes = { 1, 2 },			-- When complete, default will give 1 or 2 items
+			AmountPerSuccess = { 1, 3 }		-- Per success, this will give 1 - 3 of the selected item
+		},
+		Washing = {
+			Successes = { 1, 2 },			-- When complete, default will give 1 or 2 items
+			AmountPerSuccess = { 1, 3 }		-- Per success, this will give 1 - 3 of the selected item
+		},
+
 	},
 
 	CrackPool = { -- Rewards from cracking stone
-		{item = "carbon", rarity = "70",},
-		{item = "copperore",rarity = "10",},
-		{item = "ironore", rarity = "10",},
-		{item = "metalscrap", rarity = "90",},
+		{ item = "carbon", rarity = "70",},
+		{ item = "copperore",rarity = "10",},
+		{ item = "ironore", rarity = "10",},
+		{ item = "metalscrap", rarity = "90",},
 	},
 
 	WashPool = {	-- Rewards from washing stone
-		{item = "goldore", rarity = "10",},
-		{item = "copperore",rarity = "80",},
-		{item = "uncut_ruby", rarity = "50" },
-		{item = "uncut_emerald", rarity = "50"},
-		{item = "uncut_diamond", rarity = "10"},
-		{item = "uncut_sapphire", rarity = "50"},
+		{ item = "goldore", rarity = "10",},
+		{ item = "copperore",rarity = "80",},
+		{ item = "uncut_ruby", rarity = "50" },
+		{ item = "uncut_emerald", rarity = "50"},
+		{ item = "uncut_diamond", rarity = "10"},
+		{ item = "uncut_sapphire", rarity = "50"},
 	},
 
 	PanPool = {		-- Rewards from panning
-		{item = "can", rarity = "90", },
-		{item = "goldore", rarity = "10", },
-		{item = "bottle", rarity = "10", },
-		{item = "stone", rarity = "90", },
-		{item = "silverore", rarity = "10", },
+		{ item = "can", rarity = "90", },
+		{ item = "goldore", rarity = "10", },
+		{ item = "bottle", rarity = "10", },
+		{ item = "stone", rarity = "90", },
+		{ item = "silverore", rarity = "10", },
 	},
 
 	setMiningTable = {	-- Set rarity of ore spawn for AltMining

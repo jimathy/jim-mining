@@ -18,14 +18,11 @@ RegisterServerEvent(getScript()..":Reward", function(data)
 	local src = source
 	local amount = 1
 	if data.mine then
-		addItem("stone", math.random(1, 3),  nil, src)
-		--[[if math.random(1, 100) > 50 then
-			TriggerEvent(getScript()..":server:toggleItem", true, "sulphur", math.random(1, 3), src)
-		end]]
+		addItem("stone", GetTiming(Config.PoolAmounts.Mining.AmountPerSuccess),  nil, src)
 
 	elseif data.crack then
 			local selectedItem = GetRandItemFromTable(Config.CrackPool)
-			amount = math.random(1, 3)
+			amount =GetTiming(Config.PoolAmounts.Cracking.AmountPerSuccess)
 			local canCarryCheck = canCarry({ [selectedItem] = amount }, src)
 			if selectedItem and canCarryCheck[selectedItem] then
 				removeItem("stone", data.cost, src)
@@ -33,29 +30,34 @@ RegisterServerEvent(getScript()..":Reward", function(data)
 			else
 				triggerNotify(nil, Loc[Config.Lan].error["full"], "error")
 			end
+
 	elseif data.wash then
-		for i = 1, math.random(1, 2) do
+		-- Remove stone then give rewards
+		removeItem("stone", data.cost, src)
+		-- Calculate how many items to give
+		for i = 1, GetTiming(Config.PoolAmounts.Washing.Successes) do
 			local selectedItem = GetRandItemFromTable(Config.WashPool)
-			amount = math.random(1, 3)
+			amount = GetTiming(Config.PoolAmounts.Washing.AmountPerSuccess)
 			local canCarryCheck = canCarry({ [selectedItem] = amount }, src)
 
 			if selectedItem and canCarryCheck[selectedItem] then
-				removeItem("stone", data.cost, src)
 				addItem(selectedItem, amount, nil, src)
 			else
 				triggerNotify(nil, Loc[Config.Lan].error["full"], "error")
 			end
 		end
+
 	elseif data.pan then
-		for i = 1, math.random(1, 3) do
+		for i = 1, GetTiming(Config.PoolAmounts.Panning.Successes) do
 			local selectedItem = GetRandItemFromTable(Config.PanPool)
-			amount = math.random(1, 3)
+			amount = GetTiming(Config.PoolAmounts.Panning.AmountPerSuccess)
 			local canCarryCheck = canCarry({ [selectedItem] = amount }, src)
 
 			if selectedItem and canCarryCheck[selectedItem] then
 				addItem(selectedItem, amount, nil, src)
 			end
 		end
+
 	end
 end)
 
