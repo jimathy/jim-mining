@@ -659,5 +659,5 @@ Mining.Functions.removeJob = function()
 end
 
 onResourceStop(Mining.Functions.removeJob, true)
-onPlayerLoaded(Mining.Functions.checkForJob, true)
+onPlayerLoaded(function() Wait(1000) Mining.Functions.checkForJob() end, true)
 RegisterNetEvent('QBCore:Client:OnJobUpdate', Mining.Functions.checkForJob)
