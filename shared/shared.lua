@@ -1,177 +1,194 @@
-QBCore = exports['qb-core']:GetCoreObject()
-
-local time = 1000
-function loadModel(model) if not HasModelLoaded(model) then
-	if Config.Debug then print("^5Debug^7: ^2Loading Model^7: '^6"..model.."^7'") end
-	while not HasModelLoaded(model) do
-		if time > 0 then time = time - 1 RequestModel(model)
-		else time = 1000 print("^5Debug^7: ^3LoadModel^7: ^2Timed out loading model ^7'^6"..model.."^7'") break
-		end
-		Wait(10)
-	end
-end end
-function unloadModel(model) if Config.Debug then print("^5Debug^7: ^2Removing Model^7: '^6"..model.."^7'") end SetModelAsNoLongerNeeded(model) end
-function loadAnimDict(dict)	if not HasAnimDictLoaded(dict) then if Config.Debug then print("^5Debug^7: ^2Loading Anim Dictionary^7: '^6"..dict.."^7'") end while not HasAnimDictLoaded(dict) do RequestAnimDict(dict) Wait(5) end end end
-function unloadAnimDict(dict) if Config.Debug then print("^5Debug^7: ^2Removing Anim Dictionary^7: '^6"..dict.."^7'") end RemoveAnimDict(dict) end
-function loadPtfxDict(dict)	if not HasNamedPtfxAssetLoaded(dict) then if Config.Debug then print("^5Debug^7: ^2Loading Ptfx Dictionary^7: '^6"..dict.."^7'") end while not HasNamedPtfxAssetLoaded(dict) do RequestNamedPtfxAsset(dict) Wait(5) end end end
-function unloadPtfxDict(dict) if Config.Debug then print("^5Debug^7: ^2Removing Ptfx Dictionary^7: '^6"..dict.."^7'") end RemoveNamedPtfxAsset(dict) end
-
 function loadDrillSound()
-	if Config.Debug then print("^5Debug^7: ^2Loading Drill Sound Banks") end
+	debugPrint("^5Debug^7: ^2Loading Drill Sound Banks")
 	RequestAmbientAudioBank("DLC_HEIST_FLEECA_SOUNDSET", 0)
 	RequestAmbientAudioBank("DLC_MPHEIST\\HEIST_FLEECA_DRILL", 0)
 	RequestAmbientAudioBank("DLC_MPHEIST\\HEIST_FLEECA_DRILL_2", 0)
 end
 function unloadDrillSound()
-	if Config.Debug then print("^5Debug^7: ^2Removing Drill Sound Banks") end
+	debugPrint("^5Debug^7: ^2Removing Drill Sound Banks")
 	ReleaseAmbientAudioBank("DLC_HEIST_FLEECA_SOUNDSET")
 	ReleaseAmbientAudioBank("DLC_MPHEIST\\HEIST_FLEECA_DRILL")
 	ReleaseAmbientAudioBank("DLC_MPHEIST\\HEIST_FLEECA_DRILL_2")
 end
-function lookEnt(entity)
-	if type(entity) == "vec3" then
-		if not IsPedHeadingTowardsPosition(PlayerPedId(), entity, 10.0) then
-			TaskTurnPedToFaceCoord(PlayerPedId(), entity, 1500)
-			if Config.Debug then print("^5Debug^7: ^2Turning Player to^7: '^6"..json.encode(entity).."^7'") end
-			Wait(1500)
-		end
+
+function GetTiming(tbl)
+	if type(tbl) == "table" then
+		return math.random(tbl[1], tbl[2])
 	else
-		if DoesEntityExist(entity) then
-			if not IsPedHeadingTowardsPosition(PlayerPedId(), GetEntityCoords(entity), 30.0) then
-				TaskTurnPedToFaceCoord(PlayerPedId(), GetEntityCoords(entity), 1500)
-				if Config.Debug then print("^5Debug^7: ^2Turning Player to^7: '^6"..entity.."^7'") end
-				Wait(1500)
-			end
-		end
+		return tbl
 	end
 end
 
-function makeProp(data, freeze, synced)
-    loadModel(data.prop)
-    local prop = CreateObject(data.prop, data.coords.x, data.coords.y, data.coords.z-1.03, synced or false, synced or false, false)
-    SetEntityHeading(prop, data.coords.w+180.0)
-    FreezeEntityPosition(prop, freeze or 0)
-    if Config.Debug then
-		local coords = { string.format("%.2f", data.coords.x), string.format("%.2f", data.coords.y), string.format("%.2f", data.coords.z), (string.format("%.2f", data.coords.w or 0.0)) }
-		print("^5Debug^7: ^1Prop ^2Created^7: '^6"..prop.."^7' | ^2Hash^7: ^7'^6"..(data.prop).."^7' | ^2Coord^7: ^5vec4^7(^6"..(coords[1]).."^7, ^6"..(coords[2]).."^7, ^6"..(coords[3]).."^7, ^6"..(coords[4]).."^7)")
-	end
-	return prop
+------------------------------------------------------------
+local minecartEntity = nil
+local points = {
+	["Main"] = {
+		vec4(-597.32, 2092.28, 131.41, 195.85),
+		vec4(-592.9, 2077.47, 131.41, 195.17),
+		vec4(-591.45, 2071.89, 131.28, 193.39),
+		vec4(-589.41, 2062.91, 130.94, 192.61),
+		vec4(-588.32, 2054.52, 130.34, 187.2),
+		vec4(-587.33, 2049.1, 129.89, 190.79),
+		vec4(-585.11, 2043.15, 129.37, 205.88),
+		vec4(-582.46, 2038.33, 128.96, 211.06),
+		vec4(-578.29, 2032.1, 128.39, 214.94),
+		vec4(-574.3, 2026.73, 127.98, 219.38),
+		vec4(-569.94, 2022.21, 127.71, 220.77),
+		vec4(-562.91, 2014.7, 127.33, 220.61),
+		vec4(-558.16, 2008.06, 127.19, 211.98),
+		vec4(-548.1, 1991.22, 127.03, 201.61),
+	},
+	--Cross Roads
+	["Right"] = {
+		vec4(-543.95, 1980.29, 127.05, 191.34),
+		vec4(-542.48, 1969.53, 126.96, 184.28),
+		vec4(-541.43, 1960.34, 126.68, 185.48),
+		vec4(-539.46, 1950.64, 126.16, 192.29),
+		vec4(-536.94, 1941.68, 125.68, 193.08),
+		vec4(-535.12, 1930.0, 124.79, 185.12),
+		vec4(-535.73, 1918.04, 123.9, 172.21),
+		vec4(-538.41, 1909.36, 123.31, 155.38),
+		vec4(-545.73, 1899.81, 123.06, 137.47),
+		vec4(-553.45, 1892.99, 123.06, 122.89),
+		vec4(-562.74, 1887.5, 123.06, 112.81)
+	},
+
+	["Left"] = {
+		vec4(-544.12, 1985.69, 127.03, 224.58),
+		vec4(-540.32, 1982.75, 127.05, 243.6),
+		vec4(-537.52, 1981.77, 127.05, 257.2),
+		vec4(-527.43, 1980.09, 126.87, 260.39),
+		vec4(-520.56, 1979.26, 126.61, 264.99),
+		vec4(-514.04, 1979.04, 126.37, 268.85),
+		vec4(-504.19, 1979.46, 126.06, 274.8),
+		vec4(-504.19, 1979.46, 126.06, 274.8),
+		vec4(-498.69, 1980.47, 125.67, 285.12),
+		vec4(-492.59, 1982.97, 124.93, 294.23),
+		vec4(-488.0, 1984.97, 124.44, 293.38),
+		vec4(-483.61, 1986.58, 124.18, 285.18),
+		vec4(-475.68, 1989.11, 123.83, 288.35),
+		vec4(-470.47, 1991.31, 123.65, 298.13),
+		vec4(-466.23, 1994.06, 123.56, 308.0),
+		vec4(-460.4, 1999.11, 123.57, 313.9),
+		vec4(-453.77, 2006.07, 123.55, 318.79),
+		vec4(-449.49, 2013.25, 123.55, 340.69),
+		vec4(-448.74, 2019.25, 123.55, 9.69),
+		vec4(-451.61, 2032.88, 123.23, 12.03),
+		vec4(-454.41, 2041.63, 122.84, 23.7),
+		vec4(-461.12, 2054.57, 122.08, 27.56),
+		vec4(-464.93, 2061.84, 121.09, 22.72),
+		vec4(-468.31, 2070.74, 120.6, 15.32),
+		vec4(-470.27, 2077.84, 120.35, 11.69),
+		vec4(-471.51, 2084.36, 120.14, 11.01),
+		vec4(-472.92, 2090.72, 120.1, 12.91),
+	},
+}
+
+local currentPointIndex = 1
+
+function lerp(a, b, t)
+    return a + (b - a) * t
 end
 
-function destroyProp(entity)
-	if Config.Debug then print("^5Debug^7: ^2Destroying Prop^7: '^6"..entity.."^7'") end
-	SetEntityAsMissionEntity(entity) Wait(5)
-	DetachEntity(entity, true, true) Wait(5)
-	DeleteObject(entity)
+function calculateDistance(point1, point2)
+    return Vdist(point1.x, point1.y, point1.z, point2.x, point2.y, point2.z)
 end
 
-function makePed(model, coords, freeze, collision, scenario, anim)
-	loadModel(model)
-	local ped = CreatePed(0, model, coords.x, coords.y, coords.z-1.03, coords.w, false, false)
-	SetEntityInvincible(ped, true)
-	SetBlockingOfNonTemporaryEvents(ped, true)
-	FreezeEntityPosition(ped, freeze or true)
-    if collision then SetEntityNoCollisionEntity(ped, PlayerPedId(), false) end
-    if scenario then TaskStartScenarioInPlace(ped, scenario, 0, true) end
-    if anim then
-        loadAnimDict(anim[1])
-        TaskPlayAnim(ped, anim[1], anim[2], 1.0, 1.0, -1, 1, 0.2, 0, 0, 0)
+function calculateHeadingDifference(heading1, heading2)
+    local headingDiff = heading2 - heading1
+    if headingDiff < -180.0 then
+        headingDiff = headingDiff + 360.0
+    elseif headingDiff > 180.0 then
+        headingDiff = headingDiff - 360.0
     end
-	if Config.Debug then print("^5Debug^7: ^6Ped ^2Created for location^7: '^6"..model.."^7'") end
-    return ped
+    return headingDiff
 end
 
-function makeBlip(data)
-	local blip = AddBlipForCoord(data.coords)
-	SetBlipAsShortRange(blip, true)
-	SetBlipSprite(blip, data.sprite or 1)
-	SetBlipColour(blip, data.col or 0)
-	SetBlipScale(blip, data.scale or 0.7)
-	SetBlipDisplay(blip, (data.disp or 6))
-	if data.category then SetBlipCategory(blip, data.category) end
-	BeginTextCommandSetBlipName('STRING')
-	AddTextComponentString(tostring(data.name))
-	EndTextCommandSetBlipName(blip)
-	if Config.Debug then print("^5Debug^7: ^6Blip ^2created for location^7: '^6"..data.name.."^7'") end
-	return blip
+function spawnMinecart(coords)
+    minecartEntity = makeProp({ prop = "k4mb1_minecart", coords = coords }, true, false)
+	Wait(1000)
+	AttachEntityToEntity(PlayerPedId(), minecartEntity, 20, 0.0, 0.10, 0.5, 0.4, 0.0, 0.0, -15.0, true, true, false, true, 1, true)
 end
 
-function triggerNotify(title, message, type, src)
-	if Config.Notify == "okok" then
-		if not src then exports['okokNotify']:Alert(title, message, 6000, type)
-		else TriggerClientEvent('okokNotify:Alert', src, title, message, 6000, type) end
-	elseif Config.Notify == "qb" then
-		if not src then	TriggerEvent("QBCore:Notify", message, type)
-		else TriggerClientEvent("QBCore:Notify", src, message, type) end
-	elseif Config.Notify == "t" then
-		if not src then exports['t-notify']:Custom({title = title, style = type, message = message, sound = true})
-		else TriggerClientEvent('t-notify:client:Custom', src, { style = type, duration = 6000, title = title, message = message, sound = true, custom = true}) end
-	elseif Config.Notify == "infinity" then
-		if not src then TriggerEvent('infinity-notify:sendNotify', message, type)
-		else TriggerClientEvent('infinity-notify:sendNotify', src, message, type) end
-	elseif Config.Notify == "rr" then
-		if not src then exports.rr_uilib:Notify({msg = message, type = type, style = "dark", duration = 6000, position = "top-right", })
-		else TriggerClientEvent("rr_uilib:Notify", src, {msg = message, type = type, style = "dark", duration = 6000, position = "top-right", }) end
-	elseif Config.Notify == "ox" then
-		if not src then exports.ox_lib:notify({title = title, description = message, type = type or "success"})
-		else TriggerClientEvent('ox_lib:notify', src, { type = type or "success", title = title, description = message }) end
-	end
-end
+function moveMinecart(points)
+    local speed = 5.0  -- Adjust the constant speed as needed
+	Wait(3000)
 
-function pairsByKeys(t)
-	local a = {}
-	for n in pairs(t) do a[#a+1] = n end
-	table.sort(a)
-	local i = 0
-	local iter = function() i = i + 1 if a[i] == nil then return nil else return a[i], t[a[i]] end end
-	return iter
-end
-function countTable(table) local i = 0 for keys in pairs(table) do i = i + 1 end return i end
+    while true do
+        local nextIndex = (currentPointIndex % #points) + 1
+        local distance = calculateDistance(points[currentPointIndex], points[nextIndex])
+        local timeToReachNextPoint = distance / speed
 
-function toggleItem(give, item, amount) TriggerServerEvent("jim-mining:server:toggleItem", give, item, amount) end
+        local startTime = GetGameTimer()
+        local endTime = startTime + timeToReachNextPoint * 1000
 
-if Config.Inv == "ox" then
-	function HasItem(items, amount) local count = exports.ox_inventory:Search('count', items) local amount = (amount or 1)
-        if count >= amount then if Config.Debug then print("^5Debug^7: ^3HasItem^7: ^5FOUND^7 ^3"..count.."^7/^3"..amount.." "..tostring(items)) end return true
-        else if Config.Debug then print("^5Debug^7: ^3HasItem^7: ^2"..tostring(items).." ^1NOT FOUND^7") end return false end
-	end
-else
-    function HasItem(items, amount) local amount, count = amount or 1, 0
-        for _, itemData in pairs(QBCore.Functions.GetPlayerData().items) do
-            if itemData and (itemData.name == items) then
-                if Config.Debug then print("^5Debug^7: ^3HasItem^7: ^2Item^7: '^3"..tostring(items).."^7' ^2Slot^7: ^3"..itemData.slot.." ^7x(^3"..tostring(itemData.amount).."^7)") end
-                count += (itemData.amount or 1)
-            end
+        while GetGameTimer() < endTime do
+            local t = (GetGameTimer() - startTime) / (timeToReachNextPoint * 1000)
+            local lerpedCoords = vec3(
+                lerp(points[currentPointIndex].x, points[nextIndex].x, t),
+                lerp(points[currentPointIndex].y, points[nextIndex].y, t),
+                lerp(points[currentPointIndex].z, points[nextIndex].z, t)
+            )
+
+            local lerpedHeading = lerp(points[currentPointIndex].w, points[nextIndex].w, t)
+            local headingDiff = calculateHeadingDifference(GetEntityHeading(minecartEntity), lerpedHeading)
+
+            SetEntityCoordsNoOffset(minecartEntity, lerpedCoords.x, lerpedCoords.y, lerpedCoords.z, true, true, true)
+            SetEntityHeading(minecartEntity, GetEntityHeading(minecartEntity) + headingDiff)
+
+            Wait(0)
         end
-        if count >= amount then if Config.Debug then print("^5Debug^7: ^3HasItem^7: ^5FOUND^7 ^3"..count.."^7/^3"..amount.." "..tostring(items)) end return true
-        else if Config.Debug then print("^5Debug^7: ^3HasItem^7: ^2"..tostring(items).." ^1NOT FOUND^7") end return false end
+
+		-- Check if it reached the last point and stop
+		if currentPointIndex == #points -1 then
+			destroyProp(minecartEntity)
+			minecartEntity = nil
+			currentPointIndex = 1
+			break
+		end
+        currentPointIndex = nextIndex
     end
 end
 
-function lockInv(toggle) FreezeEntityPosition(PlayerPedId(), toggle) LocalPlayer.state:set("inv_busy", toggle, true) TriggerEvent('inventory:client:busy:status', toggle) TriggerEvent('canUseInventoryAndHotbar:toggle', not toggle) end
-
-function progressBar(data)
-	local result = nil
-	if Config.ProgressBar == "ox" then
-		if exports.ox_lib:progressBar({	duration = Config.Debug and 1000 or data.time, label = data.label, useWhileDead = data.dead or false, canCancel = data.cancel or true,
-			anim = { dict = data.dict, clip = data.anim, flag = (data.flag == 8 and 32 or data.flag) or nil, scenario = data.task }, disable = { combat = true }, }) then
-			result = true
-			lockInv(false)
-		else
-			result = false
-			lockInv(false)
-		end
+function mineCartMenu(ent, right)
+	local Menu = {}
+	local zadjust = 0.3
+	if ent then
+		Menu[#Menu+1] = {
+			header = "Right Chamber",
+			onSelect = function()
+				local pointTable = {}
+				for i = 1, #points["Main"] do pointTable[#pointTable+1] = vec4(points["Main"][i].x, points["Main"][i].y, points["Main"][i].z-zadjust, points["Main"][i].w) end
+				for i = 1, #points["Right"] do pointTable[#pointTable+1] = vec4(points["Right"][i].x, points["Right"][i].y, points["Right"][i].z-zadjust, points["Right"][i].w) end
+				spawnMinecart(pointTable[1])
+				moveMinecart(pointTable)
+			end,
+		}
+		Menu[#Menu+1] = {
+			header = "Left Chamber",
+			onSelect = function()
+				local pointTable = {}
+				for i = 1, #points["Main"] do pointTable[#pointTable+1] = vec4(points["Main"][i].x, points["Main"][i].y, points["Main"][i].z-zadjust, points["Main"][i].w) end
+				for i = 1, #points["Left"] do pointTable[#pointTable+1] = vec4(points["Left"][i].x, points["Left"][i].y, points["Left"][i].z-zadjust, points["Left"][i].w) end
+				spawnMinecart(pointTable[1])
+				moveMinecart(pointTable)
+			end,
+		}
 	else
-		QBCore.Functions.Progressbar("mechbar",	data.label,	Config.Debug and 1000 or data.time, data.dead, data.cancel or true,
-		{ disableMovement = true, disableCarMovement = true, disableMouse = false, disableCombat = true, },
-		{ animDict = data.dict, anim = data.anim, flags = (data.flag == 8 and 32 or data.flag) or nil, task = data.task }, {}, {}, function()
-			result = true
-			lockInv(false)
-		end, function()
-			result = false
-			lockInv(false)
-		end, data.icon)
+		Menu[#Menu+1] = {
+			header = "Return to Entrance",
+			onSelect = function()
+				local pointTable = {}
+				if right then
+					for i = #points["Right"], 1, -1 do pointTable[#pointTable+1] = vec4(points["Right"][i].x, points["Right"][i].y, points["Right"][i].z-zadjust, points["Right"][i].w-180) end
+				else
+					for i = #points["Left"], 1, -1 do pointTable[#pointTable+1] = vec4(points["Left"][i].x, points["Left"][i].y, points["Left"][i].z-zadjust, points["Left"][i].w-180) end
+				end
+				for i = #points["Main"], 1, -1 do pointTable[#pointTable+1] = vec4(points["Main"][i].x, points["Main"][i].y, points["Main"][i].z-zadjust, points["Main"][i].w-180) end
+				spawnMinecart(pointTable[1])
+				moveMinecart(pointTable)
+			end,
+		}
 	end
-	while result == nil do Wait(10) end
-	return result
+	openMenu(Menu, {header = "Ride a Minecart", canClose = true})
 end

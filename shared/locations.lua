@@ -1,18 +1,15 @@
-Config.Locations = {
+Locations = {
     ["Washing"] = {
         Enable = true,
         positions = {
-            { name = "Stone Washing", coords = vec3(1840.18, 412.42, 160.49), sprite = 467, col = 3, disp = 6, blipEnable = true }, -- Mountains
+            { name = "Stone Washing", coords = vec3(1840.18, 412.42, 160.49), sprite = 467, col = 3, disp = 6, blipEnable = false }, -- Mountains
             { name = "Stone Washing", coords = vec3(1870.91, 395.1, 160.16), sprite = 467, col = 3, disp = 6, blipEnable = false },
-
-            { name = "Stone Washing", coords = vec3(-432.59, 2936.84, 13.87), sprite = 467, col = 3, disp = 6, blipEnable = true }, -- Stream Blip
+            { name = "Stone Washing", coords = vec3(-432.59, 2936.84, 13.87), sprite = 467, col = 3, disp = 6, blipEnable = false }, -- Stream Blip
             { name = "Stone Washing", coords = vec3(-422.37, 2946.18, 13.77), sprite = 467, col = 3, blipEnable = false },
             { name = "Stone Washing", coords = vec3(-443.21, 2926.5, 13.62), sprite = 467, col = 3, blipEnable = false },
             { name = "Stone Washing", coords = vec3(-455.48, 2917.16, 13.52), sprite = 467, col = 3, blipEnable = false },
-
-            { name = "Stone Washing", coords = vec3(2500.64, 6129.4, 162.46), sprite = 467, col = 3, disp = 6, blipEnable = true }, -- Gordo
-
-            { name = "Stone Washing", coords = vec3(907.06, 4377.66, 30.28), sprite = 467, col = 3, disp = 6, blipEnable = true }, -- Alamo Sea
+            { name = "Stone Washing", coords = vec3(2500.64, 6129.4, 162.46), sprite = 467, col = 3, disp = 6, blipEnable = false }, -- Gordo
+            { name = "Stone Washing", coords = vec3(907.06, 4377.66, 30.28), sprite = 467, col = 3, disp = 6, blipEnable = false }, -- Alamo Sea
             { name = "Stone Washing", coords = vec3(894.14, 4386.56, 30.24), sprite = 467, col = 3, blipEnable = false },
             { name = "Stone Washing", coords = vec3(893.12, 4370.74, 30.35), sprite = 467, col = 3, blipEnable = false },
             { name = "Stone Washing", coords = vec3(912.88, 4365.7, 30.39), sprite = 467, col = 3, blipEnable = false },
@@ -23,16 +20,17 @@ Config.Locations = {
         positions = {
             ["Vineyard"] = {
                 Enable = true,
-                Blip = { -- The location where you enter the mine
+                Blip = {
                     Enable = true,
                     name = "Gold Panning",
-                    coords = vector3(-1410.58, 2005.91, 59.4),
-                    sprite = 467, col = 5,
+                    coords = vec3(-1410.58, 2005.91, 59.4),
+                    sprite = 467,
+                    col = 5,
                 },
                 Positions = {
-                    { coords = vector4(-1396.3, 2004.59, 53.59, 82.0), w = 22.1, d = 4.0 },
-                    { coords = vector4(-1410.08, 2006.08, 48.8, 89.0), w = 6.3, d = 4.2 },
-                    { coords = vector4(-1418.62, 2006.05, 48.41, 89.0), w = 10.9, d = 6.0 },
+                    { coords = vec4(-1396.3, 2004.59, 53.59, 82.0), w = 22.1, d = 4.0 },
+                    { coords = vec4(-1410.08, 2006.08, 48.8, 89.0), w = 6.3, d = 4.2 },
+                    { coords = vec4(-1418.62, 2006.05, 48.41, 89.0), w = 10.9, d = 6.0 },
                 }
             },
             ["Tongva"] = {
@@ -40,12 +38,12 @@ Config.Locations = {
                 Blip = { -- The location where you enter the mine
                     Enable = true,
                     name = "Gold Panning",
-                    coords = vector3(-1550.06, 1445.13, 116.37),
+                    coords = vec3(-1550.06, 1445.13, 116.37),
                     sprite = 467, col = 5,
                 },
                 Positions = {
-                    { coords = vector4(-1550.06, 1445.13, 106.37, 139.0), w = 10.9, d = 6.0 },
-                    { coords = vector4(-1562.88, 1434.03, 107.19, 129.0), w = 24.3, d = 6.0 },
+                    { coords = vec4(-1550.06, 1445.13, 106.37, 139.0), w = 10.9, d = 6.0 },
+                    { coords = vec4(-1562.88, 1434.03, 107.19, 129.0), w = 24.3, d = 6.0 },
                 }
             },
             ["Wilderness"] = {
@@ -53,11 +51,11 @@ Config.Locations = {
                 Blip = { -- The location where you enter the mine
                     Enable = true,
                     name = "Gold Panning",
-                    coords = vector3(-870.24, 4424.14, 15.37),
+                    coords = vec3(-870.24, 4424.14, 15.37),
                     sprite = 467, col = 5,
                 },
                 Positions = {
-                    { coords = vector4(-870.24, 4424.14, 10.37, 129.0), w = 25.1, d = 19.8 },
+                    { coords = vec4(-870.24, 4424.14, 10.37, 129.0), w = 25.1, d = 19.8 },
                 }
             },
         },
@@ -65,7 +63,7 @@ Config.Locations = {
 	['JewelBuyer'] = { -- The Location of the jewel buyer, I left this as Vangelico, others will proabably change to pawn shops
         Enable = true,
         positions = {
-            { name = "Jewel Buyer", coords = vec4(-629.86, -240.35, 38.16, 110.05), sprite = 527, col = 617, blipTrue = false, model = `S_M_M_HighSec_03`, scenario = "WORLD_HUMAN_CLIPBOARD", },
+            { name = "Jewel Buyer", coords = vec4(1699.74, 3785.52, 34.71, 221.82), sprite = 527, col = 617, blipTrue = false, model = `S_M_M_HighSec_03`, scenario = "WORLD_HUMAN_CLIPBOARD", },
         },
     },
     ["Smelting"] = {
@@ -75,11 +73,13 @@ Config.Locations = {
     ["Mines"] = {
         ["Foundary"] = {
             Enable = true,
+            Job = nil,
             Blip = { -- The location where you enter the mine
                 Enable = true,
                 name = "Foundary",
                 coords = vec4(1074.89, -1988.19, 30.89, 235.07),
-                sprite = 436, col = 1,
+                sprite = 436,
+                col = 1,
             },
             Lights = {
                 Enable = true,
@@ -92,7 +92,7 @@ Config.Locations = {
                 { name = "Foundary Store", coords = vec4(1074.89, -1988.19, 30.89, 235.07), model = `G_M_M_ChemWork_01`, scenario = "WORLD_HUMAN_CLIPBOARD", },
             },
             Smelting = {
-                { blipEnable = true, name = "Foundary", coords = vec3(1112.29, -2009.9, 31.46), sprite = 436, col = 1,  },
+                { blipEnable = false, name = "Foundary", coords = vec3(1112.29, -2009.9, 31.46), sprite = 436, col = 1,  },
             },
             Cracking = {
                 { blipEnable = false, name = "Stone Cracking", coords = vec4(1109.19, -1992.8, 30.98, 146.88), sprite = 566, col = 81, prop = "prop_vertdrill_01" },
@@ -156,7 +156,7 @@ Config.Locations = {
                 },
             },
             OrePositions = {
-                vector4(-589.25, 2050.53, 130.11, 127.33),
+                vec4(-589.25, 2050.53, 130.11, 127.33),
                 vec4(-580.30, 2037.82, 128.8, 300.0),
                 vec4(-572.68, 2022.37, 127.93, 130.0),
                 vec4(-563.0, 2011.85, 127.45, 130.0),
@@ -198,23 +198,23 @@ Config.Locations = {
                 },
             },
             OrePositions = {
-                vec4(2977.54, 2741.26, 44.74, 240.0),
-                vec4(2980.37, 2748.7, 43.2, 210.0),
-                vec4(2985.62, 2751.35, 43.26, 200.0),
-                vec4(2990.45, 2750.6, 43.6, 150.0),
+                vec4(2977.84, 2741.26, 44.74, 240.0),
+                vec4(2980.57, 2748.40, 43.20, 210.0),
+                vec4(2985.72, 2750.95, 43.26, 200.0),
+                vec4(2990.25, 2750.40, 43.60, 150.0),
 
-                vec4(3000.77, 2754.15, 43.7, 220.0),
-                vec4(3004.89, 2762.88, 43.74, 240.0),
+                vec4(3000.97, 2753.95, 43.70, 220.0),
+                vec4(3004.29, 2761.18, 43.84, 240.0),
 
                 vec4(3006.38, 2768.63, 42.79, 270.0),
                 vec4(3005.94, 2773.78, 42.51, 270.0),
             },
         },
-        ["K4MB1"] = { -- K4MB1's Mineshaft in the quarry
-            Enable = true,
+        ["K4MB1Quarry"] = { -- K4MB1's Mineshaft in the quarry
+            Enable = false,
             Job = nil,
             Blip = {
-                Enable = true,
+                Enable = false,
                 name = "Mining Cave",
                 coords = vec4(2937.98, 2744.81, 43.28, 281.59),
                 sprite = 527,
@@ -224,18 +224,18 @@ Config.Locations = {
                 { name = "Cave Shop", coords = vec4(2908.8, 2643.6, 43.26, 328.32), model = `G_M_M_ChemWork_01`, scenario = "WORLD_HUMAN_CLIPBOARD", },
             },
             Smelting = {
-                { blipEnable = true, name = "Smelter", coords = vec3(2921.81, 2653.42, 43.15), sprite = 436, col = 1, },
+                { blipEnable = false, name = "Smelter", coords = vec3(2921.81, 2653.42, 43.15), sprite = 436, col = 1, },
             },
             Cracking = {
                 { name = "Stone Cracking", coords = vec4(2914.9, 2650.78, 43.08, 231.77), sprite = 566, col = 81, blipTrue = false, prop = `prop_vertdrill_01` }, -- Foundary
                 { name = "Stone Cracking", coords = vec4(2914.61, 2649.06, 43.19, 272.74), sprite = 566, col = 81, blipTrue = false, prop = `prop_vertdrill_01` }, -- Foundary
             },
             OreBuyer = {
-                { blipEnable = true, name = "Ore Buyer", coords = vec4(2917.79, 2646.26, 43.17, 6.14), sprite = 568, col = 81,model = `G_M_M_ChemWork_01`, scenario = "WORLD_HUMAN_CLIPBOARD", },
+                { blipEnable = false, name = "Ore Buyer", coords = vec4(2917.79, 2646.26, 43.17, 6.14), sprite = 568, col = 81,model = `G_M_M_ChemWork_01`, scenario = "WORLD_HUMAN_CLIPBOARD", },
             },
             JewelCut = {
-                { blipEnable = true, name = "Jewel Cutting", coords = vec4(2917.45, 2654.24, 43.03, 229.61), sprite = 566, col = 81, prop = `gr_prop_gr_speeddrill_01c` },
-                { blipEnable = true, name = "Jewel Cutting", coords = vec4(2919.89, 2656.36, 43.15, 199.99), sprite = 566, col = 81, prop = `gr_prop_gr_speeddrill_01c` },
+                { blipEnable = false, name = "Jewel Cutting", coords = vec4(2917.45, 2654.24, 43.03, 229.61), sprite = 566, col = 81, prop = `gr_prop_gr_speeddrill_01c` },
+                { blipEnable = false, name = "Jewel Cutting", coords = vec4(2919.89, 2656.36, 43.15, 199.99), sprite = 566, col = 81, prop = `gr_prop_gr_speeddrill_01c` },
             },
             OrePositions = {
                 vec4(2906.33, 2736.05, 43.85, 30.0),
@@ -273,6 +273,117 @@ Config.Locations = {
                 vec4(2819.55, 2606.31, 38.08, 59.71),
                 vec4(2823.73, 2611.07, 38.3, 49.71),
                 vec4(2827.98, 2611.26, 34.15, 40.74),
+            },
+        },
+        ["K4MB1Shaft"] = { -- K4MB1's Mineshaft Replacement
+            Enable = false,
+            Job = nil,
+            Blip = {
+                Enable = true,
+                name = "Mine Shaft",
+                coords = vec4(-596.74, 2090.99, 131.41, 16.6),
+                sprite = 527,
+                col = 81,
+            },
+            Store = {
+                { name = "Mine", coords = vec4(-594.96, 2091.3, 131.47, 67.65), model = `G_M_M_ChemWork_01`, scenario = "WORLD_HUMAN_CLIPBOARD",  },
+            },
+            Lights = { Enable = false, },
+            OrePositions = {
+                vec4(-477.83, 1905.02, 119.71, 12.62),
+                vec4(-479.72, 1906.62, 119.47, 276.51),
+                vec4(-481.51, 1911.46, 119.7, 340.86),
+                vec4(-483.24, 1907.6, 119.73, 92.48),
+                vec4(-480.57, 1901.8, 119.74, 161.03),
+                vec4(-479.48, 1886.72, 119.65, 59.24),
+                vec4(-481.62, 1882.51, 119.71, 91.92),
+                vec4(-485.7, 1880.19, 119.69, 15.18),
+                vec4(-540.15, 1890.1, 122.28, 237.05),
+                vec4(-543.33, 1890.93, 122.18, 7.12),
+                vec4(-470.07, 1912.13, 113.6, 357.93),
+                vec4(-473.65, 1909.84, 113.68, 84.48),
+                vec4(-467.56, 1909.82, 113.45, 283.16),
+                vec4(-467.53, 1906.35, 113.52, 258.35),
+                vec4(-472.06, 1902.49, 113.49, 73.22),
+                vec4(-482.63, 1857.16, 118.79, 129.3),
+                vec4(-469.70, 1849.84, 117.42, 211.85),
+                vec4(-460.47, 1854.89, 117.54, 233.32),
+                vec4(-463.58, 1865.81, 117.45, 335.56),
+                vec4(-457.14, 1890.43, 119.75, 160.3),
+                vec4(-453.58, 1890.17, 119.84, 187.57),
+                vec4(-452.06, 1893.55, 119.73, 287.2),
+                vec4(-457.75, 1894.74, 121.05, 74.77),
+                vec4(-452.41, 1891.73, 119.84, 236.81),
+                vec4(-456.62, 1896.74, 119.58, 72.35),
+                vec4(-472.64, 1906.47, 113.63, 86.1),
+                vec4(-472.41, 1911.65, 113.73, 356.82),
+                vec4(-518.35, 1881.02, 119.69, 38.05),
+                vec4(-517.56, 1877.97, 119.61, 159.45),
+                vec4(-513.12, 1877.12, 119.73, 169.88),
+                vec4(-505.51, 1877.71, 119.59, 311.8),
+                vec4(-505.81, 1874.22, 119.72, 132.48),
+                vec4(-504.93, 1872.72, 119.65, 170.24),
+                vec4(-502.27, 1873.66, 119.65, 237.83),
+                vec4(-569.21, 1861.72, 121.8, 161.55),
+                vec4(-569.89, 1863.92, 121.87, 71.88),
+                vec4(-567.71, 1862.88, 121.89, 234.29),
+                vec4(-567.52, 1854.66, 121.01, 92.28),
+                vec4(-565.15, 1852.81, 120.82, 182.68),
+                vec4(-542.87, 1873.23, 117.46, 230.0),
+                vec4(-545.06, 1875.08, 117.51, 4.39),
+                vec4(-556.05, 1897.87, 118.61, 102.27),
+                vec4(-553.8, 1897.99, 118.43, 221.84),
+                vec4(-552.3, 1902.38, 118.54, 285.05),
+                vec4(-557.56, 1906.77, 118.73, 1.94),
+                vec4(-581.98, 1907.99, 120.13, 140.81),
+                vec4(-578.58, 1914.74, 120.21, 20.82),
+                vec4(-577.73, 1911.12, 120.14, 175.76),
+                vec4(-573.85, 1908.96, 120.3, 283.28),
+                vec4(-592.22, 1893.14, 120.67, 19.19),
+                vec4(-591.08, 1890.27, 121.06, 149.04),
+                vec4(-587.66, 1864.69, 123.25, 215.18),
+                vec4(-589.29, 1865.07, 123.2, 100.95),
+                vec4(-587.78, 1864.53, 123.24, 206.23),
+                vec4(-590.24, 1868.88, 123.56, 88.72),
+
+                vec4(-491.32, 2091.7, 119.82, 57.1),
+                vec4(-492.64, 2087.7, 120.01, 122.93),
+                vec4(-487.88, 2086.0, 119.93, 189.94),
+                vec4(-484.78, 2087.41, 119.78, 233.06),
+                vec4(-483.19, 2090.83, 119.73, 258.0),
+                vec4(-495.91, 2118.58, 117.21, 311.85),
+                vec4(-497.27, 2115.59, 117.77, 94.54),
+                vec4(-487.48, 2114.57, 117.38, 213.63),
+                vec4(-497.13, 2117.84, 117.38, 46.29),
+                vec4(-470.59, 2143.49, 113.65, 328.31),
+                vec4(-459.97, 2138.79, 113.79, 260.05),
+                vec4(-437.19, 2106.63, 115.53, 31.09),
+                vec4(-438.84, 2079.16, 120.59, 81.99),
+                vec4(-437.03, 2075.86, 120.76, 148.08),
+                vec4(-435.27, 2073.3, 120.76, 158.64),
+                vec4(-429.79, 2078.62, 120.65, 252.87),
+                vec4(-396.78, 2072.46, 120.05, 43.47),
+                vec4(-394.09, 2071.5, 119.88, 337.87),
+                vec4(-392.69, 2055.71, 121.15, 80.01),
+                vec4(-395.57, 2054.44, 121.83, 24.33),
+                vec4(-400.5, 2052.93, 121.17, 318.86),
+                vec4(-425.07, 2054.45, 118.03, 142.58),
+                vec4(-423.43, 2058.64, 118.09, 15.07),
+                vec4(-427.53, 2039.54, 123.9, 73.41),
+                vec4(-410.52, 2044.13, 123.69, 254.28),
+                vec4(-413.69, 2042.24, 123.76, 94.61),
+                vec4(-428.59, 2012.76, 125.07, 124.9),
+                vec4(-425.7, 2013.72, 124.87, 255.74),
+                vec4(-426.27, 1998.48, 124.69, 125.67),
+                vec4(-425.49, 2001.1, 124.79, 47.45),
+                vec4(-435.35, 2038.22, 118.19, 208.76),
+                vec4(-438.48, 2040.25, 118.47, 76.13),
+                vec4(-432.14, 2044.76, 120.81, 275.04),
+                vec4(-435.84, 2048.07, 121.44, 85.3),
+                vec4(-445.29, 2049.48, 124.69, 62.32),
+                vec4(-399.85, 2064.14, 119.31, 325.26),
+                vec4(-396.48, 2059.18, 120.15, 251.83),
+                vec4(-400.68, 2056.45, 121.08, 183.13),
             },
         },
         --["NewLocation"] = {
