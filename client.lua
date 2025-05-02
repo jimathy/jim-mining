@@ -304,6 +304,7 @@ Mining.Functions.makeJob = function()
 	if Locations["JewelBuyer"].Enable then
 		for k, v in pairs(Locations["JewelBuyer"].positions) do
 			local name = getScript()..":JewelBuyer:"..k
+			if v.blipTrue then Blip[#Blip+1] = makeBlip(v) end
 			Peds[#Peds+1] = makePed(v.model, v.coords, 1, 1, v.scenario)
 			local ped = Peds[#Peds]
 			Targets[name] =
