@@ -51,6 +51,11 @@ Loc["en"] = {
         ["neck_craft_section"] = "Go to Necklace Crafting Section",
         ["make_ear"] = "Make Earrings",
         ["ear_craft_section"] = "Go to Earring Crafting Section",
+
+        ["right_chamber"] = "Right Chamber",
+        ["left_chamber"] = "Left Chamber",
+        ["return_entrance"] = "Return to Entrance",
+        ["minecart_menu"] = "Ride a Minecart",
     },
     warning = {},
 }

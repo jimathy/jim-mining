@@ -74,7 +74,7 @@ Mining.Functions.setupMiningTarget = function(name, coords, prop, emptyProp, set
 			end,
 			icon = "fas fa-hammer",
 			item = "pickaxe",
-			label = Loc[Config.Lan].info["mine_ore"]..
+			label = locale("info", "mine_ore")..
 					" ("..(Items["pickaxe"] and Items["pickaxe"].label or "pickaxe❌")..") "..
 					(Config.General.AltMining and Items[setReward].label or "")..
 					(debugMode and " ["..name.."]" or ""),
@@ -85,7 +85,7 @@ Mining.Functions.setupMiningTarget = function(name, coords, prop, emptyProp, set
 			end,
 			icon = "fas fa-screwdriver",
 			item = "miningdrill",
-			label = Loc[Config.Lan].info["mine_ore"]..
+			label = locale("info", "mine_ore")..
 					" ("..(Items["miningdrill"] and Items["miningdrill"].label or "miningdrill❌")..")"..
 					(Config.General.AltMining and Items[setReward].label or "")..
 					(debugMode and " ["..name.."]" or ""),
@@ -96,7 +96,7 @@ Mining.Functions.setupMiningTarget = function(name, coords, prop, emptyProp, set
 			end,
 			icon = "fas fa-screwdriver-wrench",
 			item = "mininglaser",
-			label = Loc[Config.Lan].info["mine_ore"]..
+			label = locale("info", "mine_ore")..
 					" ("..(Items["mininglaser"] and Items["mininglaser"].label or "mininglaser❌")..")"..
 					(Config.General.AltMining and Items[setReward].label or "")..
 					(debugMode and " ["..name.."]" or ""),
@@ -160,7 +160,7 @@ Mining.Functions.makeJob = function()
 									openShop({ items = Config.Items, shop = "miningShop", coords = loc["Store"][i].coords })
 								end,
 								icon = "fas fa-store",
-								label = Loc[Config.Lan].info["browse_store"]..(debugMode and " ["..name.."]" or ""),
+								label = locale("info", "browse_store")..(debugMode and " ["..name.."]" or ""),
 								job = loc.Job,
 							},
 							(( mine == "K4MB1Shaft" and Config.General.K4MB1Cart ) and
@@ -186,7 +186,7 @@ Mining.Functions.makeJob = function()
 						createCircleTarget({name, loc["Smelting"][i].coords.xyz, 3.0, { name=name, debugPoly = debugMode, useZ=true, }, }, {
 							{ 	action = function()
 									craftingMenu({ craftable = Crafting.SmeltMenu, coords = loc["Smelting"][i].coords }) end,
-								icon = "fas fa-fire-burner", label = Loc[Config.Lan].info["use_smelter"]..(debugMode and " ["..name.."]" or ""), job = loc.Job,
+								icon = "fas fa-fire-burner", label = locale("info", "use_smelter")..(debugMode and " ["..name.."]" or ""), job = loc.Job,
 							},
 						}, 10.0)
 				end
@@ -205,7 +205,7 @@ Mining.Functions.makeJob = function()
 							{ 	action = function()
 									Mining.Other.crackStart({ bench = bench })
 								end,
-								icon = "fas fa-compact-disc", label = Loc[Config.Lan].info["crackingbench"]..(debugMode and " ["..name.."]" or ""), item = "stone", job = loc.Job,
+								icon = "fas fa-compact-disc", label = locale("info", "crackingbench")..(debugMode and " ["..name.."]" or ""), item = "stone", job = loc.Job,
 							},
 						}, 2.0)
 				end
@@ -224,7 +224,7 @@ Mining.Functions.makeJob = function()
 							{	action = function()
 									sellMenu({ ped = ped, sellTable = Selling["OreSell"] })
 								end,
-								icon = "fas fa-sack-dollar", label = Loc[Config.Lan].info["sell_ores"]..(debugMode and " ["..name.."]" or ""), job = Config.General.requiredJob
+								icon = "fas fa-sack-dollar", label = locale("info", "sell_ores")..(debugMode and " ["..name.."]" or ""), job = Config.General.requiredJob
 							},
 						}, 2.0)
 				end
@@ -243,7 +243,7 @@ Mining.Functions.makeJob = function()
 							{ 	action = function()
 									Mining.Menus.jewelCut({bench = bench})
 								end,
-								icon = "fas fa-gem", label = Loc[Config.Lan].info["jewelcut"]..(debugMode and " ["..name.."]" or ""), job = Config.General.requiredJob,
+								icon = "fas fa-gem", label = locale("info", "jewelcut")..(debugMode and " ["..name.."]" or ""), job = Config.General.requiredJob,
 							},
 						}, 2.0)
 				end
@@ -281,7 +281,7 @@ Mining.Functions.makeJob = function()
 					{	action = function()
 							Mining.Other.washStart({ coords = v.coords })
 						end,
-						icon = "fas fa-hands-bubbles", item = "stone", label = Loc[Config.Lan].info["washstone"]..(debugMode and " ["..name.."]" or ""),
+						icon = "fas fa-hands-bubbles", item = "stone", label = locale("info", "washstone")..(debugMode and " ["..name.."]" or ""),
 					},
 				}, 2.0)
 			if v.blipEnable then
@@ -303,7 +303,7 @@ Mining.Functions.makeJob = function()
 							end,
 							icon = "fas fa-ring",
 							item = "goldpan",
-							label = Loc[Config.Lan].info["goldpan"],
+							label = locale("info", "goldpan"),
 						},
 					}, 2.0)
 			end
@@ -321,7 +321,7 @@ Mining.Functions.makeJob = function()
 					{	action = function()
 						sellMenu({ ped = ped, sellTable = Selling["JewelSell"] })
 						end,
-						icon = "fas fa-gem", label = Loc[Config.Lan].info["jewelbuyer"]..(debugMode and " ["..name.."]" or ""), job = Config.General.requiredJob
+						icon = "fas fa-gem", label = locale("info", "jewelbuyer")..(debugMode and " ["..name.."]" or ""), job = Config.General.requiredJob
 					},
 				}, 2.0)
 		end
@@ -391,7 +391,7 @@ Mining.MineOre.pickaxe = function(data)
 			Wait(350)
 		end
 	end)
-	if progressBar({label = Loc[Config.Lan].info["drilling_ore"], time = GetTiming(Config.Timings["Pickaxe"]), cancel = true, icon = "pickaxe"}) then
+	if progressBar({label = locale("info", "drilling_ore"), time = GetTiming(Config.Timings["Pickaxe"]), cancel = true, icon = "pickaxe"}) then
 		TriggerServerEvent(getScript()..":Reward", { mine = true, cost = nil, setReward = data.setReward })
 		breakTool({ item = "pickaxe", damage = math.random(2, 3) })
 		Mining.Other.stoneBreak(data.name, data.stone, data.coords, data.job, data.rot, data.emptyProp)
@@ -430,7 +430,7 @@ Mining.MineOre.miningDrill = function(data)
 				Wait(600)
 			end
 		end)
-		if progressBar({label = Loc[Config.Lan].info["drilling_ore"], time = GetTiming(Config.Timings["Mining"]), cancel = true, icon = "miningdrill"}) then
+		if progressBar({label = locale("info", "drilling_ore"), time = GetTiming(Config.Timings["Mining"]), cancel = true, icon = "miningdrill"}) then
 			TriggerServerEvent(getScript()..":Reward", { mine = true, cost = nil })
 			--Destroy drill bit chances
 			if math.random(1, 100) >= 90 then
@@ -447,7 +447,7 @@ Mining.MineOre.miningDrill = function(data)
 		unloadPtfxDict("core")
 		IsDrilling, isMining = false, false
 	else
-		triggerNotify(nil, Loc[Config.Lan].error["no_drillbit"], nil) isMining = false return
+		triggerNotify(nil, locale("error", "no_drillbit"), nil) isMining = false return
 	end
 end
 
@@ -483,7 +483,7 @@ Mining.MineOre.miningLaser = function(data)
 			Wait(60)
 		end
 	end)
-	if progressBar({label = Loc[Config.Lan].info["drilling_ore"], time = GetTiming(Config.Timings["Laser"]), cancel = true, icon = "mininglaser"}) then
+	if progressBar({label = locale("info", "drilling_ore"), time = GetTiming(Config.Timings["Laser"]), cancel = true, icon = "mininglaser"}) then
 		TriggerServerEvent(getScript()..":Reward", { mine = true, cost = nil })
 		Mining.Other.stoneBreak(data.name, data.stone, data.coords, data.job, data.rot, data.emptyProp)
 	end
@@ -525,7 +525,7 @@ Mining.Other.crackStart = function(data)
 		end)
 		playAnim(dict, anim, -1, 1)
 		--TaskPlayAnim(Ped, dict, anim, 3.0, 3.0, -1, 1, 0, false, false, false)
-		if progressBar({label = Loc[Config.Lan].info["cracking_stone"], time = GetTiming(Config.Timings["Cracking"]), cancel = true, icon = "stone"}) then
+		if progressBar({label = locale("info", "cracking_stone"), time = GetTiming(Config.Timings["Cracking"]), cancel = true, icon = "stone"}) then
 			TriggerServerEvent(getScript()..":Reward", { crack = true, cost = cost })
 		end
 		StopAnimTask(Ped, dict, anim, 1.0)
@@ -537,7 +537,7 @@ Mining.Other.crackStart = function(data)
 		lockInv(false)
 		Cracking = false
 	else
-		triggerNotify(nil, Loc[Config.Lan].error["no_stone"], 'error')
+		triggerNotify(nil, locale("error", "no_stone"), 'error')
 	end
 end
 
@@ -566,7 +566,7 @@ Mining.Other.washStart = function(data)
 			end
 		end)
 		if progressBar({
-			label = Loc[Config.Lan].info["washing_stone"],
+			label = locale("info", "washing_stone"),
 			time = GetTiming(Config.Timings["Washing"]),
 			cancel = true,
 			icon = "stone"
@@ -580,7 +580,7 @@ Mining.Other.washStart = function(data)
 		Washing = false
 		ClearPedTasks(Ped)
 	else
-		triggerNotify(nil, Loc[Config.Lan].error["no_stone"], 'error')
+		triggerNotify(nil, locale("error", "no_stone"), 'error')
 	end
 end
 
@@ -605,7 +605,7 @@ Mining.Other.panStart = function(data)
 	--Start Anim
 	TaskStartScenarioInPlace(Ped, "CODE_HUMAN_MEDIC_KNEEL", 0, true)
 	if progressBar({
-		label = Loc[Config.Lan].info["goldpanning"],
+		label = locale("info", "goldpanning"),
 		time = GetTiming(Config.Timings["Panning"]),
 		cancel = true,
 		icon = "goldpan"
@@ -624,10 +624,10 @@ Mining.Menus.jewelCut = function(data)
 	loadDrillSound()
 	local Menu = {}
     local table = {
-		{ header = Loc[Config.Lan].info["gem_cut"],	txt = Loc[Config.Lan].info["gem_cut_section"], craftable = Crafting.GemCut, },
-		{ header = Loc[Config.Lan].info["make_ring"], txt = Loc[Config.Lan].info["ring_craft_section"], craftable = Crafting.RingCut, },
-		{ header = Loc[Config.Lan].info["make_neck"], txt = Loc[Config.Lan].info["neck_craft_section"], craftable = Crafting.NeckCut, },
-		{ header = Loc[Config.Lan].info["make_ear"], txt = Loc[Config.Lan].info["ear_craft_section"], craftable = Crafting.EarCut, },
+		{ header = locale("info", "gem_cut"),	txt = locale("info", "gem_cut_section"), craftable = Crafting.GemCut, },
+		{ header = locale("info", "make_ring"), txt = locale("info", "ring_craft_section"), craftable = Crafting.RingCut, },
+		{ header = locale("info", "make_neck"), txt = locale("info", "neck_craft_section"), craftable = Crafting.NeckCut, },
+		{ header = locale("info", "make_ear"), txt = locale("info", "ear_craft_section"), craftable = Crafting.EarCut, },
 	}
 	for i = 1, #table do
 		Menu[#Menu+1] = {
@@ -655,8 +655,8 @@ Mining.Menus.jewelCut = function(data)
 		}
 	end
 	openMenu(Menu, {
-		header = Loc[Config.Lan].info["craft_bench"],
-		headertxt = Loc[Config.Lan].info["req_drill_bit"],
+		header = locale("info", "craft_bench"),
+		headertxt = locale("info", "req_drill_bit"),
 		canClose = true,
 	})
 end

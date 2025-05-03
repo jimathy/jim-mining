@@ -155,7 +155,7 @@ function mineCartMenu(ent, right)
 	local zadjust = 0.3
 	if ent then
 		Menu[#Menu+1] = {
-			header = "Right Chamber",
+			header = locale("info", "right_chamber"),
 			onSelect = function()
 				local pointTable = {}
 				for i = 1, #points["Main"] do pointTable[#pointTable+1] = vec4(points["Main"][i].x, points["Main"][i].y, points["Main"][i].z-zadjust, points["Main"][i].w) end
@@ -165,7 +165,7 @@ function mineCartMenu(ent, right)
 			end,
 		}
 		Menu[#Menu+1] = {
-			header = "Left Chamber",
+			header = locale("info", "left_chamber"),
 			onSelect = function()
 				local pointTable = {}
 				for i = 1, #points["Main"] do pointTable[#pointTable+1] = vec4(points["Main"][i].x, points["Main"][i].y, points["Main"][i].z-zadjust, points["Main"][i].w) end
@@ -176,7 +176,7 @@ function mineCartMenu(ent, right)
 		}
 	else
 		Menu[#Menu+1] = {
-			header = "Return to Entrance",
+			header = locale("info", "return_entrance"),
 			onSelect = function()
 				local pointTable = {}
 				if right then
@@ -190,5 +190,5 @@ function mineCartMenu(ent, right)
 			end,
 		}
 	end
-	openMenu(Menu, {header = "Ride a Minecart", canClose = true})
+	openMenu(Menu, {header = locale("info", "minecart_menu"), canClose = true})
 end

@@ -1,6 +1,6 @@
 Selling = {
 	["OreSell"] = {
-		Header = Loc[Config.Lan].info["header_oresell"],
+		Header = locale("info", "header_oresell"),
 		Items = {
 			goldingot = 100,
 			silveringot = 100,
@@ -12,7 +12,7 @@ Selling = {
 		},
 	},
 	["JewelSell"] = {
-        Header = Loc[Config.Lan].info["jewel_buyer"],
+        Header = locale("info", "jewel_buyer"),
 		["Emerald"] = {
 			Items = {
 				emerald = 100,

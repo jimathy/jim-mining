@@ -28,7 +28,7 @@ RegisterServerEvent(getScript()..":Reward", function(data)
 				removeItem("stone", data.cost, src)
 				addItem(selectedItem, amount, nil, src)
 			else
-				triggerNotify(nil, Loc[Config.Lan].error["full"], "error")
+				triggerNotify(nil, locale("error", "full"), "error")
 			end
 
 	elseif data.wash then
@@ -43,7 +43,7 @@ RegisterServerEvent(getScript()..":Reward", function(data)
 			if selectedItem and canCarryCheck[selectedItem] then
 				addItem(selectedItem, amount, nil, src)
 			else
-				triggerNotify(nil, Loc[Config.Lan].error["full"], "error")
+				triggerNotify(nil, locale("error", "full"), "error")
 			end
 		end
 

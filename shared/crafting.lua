@@ -1,7 +1,7 @@
 Crafting = {
 	SmeltMenu = {
-		Header = Loc[Config.Lan].info["use_smelter"],
-		progressBar = { label = Loc[Config.Lan].info["smelting"], time = Config.Timings["Crafting"], },
+		Header = locale("info", "use_smelter"),
+		progressBar = { label = locale("info", "smelting"), time = Config.Timings["Crafting"], },
 		Recipes = {
 			{ ["copper"] = { ["copperore"] = 1 }, ['amount'] = 4 },
 			{ ["goldingot"] = { ["goldore"] = 1 } },
@@ -17,8 +17,8 @@ Crafting = {
 		},
 	},
 	GemCut = {
-		Header = Loc[Config.Lan].info["gem_cut"],
-		progressBar = { label = Loc[Config.Lan].info["cutting"], time = Config.Timings["Crafting"], },
+		Header = locale("info", "gem_cut"),
+		progressBar = { label = locale("info", "cutting"), time = Config.Timings["Crafting"], },
 		anims = { anim = "operate_02_hi_amy_skater_01", animDict = "anim@amb@machinery@speed_drill@" },
 		Recipes = {
 			{ ["emerald"] = { ["uncut_emerald"] = 1, } },
@@ -28,8 +28,8 @@ Crafting = {
 		},
 	},
 	RingCut = {
-		Header = Loc[Config.Lan].info["rings"],
-		progressBar = { label = Loc[Config.Lan].info["cutting"], time = Config.Timings["Crafting"], },
+		Header = locale("info", "rings"),
+		progressBar = { label = locale("info", "cutting"), time = Config.Timings["Crafting"], },
 		anims = { anim = "operate_02_hi_amy_skater_01", animDict = "anim@amb@machinery@speed_drill@" },
 		Recipes = {
 			{ ["gold_ring"] = { ["goldingot"] = 1 }, ['amount'] = 3 },
@@ -46,8 +46,8 @@ Crafting = {
 		},
 	},
 	NeckCut = {
-		Header = Loc[Config.Lan].info["gem_necklacescut"],
-		progressBar = { label = Loc[Config.Lan].info["cutting"], time = Config.Timings["Crafting"], },
+		Header = locale("info", "gem_necklacescut"),
+		progressBar = { label = locale("info", "cutting"), time = Config.Timings["Crafting"], },
 		anims = { anim = "operate_02_hi_amy_skater_01", animDict = "anim@amb@machinery@speed_drill@" },
 		Recipes = {
 			{ ["goldchain"] = { ["goldingot"] = 1 }, ['amount'] = 3  },
@@ -64,8 +64,8 @@ Crafting = {
 		},
 	},
 	EarCut = {
-		Header = Loc[Config.Lan].info["earrings"],
-		progressBar = { label = Loc[Config.Lan].info["cutting"], time = Config.Timings["Crafting"], },
+		Header = locale("info", "earrings"),
+		progressBar = { label = locale("info", "cutting"), time = Config.Timings["Crafting"], },
 		anims = { anim = "operate_02_hi_amy_skater_01", animDict = "anim@amb@machinery@speed_drill@" },
 		Recipes = {
 			{ ["goldearring"] = { ["goldingot"] = 1 }, ['amount'] = 3  },
@@ -82,4 +82,3 @@ Crafting = {
 		},
 	},
 }
-
