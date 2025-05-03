@@ -6,10 +6,6 @@ Mining = {
 	Other = {},
 	Menus = {},
 }
---Hide the mineshaft doors
-if Locations["Mines"]["MineShaft"].Enable then
-	CreateModelHide(vec3(-596.04, 2089.01, 131.41), 10.5, -1241212535, true)
-end
 
 local propTable = {
 	{ full = "cs_x_rubweec", empty = "prop_rock_5_a" },
@@ -48,7 +44,11 @@ Mining.Functions.weightedRandomReward = function()
 	for _, item in ipairs(Config.setMiningTable) do
 		local weight = item.rarity == "common" and 5 or item.rarity == "rare" and 3 or 1
 		totalWeight += weight
-		table.insert(weightedTable, {name = item.name, weight = totalWeight, prop = item.prop})
+		local prop = item.prop
+		if not Config.General.K4MB1Prop then
+			prop = "cs_x_rubweec"
+		end
+		table.insert(weightedTable, {name = item.name, weight = totalWeight, prop = prop})
 	end
 
 	local randValue = math.random(1, totalWeight)
@@ -108,7 +108,7 @@ end
 Mining.Functions.makeJob = function()
 	Mining.Functions.removeJob()
 	if Locations["Mines"]["MineShaft"].Enable then
-		CreateModelHide(vec3(-596.04, 2089.01, 131.41), 10.5, -1241212535, true)
+		CreateModelHide(vec3(-596.04, 2089.01, 131.41), 10.5, `prop_mineshaft_door`, true)
 	end
 
 	--Ore Spawning
@@ -341,7 +341,7 @@ Mining.Other.stoneBreak = function(name, stone, coords, job, rot, empty)
 			Wait(debugMode and 2000 or GetTiming(Config.Timings["OreRespawn"]))
 
 			local weightedReward = Mining.Functions.weightedRandomReward()
-			local propPick = {full=weightedReward.prop, empty=nil}
+			local propPick = { full = weightedReward.prop, empty = nil }
 			setReward = weightedReward.name
 
 			prop = Mining.Functions.spawnProp(coords, propPick.full, Config.General.K4MB1Prop and 0.8 or 1.1)
