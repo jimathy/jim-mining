@@ -47,8 +47,8 @@ Mining.Functions.weightedRandomReward = function()
 	local totalWeight, weightedTable = 0, {}
 	for _, item in ipairs(Config.setMiningTable) do
 		local weight = item.rarity == "common" and 5 or item.rarity == "rare" and 3 or 1
-		totalWeight = totalWeight + weight
-		table.insert(weightedTable, {name=item.name, weight=totalWeight, prop=item.prop})
+		totalWeight += weight
+		table.insert(weightedTable, {name = item.name, weight = totalWeight, prop = item.prop})
 	end
 
 	local randValue = math.random(1, totalWeight)
@@ -74,7 +74,10 @@ Mining.Functions.setupMiningTarget = function(name, coords, prop, emptyProp, set
 			end,
 			icon = "fas fa-hammer",
 			item = "pickaxe",
-			label = Loc[Config.Lan].info["mine_ore"].." ("..(Items["pickaxe"] and Items["pickaxe"].label or "pickaxe❌")..")"..(debugMode and " ["..name.."]" or ""),
+			label = Loc[Config.Lan].info["mine_ore"]..
+					" ("..(Items["pickaxe"] and Items["pickaxe"].label or "pickaxe❌")..") "..
+					(Config.General.AltMining and Items[setReward].label or "")..
+					(debugMode and " ["..name.."]" or ""),
 			job = job
 		},
 		{	action = function()
@@ -82,7 +85,10 @@ Mining.Functions.setupMiningTarget = function(name, coords, prop, emptyProp, set
 			end,
 			icon = "fas fa-screwdriver",
 			item = "miningdrill",
-			label = Loc[Config.Lan].info["mine_ore"].." ("..(Items["miningdrill"] and Items["miningdrill"].label or "miningdrill❌")..")"..(debugMode and " ["..name.."]" or ""),
+			label = Loc[Config.Lan].info["mine_ore"]..
+					" ("..(Items["miningdrill"] and Items["miningdrill"].label or "miningdrill❌")..")"..
+					(Config.General.AltMining and Items[setReward].label or "")..
+					(debugMode and " ["..name.."]" or ""),
 			job = job
 		},
 		{	action = function()
@@ -90,7 +96,10 @@ Mining.Functions.setupMiningTarget = function(name, coords, prop, emptyProp, set
 			end,
 			icon = "fas fa-screwdriver-wrench",
 			item = "mininglaser",
-			label = Loc[Config.Lan].info["mine_ore"].." ("..(Items["mininglaser"] and Items["mininglaser"].label or "mininglaser❌")..")"..(debugMode and " ["..name.."]" or ""),
+			label = Loc[Config.Lan].info["mine_ore"]..
+					" ("..(Items["mininglaser"] and Items["mininglaser"].label or "mininglaser❌")..")"..
+					(Config.General.AltMining and Items[setReward].label or "")..
+					(debugMode and " ["..name.."]" or ""),
 			job = job
 		},
 	}, 1.7)
@@ -109,7 +118,7 @@ Mining.Functions.makeJob = function()
 			if loc["OrePositions"] then
 				for i, coords in ipairs(loc["OrePositions"]) do
 					local name = "Ore".."_"..mine.."_"..i
-					local chosenProp, reward = propTable[math.random(#propTable)], nil
+					local chosenProp, reward = propTable[math.random(#propTable)], "stone"
 
 					if Config.General.AltMining then
 						local weightedReward = Mining.Functions.weightedRandomReward()

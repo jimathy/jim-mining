@@ -18,7 +18,7 @@ RegisterServerEvent(getScript()..":Reward", function(data)
 	local src = source
 	local amount = 1
 	if data.mine then
-		addItem("stone", GetTiming(Config.PoolAmounts.Mining.AmountPerSuccess),  nil, src)
+		addItem(data.setReward, GetTiming(Config.PoolAmounts.Mining.AmountPerSuccess),  nil, src)
 
 	elseif data.crack then
 			local selectedItem = GetRandItemFromTable(Config.CrackPool)
