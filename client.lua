@@ -68,9 +68,9 @@ Mining.Functions.spawnProp = function(coords, propName, adjustHeight)
 end
 
 Mining.Functions.setupMiningTarget = function(name, coords, prop, emptyProp, setReward, job)
-	Targets[name] = createCircleTarget({name, vec3(coords.x, coords.y, coords.z), 1.2, {name=name, debugPoly=debugMode, useZ=true}}, {
+	Targets[name] = createCircleTarget({name, vec3(coords.x, coords.y, coords.z), 1.2, {name = name, debugPoly = debugMode, useZ = true}}, {
 		{	action = function()
-				Mining.MineOre.pickaxe({stone=prop, name=name, coords=coords, emptyProp=emptyProp, setReward=setReward})
+				Mining.MineOre.pickaxe({stone = prop, name = name, coords = coords, emptyProp = emptyProp, setReward = setReward})
 			end,
 			icon = "fas fa-hammer",
 			item = "pickaxe",
@@ -81,7 +81,7 @@ Mining.Functions.setupMiningTarget = function(name, coords, prop, emptyProp, set
 			job = job
 		},
 		{	action = function()
-				Mining.MineOre.miningDrill({stone=prop, name=name, coords=coords, emptyProp=emptyProp, setReward=setReward})
+				Mining.MineOre.miningDrill({stone = prop, name = name, coords = coords, emptyProp = emptyProp, setReward = setReward})
 			end,
 			icon = "fas fa-screwdriver",
 			item = "miningdrill",
@@ -92,7 +92,7 @@ Mining.Functions.setupMiningTarget = function(name, coords, prop, emptyProp, set
 			job = job
 		},
 		{	action = function()
-				Mining.MineOre.miningLaser({stone=prop, name=name, coords=coords, emptyProp=emptyProp, setReward=setReward})
+				Mining.MineOre.miningLaser({stone = prop, name = name, coords = coords, emptyProp = emptyProp, setReward = setReward})
 			end,
 			icon = "fas fa-screwdriver-wrench",
 			item = "mininglaser",
@@ -431,7 +431,7 @@ Mining.MineOre.miningDrill = function(data)
 			end
 		end)
 		if progressBar({label = locale("info", "drilling_ore"), time = GetTiming(Config.Timings["Mining"]), cancel = true, icon = "miningdrill"}) then
-			TriggerServerEvent(getScript()..":Reward", { mine = true, cost = nil })
+			TriggerServerEvent(getScript()..":Reward", { mine = true, cost = nil, setReward = data.setReward })
 			--Destroy drill bit chances
 			if math.random(1, 100) >= 90 then
 				local breakId = GetSoundId()
@@ -484,7 +484,7 @@ Mining.MineOre.miningLaser = function(data)
 		end
 	end)
 	if progressBar({label = locale("info", "drilling_ore"), time = GetTiming(Config.Timings["Laser"]), cancel = true, icon = "mininglaser"}) then
-		TriggerServerEvent(getScript()..":Reward", { mine = true, cost = nil })
+		TriggerServerEvent(getScript()..":Reward", { mine = true, cost = nil, setReward = data.setReward })
 		Mining.Other.stoneBreak(data.name, data.stone, data.coords, data.job, data.rot, data.emptyProp)
 	end
 	IsDrilling, isMining = false, false
