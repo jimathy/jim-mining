@@ -332,7 +332,7 @@ end
 
 Mining.Other.stoneBreak = function(name, stone, coords, job, rot, empty)
 	CreateThread(function()
-		local prop, emptyProp, setReward = stone, empty, nil
+		local prop, emptyProp, setReward = stone, empty, "stone"
 		removeZoneTarget(Targets[name])
 		Targets[name] = nil
 
