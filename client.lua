@@ -281,7 +281,13 @@ Mining.Functions.makeJob = function()
 					{	action = function()
 							Mining.Other.washStart({ coords = v.coords })
 						end,
-						icon = "fas fa-hands-bubbles", item = "stone", label = locale("info", "washstone")..(debugMode and " ["..name.."]" or ""),
+						icon = "fas fa-hands-bubbles",
+						item = "stone",
+						label = locale("info", "washstone")..(debugMode and " ["..name.."]" or ""),
+						canInteract = function()
+							return not Washing
+						end
+
 					},
 				}, 2.0)
 			if v.blipEnable then
@@ -304,6 +310,9 @@ Mining.Functions.makeJob = function()
 							icon = "fas fa-ring",
 							item = "goldpan",
 							label = locale("info", "goldpan"),
+							canInteract = function()
+								return not Panning
+							end,
 						},
 					}, 2.0)
 			end
@@ -543,7 +552,7 @@ end
 
 ------------------------------------------------------------
 -- Washing Command / Animations
-local Washing = false
+Washing = false
 Mining.Other.washStart = function(data)
 	local Ped = PlayerPedId()
 	if Washing then return end
@@ -552,7 +561,7 @@ Mining.Other.washStart = function(data)
 		Washing = true
 		lockInv(true)
 		--Create Rock and Attach
-		local Rock = makeProp({ prop = "prop_rock_5_smash1", coords = vec4(0,0,0,0)}, 0, 1)
+		local Rock = makeProp({ prop = "prop_rock_5_smash1", coords = vec4(0, 0, 0, 0)}, 0, 1)
 		AttachEntityToEntity(Rock, Ped, GetPedBoneIndex(Ped, 60309), 0.1, 0.0, 0.05, 90.0, -90.0, 90.0, true, true, false, true, 1, true)
 		TaskStartScenarioInPlace(Ped, "PROP_HUMAN_BUM_BIN", 0, true)
 		local water
@@ -586,7 +595,7 @@ end
 
 ------------------------------------------------------------
 -- Gold Panning Command / Animations
-local Panning = false
+Panning = false
 Mining.Other.panStart = function(data)
 	local Ped = PlayerPedId()
 	if Panning then return else Panning = true end
