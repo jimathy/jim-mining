@@ -46,7 +46,7 @@ Crafting = {
 		},
 	},
 	NeckCut = {
-		Header = locale("info", "gem_necklacescut"),
+		Header = locale("info", "necklaces"),
 		progressBar = { label = locale("info", "cutting"), time = Config.Timings["Crafting"], },
 		anims = { anim = "operate_02_hi_amy_skater_01", animDict = "anim@amb@machinery@speed_drill@" },
 		Recipes = {
