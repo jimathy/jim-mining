@@ -61,10 +61,10 @@ RegisterServerEvent(getScript()..":Reward", function(data)
 	end
 end)
 
-registerShop("miningShop", Config.Items.label, Config.Items.items)
 
 onResourceStart(function()
 	Wait(1000)
+	registerShop("miningShop", Config.Items.label, Config.Items.items)
 	for k in pairs(Selling) do
 		if Selling[k].Items then
 			for b in pairs(Selling[k].Items) do
@@ -102,4 +102,4 @@ onResourceStart(function()
 	for k in pairs(itemcheck) do
 		if not Items[k] then print("Crafting recipe couldn't find item '"..k.."' in the shared") end
 	end
-end)
+end, true)
