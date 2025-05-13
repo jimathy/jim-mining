@@ -8,6 +8,7 @@ Loc["en"] = {
         ["no_pan"] = "You don't a Gold Pan",
         ["no_ingredients"] = "You don't have the correct ingredients",
         ["dont_have"] = "You don't have any ",
+        ["full"] = "Your inventory is full!"
     },
     success = {},
     info = {

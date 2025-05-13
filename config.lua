@@ -29,7 +29,6 @@ Config = {
 	Crafting = {
 		craftCam = false,
 		MultiCraft = true,		-- Enable multicraft
-		MultiCraftAmounts = { [1], [5], [10] },
 	},
 
 	Timings = { -- Time it takes to do things

@@ -7,7 +7,9 @@ local function GetRandItemFromTable(table)
 			items[#items+1] = item.item
 		end
 	end
-	if #items == 0 then goto start end
+	if #items == 0 then
+		goto start
+	end
 	local rand = math.random(1, #items)
 	local selectedItem = items[rand]
 	debugPrint("Selected item "..selectedItem.." - rand: "..rand.." leng: "..#items)
@@ -17,13 +19,25 @@ end
 RegisterServerEvent(getScript()..":Reward", function(data)
 	local src = source
 	local amount = 1
+
 	if data.mine then
-		addItem(data.setReward, GetTiming(Config.PoolAmounts.Mining.AmountPerSuccess),  nil, src)
+
+		local amount = GetTiming(Config.PoolAmounts.Mining.AmountPerSuccess)
+		local carryCheck = canCarry({ [data.setReward] = amount }, src)
+
+		if carryCheck[data.setReward] then
+			addItem(data.setReward, amount,  nil, src)
+		else
+			triggerNotify(nil, locale("error", "full"), "error")
+		end
 
 	elseif data.crack then
+
 			local selectedItem = GetRandItemFromTable(Config.CrackPool)
-			amount =GetTiming(Config.PoolAmounts.Cracking.AmountPerSuccess)
+			amount = GetTiming(Config.PoolAmounts.Cracking.AmountPerSuccess)
+
 			local canCarryCheck = canCarry({ [selectedItem] = amount }, src)
+
 			if selectedItem and canCarryCheck[selectedItem] then
 				removeItem("stone", data.cost, src)
 				addItem(selectedItem, amount, nil, src)
@@ -32,15 +46,16 @@ RegisterServerEvent(getScript()..":Reward", function(data)
 			end
 
 	elseif data.wash then
-		-- Remove stone then give rewards
-		removeItem("stone", data.cost, src)
-		-- Calculate how many items to give
+
 		for i = 1, GetTiming(Config.PoolAmounts.Washing.Successes) do
+
 			local selectedItem = GetRandItemFromTable(Config.WashPool)
 			amount = GetTiming(Config.PoolAmounts.Washing.AmountPerSuccess)
+
 			local canCarryCheck = canCarry({ [selectedItem] = amount }, src)
 
 			if selectedItem and canCarryCheck[selectedItem] then
+				removeItem("stone", data.cost, src)
 				addItem(selectedItem, amount, nil, src)
 			else
 				triggerNotify(nil, locale("error", "full"), "error")
@@ -48,9 +63,12 @@ RegisterServerEvent(getScript()..":Reward", function(data)
 		end
 
 	elseif data.pan then
+
 		for i = 1, GetTiming(Config.PoolAmounts.Panning.Successes) do
+
 			local selectedItem = GetRandItemFromTable(Config.PanPool)
 			amount = GetTiming(Config.PoolAmounts.Panning.AmountPerSuccess)
+
 			local canCarryCheck = canCarry({ [selectedItem] = amount }, src)
 
 			if selectedItem and canCarryCheck[selectedItem] then

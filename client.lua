@@ -328,7 +328,7 @@ Mining.Functions.makeJob = function()
 			Targets[name] =
 				createCircleTarget({ name, v.coords.xyz, 1.2, { name = name, debugPoly = debugMode, useZ = true }, }, {
 					{	action = function()
-						sellMenu({ ped = ped, sellTable = Selling["JewelSell"] })
+							sellMenu({ ped = ped, sellTable = Selling["JewelSell"] })
 						end,
 						icon = "fas fa-gem", label = locale("info", "jewelbuyer")..(debugMode and " ["..name.."]" or ""), job = Config.General.requiredJob
 					},
