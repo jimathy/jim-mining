@@ -1,6 +1,6 @@
 name "Jim-Mining"
 author "Jimathy"
-version "3.0.04"
+version "3.0.05"
 description "Mining Script"
 fx_version "cerulean"
 game "gta5"
@@ -12,7 +12,7 @@ shared_scripts {
 	'locales/*.lua',
 	'config.lua',
 
-    --Jim Bridge - https://github.com/jimathy/jim-bridge
+    --Jim Bridge - https://github.com/jimathy/jim_bridge
     '@jim_bridge/starter.lua',
 
 	'shared/*.lua',
