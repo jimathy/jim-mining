@@ -63,7 +63,7 @@ Locations = {
 	['JewelBuyer'] = { -- The Location of the jewel buyer, I left this as Vangelico, others will proabably change to pawn shops
         Enable = true,
         positions = {
-            { name = "Jewel Buyer", coords = vec4(1699.74, 3785.52, 34.71, 221.82), sprite = 527, col = 617, blipTrue = false, model = `S_M_M_HighSec_03`, scenario = "WORLD_HUMAN_CLIPBOARD", },
+            { name = "Jewel Buyer", coords = vec4(-630.46, -240.13, 38.14, 124.88), sprite = 527, col = 617, blipTrue = true, model = `S_M_M_HighSec_03`, scenario = "WORLD_HUMAN_CLIPBOARD", },
         },
     },
     ["Smelting"] = {
