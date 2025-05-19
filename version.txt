@@ -1,1 +1,6 @@
 3.0.05
+
+- Fix default jewel seller back to vangellico
+- Fix mining allowing inventory to go over max weight
+
+https://github.com/jimathy/jim-mining
