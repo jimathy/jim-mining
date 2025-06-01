@@ -78,7 +78,10 @@ Mining.Functions.setupMiningTarget = function(name, coords, prop, emptyProp, set
 					" ("..(Items["pickaxe"] and Items["pickaxe"].label or "pickaxe❌")..") "..
 					(Config.General.AltMining and Items[setReward].label or "")..
 					(debugMode and " ["..name.."]" or ""),
-			job = job
+			job = job,
+			canInteract = function()
+				return not isMining
+			end,
 		},
 		{	action = function()
 				Mining.MineOre.miningDrill({stone = prop, name = name, coords = coords, emptyProp = emptyProp, setReward = setReward})
@@ -89,7 +92,10 @@ Mining.Functions.setupMiningTarget = function(name, coords, prop, emptyProp, set
 					" ("..(Items["miningdrill"] and Items["miningdrill"].label or "miningdrill❌")..")"..
 					(Config.General.AltMining and Items[setReward].label or "")..
 					(debugMode and " ["..name.."]" or ""),
-			job = job
+			job = job,
+			canInteract = function()
+				return not isMining
+			end,
 		},
 		{	action = function()
 				Mining.MineOre.miningLaser({stone = prop, name = name, coords = coords, emptyProp = emptyProp, setReward = setReward})
@@ -100,7 +106,10 @@ Mining.Functions.setupMiningTarget = function(name, coords, prop, emptyProp, set
 					" ("..(Items["mininglaser"] and Items["mininglaser"].label or "mininglaser❌")..")"..
 					(Config.General.AltMining and Items[setReward].label or "")..
 					(debugMode and " ["..name.."]" or ""),
-			job = job
+			job = job,
+			canInteract = function()
+				return not isMining
+			end,
 		},
 	}, 1.7)
 end
@@ -205,7 +214,13 @@ Mining.Functions.makeJob = function()
 							{ 	action = function()
 									Mining.Other.crackStart({ bench = bench })
 								end,
-								icon = "fas fa-compact-disc", label = locale("info", "crackingbench")..(debugMode and " ["..name.."]" or ""), item = "stone", job = loc.Job,
+								icon = "fas fa-compact-disc",
+								label = locale("info", "crackingbench")..(debugMode and " ["..name.."]" or ""),
+								item = "stone",
+								job = loc.Job,
+								canInteract = function()
+									return not Cracking
+								end,
 							},
 						}, 2.0)
 				end
@@ -372,7 +387,7 @@ Mining.Other.stoneBreak = function(name, stone, coords, job, rot, empty)
 	end)
 end
 
-local isMining = false
+isMining = false
 Mining.MineOre.pickaxe = function(data)
 	local Ped = PlayerPedId()
 	if isMining then return else isMining = true end -- Stop players from doubling up the event
@@ -507,7 +522,7 @@ end
 
 ------------------------------------------------------------
 -- Cracking Command / Animations
-local Cracking = false
+Cracking = false
 Mining.Other.crackStart = function(data)
 	local Ped = PlayerPedId()
 	if Cracking then return end
@@ -523,7 +538,9 @@ Mining.Other.crackStart = function(data)
 		lockInv(true)
 		if #(benchcoords - GetEntityCoords(Ped)) > 1.5 then TaskGoStraightToCoord(Ped, benchcoords, 0.5, 400, 0.0, 0) Wait(400) end
 		local Rock = makeProp({ prop = "prop_rock_5_smash1", coords = vec4(benchcoords.x, benchcoords.y, benchcoords.z, 0)}, 0, 1)
-		if Config.General.DrillSound then PlaySoundFromCoord(soundId, "Drill", benchcoords, "DLC_HEIST_FLEECA_SOUNDSET", 0, 4.5, 0) end
+		if Config.General.DrillSound then
+			PlaySoundFromCoord(soundId, "Drill", benchcoords, "DLC_HEIST_FLEECA_SOUNDSET", 0, 4.5, 0)
+		end
 		loadPtfxDict("core")
 		CreateThread(function()
 			while Cracking do
