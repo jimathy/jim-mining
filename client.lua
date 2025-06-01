@@ -456,12 +456,12 @@ Mining.MineOre.miningDrill = function(data)
 		end)
 		if progressBar({label = locale("info", "drilling_ore"), time = GetTiming(Config.Timings["Mining"]), cancel = true, icon = "miningdrill"}) then
 			TriggerServerEvent(getScript()..":Reward", { mine = true, cost = nil, setReward = data.setReward })
+			Mining.Other.stoneBreak(data.name, data.stone, data.coords, data.job, data.rot, data.emptyProp)
 			--Destroy drill bit chances
 			if math.random(1, 100) >= 90 then
 				local breakId = GetSoundId()
 				PlaySoundFromEntity(breakId, "Drill_Pin_Break", Ped, "DLC_HEIST_FLEECA_SOUNDSET", 1, 0)
 				removeItem("drillbit", 1)
-				Mining.Other.stoneBreak(data.name, data.stone, data.coords, data.job, data.rot, data.emptyProp)
 			end
 		end
 		stopAnim(dict, anim)
