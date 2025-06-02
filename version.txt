@@ -1,6 +1,6 @@
-3.0.05
+3.0.06
 
-- Fix default jewel seller back to vangellico
-- Fix mining allowing inventory to go over max weight
+- Add canInteract functions for mining + cracking
+- Fix mining drill not hiding the stone unless a drillbit broke
 
 https://github.com/jimathy/jim-mining
