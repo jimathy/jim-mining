@@ -33,33 +33,51 @@ RegisterServerEvent(getScript()..":Reward", function(data)
 
 	elseif data.crack then
 
-			local selectedItem = GetRandItemFromTable(Config.CrackPool)
-			amount = GetTiming(Config.PoolAmounts.Cracking.AmountPerSuccess)
+		local selectedItem = GetRandItemFromTable(Config.CrackPool)
+		amount = GetTiming(Config.PoolAmounts.Cracking.AmountPerSuccess)
 
-			local canCarryCheck = canCarry({ [selectedItem] = amount }, src)
+		local canCarryCheck = canCarry({ [selectedItem] = amount }, src)
 
-			if selectedItem and canCarryCheck[selectedItem] then
-				removeItem("stone", data.cost, src)
-				addItem(selectedItem, amount, nil, src)
-			else
-				triggerNotify(nil, locale("error", "full"), "error")
-			end
+		if selectedItem and canCarryCheck[selectedItem] then
+			removeItem("stone", data.cost, src)
+			addItem(selectedItem, amount, nil, src)
+		else
+			triggerNotify(nil, locale("error", "full"), "error")
+		end
 
 	elseif data.wash then
+		local rewards = {}
 
+		-- Step 1: Determine all reward items
 		for i = 1, GetTiming(Config.PoolAmounts.Washing.Successes) do
-
 			local selectedItem = GetRandItemFromTable(Config.WashPool)
-			amount = GetTiming(Config.PoolAmounts.Washing.AmountPerSuccess)
+			local amount = GetTiming(Config.PoolAmounts.Washing.AmountPerSuccess)
 
-			local canCarryCheck = canCarry({ [selectedItem] = amount }, src)
-
-			if selectedItem and canCarryCheck[selectedItem] then
-				removeItem("stone", data.cost, src)
-				addItem(selectedItem, amount, nil, src)
-			else
-				triggerNotify(nil, locale("error", "full"), "error")
+			if selectedItem then
+				rewards[selectedItem] = (rewards[selectedItem] or 0) + amount
 			end
+		end
+
+		-- Step 2: Check if the player can carry all rewards
+		local canCarryCheck = canCarry(rewards, src)
+
+		local canCarryAll = true
+		for item, _ in pairs(rewards) do
+			if not canCarryCheck[item] then
+				canCarryAll = false
+				break
+			end
+		end
+
+		-- Step 3: If they can carry, remove and reward. If not, notify.
+		if canCarryAll then
+			removeItem("stone", data.cost, src)
+
+			for item, amount in pairs(rewards) do
+				addItem(item, amount, nil, src)
+			end
+		else
+			triggerNotify(nil, locale("error", "full"), "error")
 		end
 
 	elseif data.pan then
