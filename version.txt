@@ -1,6 +1,5 @@
-3.0.06
+3.0.07
 
-- Add canInteract functions for mining + cracking
-- Fix mining drill not hiding the stone unless a drillbit broke
+- Fix loop error causing players to be kicked when washing stone
 
 https://github.com/jimathy/jim-mining
