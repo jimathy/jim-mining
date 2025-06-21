@@ -195,7 +195,12 @@ Mining.Functions.makeJob = function()
 						createCircleTarget({name, loc["Smelting"][i].coords.xyz, 3.0, { name=name, debugPoly = debugMode, useZ=true, }, }, {
 							{ 	action = function()
 									craftingMenu({ craftable = Crafting.SmeltMenu, coords = loc["Smelting"][i].coords }) end,
-								icon = "fas fa-fire-burner", label = locale("info", "use_smelter")..(debugMode and " ["..name.."]" or ""), job = loc.Job,
+									icon = "fas fa-fire-burner",
+									label = locale("info", "use_smelter")..(debugMode and " ["..name.."]" or ""),
+									job = loc.Job,
+									canInteract = function()
+										return not CraftLock
+									end,
 							},
 						}, 10.0)
 				end
@@ -239,7 +244,9 @@ Mining.Functions.makeJob = function()
 							{	action = function()
 									sellMenu({ ped = ped, sellTable = Selling["OreSell"] })
 								end,
-								icon = "fas fa-sack-dollar", label = locale("info", "sell_ores")..(debugMode and " ["..name.."]" or ""), job = Config.General.requiredJob
+								icon = "fas fa-sack-dollar",
+								label = locale("info", "sell_ores")..(debugMode and " ["..name.."]" or ""),
+								job = Config.General.requiredJob
 							},
 						}, 2.0)
 				end
@@ -258,7 +265,12 @@ Mining.Functions.makeJob = function()
 							{ 	action = function()
 									Mining.Menus.jewelCut({bench = bench})
 								end,
-								icon = "fas fa-gem", label = locale("info", "jewelcut")..(debugMode and " ["..name.."]" or ""), job = Config.General.requiredJob,
+								icon = "fas fa-gem",
+								label = locale("info", "jewelcut")..(debugMode and " ["..name.."]" or ""),
+								job = Config.General.requiredJob,
+								canInteract = function()
+									return not CraftLock
+								end,
 							},
 						}, 2.0)
 				end
