@@ -1,5 +1,5 @@
-3.0.07
+3.0.08
 
-- Fix loop error causing players to be kicked when washing stone
+- Add canInteract to crafting targets (smelting, jewel crafting) to stop exploits
 
 https://github.com/jimathy/jim-mining
