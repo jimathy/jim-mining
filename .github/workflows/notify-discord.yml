@@ -8,10 +8,10 @@ on:
 jobs:
   notify:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Discord Commits
-        uses: Sniddl/discord-commits@v1.6
-        with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          template: "avatar-with-link"
-          include-extras: true
+      - name: Send commit payload to Discord Bot
+        run: |
+          curl -X POST http://${{ secrets.DISCORDBOT }}:3000/github-commits \
+            -H "Content-Type: application/json" \
+            -d '${{ toJson(github.event) }}'
