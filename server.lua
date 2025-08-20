@@ -103,7 +103,18 @@ end)
 
 onResourceStart(function()
 	Wait(1000)
-	registerShop("miningShop", Config.Items.label, Config.Items.items)
+	for k, v in pairs(Locations["Mines"]) do
+		for l, b in pairs(v) do
+			if l == "Store" then
+				for i = 1, #b do
+					registerShop("miningShop", Config.Items.label, Config.Items.items, nil, b[i].coords.xyz)
+				end
+			end
+		end
+	end
+
+	--registerShop("miningShop", Config.Items.label, Config.Items.items)
+
 	for k in pairs(Selling) do
 		if Selling[k].Items then
 			for b in pairs(Selling[k].Items) do
