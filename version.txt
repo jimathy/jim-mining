@@ -1,5 +1,6 @@
-3.0.08
+3.0.09
 
-- Add canInteract to crafting targets (smelting, jewel crafting) to stop exploits
+- Make use of jim_bridge's new shop exploit protection
+- Fix multiple target creation exploit when changing job role
 
 https://github.com/jimathy/jim-mining
