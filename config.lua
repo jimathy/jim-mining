@@ -31,6 +31,14 @@ Config = {
 		MultiCraft = true,		-- Enable multicraft
 	},
 
+	BreakTool = {				-- BreakTool lowers the durability by default of a math.random(2, 3)
+		Pickaxe = true,
+		MiningDrill = false,
+		DrillBit = false,
+		MiningLaser = false,
+		GoldPan = false,
+	},
+
 	Timings = { -- Time it takes to do things
 		Cracking = { 15000, 25000 }, -- 15 - 25 seconds
 		Washing = { 15000, 25000 }, -- 15 - 25 seconds
