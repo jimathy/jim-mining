@@ -1,0 +1,12 @@
+# VCS / CI noise
+.gitattributes     export-ignore
+.gitignore         export-ignore
+.github/**         export-ignore
+.gitmodules        export-ignore
+
+# Dev tooling/config
+.vscode/**         export-ignore
+*.code-workspace   export-ignore
+.editorconfig      export-ignore
+.eslintrc*         export-ignore
+.prettier*         export-ignore

@@ -1,0 +1,88 @@
+name: Package & Release
+
+on:
+  push:
+    tags:
+      - "v*"
+      - "*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (full history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Derive vars
+        id: vars
+        shell: bash
+        run: |
+          echo "name=${GITHUB_REPOSITORY##*/}" >> $GITHUB_OUTPUT              # e.g. jim_bridge
+          echo "version=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT               # strip leading v
+
+      - name: Build zip with folder prefix
+        shell: bash
+        run: |
+          NAME='${{ steps.vars.outputs.name }}'
+          VER='${{ steps.vars.outputs.version }}'
+          git archive --format=zip --prefix="${NAME}/" -o "${NAME}-${VER}.zip" "$GITHUB_REF_NAME"
+          ls -lh "${NAME}-${VER}.zip"
+
+      # --- Patch notes generation (commit titles + links) -------------------
+      - name: Find previous tag (SemVer aware)
+        id: prev
+        shell: bash
+        run: |
+          CUR="${GITHUB_REF_NAME}"
+          # Sort tags by version desc, drop the current, take the next newest
+          PREV=$(git tag --sort=-v:refname | grep -v -x "$CUR" | head -n 1 || true)
+          echo "prev=$PREV" >> $GITHUB_OUTPUT
+          echo "Previous tag: ${PREV:-<none>}"
+
+      - name: Generate RELEASE_NOTES.md from commits
+        shell: bash
+        run: |
+          REPO="${{ github.repository }}"
+          CUR="${GITHUB_REF_NAME}"
+          PREV='${{ steps.prev.outputs.prev }}'
+
+          if [ -n "$PREV" ]; then
+            RANGE="$PREV..$CUR"
+            HEADER="## Changes in $CUR"
+          else
+            # First release: include all commits
+            ROOT=$(git rev-list --max-parents=0 HEAD | tail -n 1)
+            RANGE="$ROOT..$CUR"
+            HEADER="## Changes"
+          fi
+
+          {
+            echo "$HEADER"
+            echo
+            # Oldest → newest, subject only, skip merge commits
+            # Escape '[' and ']' so markdown doesn't break on rare titles
+            git log --reverse --no-merges --pretty=format:'- ['%h'] - %s' "$RANGE" \
+              | perl -pe 's/([\[\]])/\\$1/g'
+          } > RELEASE_NOTES.md
+
+          echo "--- RELEASE_NOTES.md ---"
+          cat RELEASE_NOTES.md
+          echo "------------------------"
+
+      - name: Create / Update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          files: |
+            *.zip
+          body_path: RELEASE_NOTES.md   # attach our generated notes
+          # If you wanted GitHub's auto notes instead, set:
+          # generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
