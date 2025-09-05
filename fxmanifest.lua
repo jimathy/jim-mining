@@ -17,10 +17,11 @@ shared_scripts {
 
 	'shared/*.lua',
 }
+
 client_scripts {
-    'client.lua'
+    'client/*.lua'
 }
 
-server_script 'server.lua'
+server_scripts { 'server/*.lua' }
 
 dependency 'jim_bridge'
