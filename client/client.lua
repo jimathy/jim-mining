@@ -579,18 +579,6 @@ Mining.Other.crackStart = function(data)
 		--TaskPlayAnim(Ped, dict, anim, 3.0, 3.0, -1, 1, 0, false, false, false)
 		if progressBar({label = locale("info", "cracking_stone"), time = GetTiming(Config.Timings["Cracking"]), cancel = true, icon = "stone"}) then
 			TriggerServerEvent(getScript()..":Reward", { crack = true, cost = cost })
-			if Config.BreakTool.DrillBit then
-				breakTool({ item = "drillbit", damage = math.random(2, 3) })
-			else
-				--Destroy drill bit chances
-				local chance = math.random(1, 100)
-				debugPrint("Debug: crackStart chance: "..chance)
-				if chance >= 90 then
-					local breakId = GetSoundId()
-					PlaySoundFromEntity(breakId, "Drill_Pin_Break", Ped, "DLC_HEIST_FLEECA_SOUNDSET", 1, 0)
-					removeItem("drillbit", 1)
-				end
-			end
 		end
 		StopAnimTask(Ped, dict, anim, 1.0)
 		unloadDrillSound()
