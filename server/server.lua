@@ -103,13 +103,28 @@ end)
 
 onResourceStart(function()
 	Wait(1000)
-	for k, v in pairs(Locations["Mines"]) do
-		for l, b in pairs(v) do
-			if l == "Store" then
-				for i = 1, #b do
-					registerShop("miningShop", Config.Items.label, Config.Items.items, nil, b[i].coords.xyz)
+	for id, info in pairs(Locations["Mines"]) do
+		if info.Enable then
+			print(id)
+			if info.Store then
+				for i = 1, #info.Store do
+					registerShop("miningShop", Config.Items.label, Config.Items.items, nil, info.Store[i].coords.xyz)
 				end
 			end
+			if info.OreBuyer then
+				for i = 1, #info.OreBuyer do
+					local name = getScript()..":OreBuyer:"..id..":"..i
+					registerSellShop(name, info.Store[i].coords.xyz)
+				end
+			end
+		end
+
+	end
+
+	if Locations["JewelBuyer"] and Locations["JewelBuyer"].Enable then
+		for i = 1, #Locations["JewelBuyer"].positions do
+			local name = getScript()..":JewelBuyer:"..i
+			registerSellShop(name, Locations["JewelBuyer"].positions[i].coords.xyz)
 		end
 	end
 
@@ -152,4 +167,5 @@ onResourceStart(function()
 	for k in pairs(itemcheck) do
 		if not Items[k] then print("Crafting recipe couldn't find item '"..k.."' in the shared") end
 	end
+
 end, true)

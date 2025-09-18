@@ -242,7 +242,11 @@ Mining.Functions.makeJob = function()
 					Targets[name] =
 						createCircleTarget({name, loc["OreBuyer"][i].coords.xyz, 0.9, { name = name, debugPoly = debugMode, uzeZ = true }, }, {
 							{	action = function()
-									sellMenu({ ped = ped, sellTable = Selling["OreSell"] })
+									sellMenu({
+										name = name,
+										ped = ped,
+										sellTable = Selling["OreSell"]
+									})
 								end,
 								icon = "fas fa-sack-dollar",
 								label = locale("info", "sell_ores")..(debugMode and " ["..name.."]" or ""),
@@ -355,7 +359,11 @@ Mining.Functions.makeJob = function()
 			Targets[name] =
 				createCircleTarget({ name, v.coords.xyz, 1.2, { name = name, debugPoly = debugMode, useZ = true }, }, {
 					{	action = function()
-							sellMenu({ ped = ped, sellTable = Selling["JewelSell"] })
+							sellMenu({
+                        		name = name,
+								ped = ped,
+								sellTable = Selling["JewelSell"]
+							})
 						end,
 						icon = "fas fa-gem", label = locale("info", "jewelbuyer")..(debugMode and " ["..name.."]" or ""), job = Config.General.requiredJob
 					},
@@ -430,8 +438,8 @@ Mining.MineOre.pickaxe = function(data)
 	if progressBar({label = locale("info", "drilling_ore"), time = GetTiming(Config.Timings["Pickaxe"]), cancel = true, icon = "pickaxe"}) then
 		TriggerServerEvent(getScript()..":Reward", { mine = true, cost = nil, setReward = data.setReward })
 		Mining.Other.stoneBreak(data.name, data.stone, data.coords, data.job, data.rot, data.emptyProp)
-		if Config.BreakTool.Pickaxe then 
-			breakTool({ item = "pickaxe", damage = math.random(2, 3) }) 
+		if Config.BreakTool.Pickaxe then
+			breakTool({ item = "pickaxe", damage = math.random(2, 3) })
 		end
 	end
 	stopAnim(dict, anim)
@@ -471,7 +479,7 @@ Mining.MineOre.miningDrill = function(data)
 		if progressBar({label = locale("info", "drilling_ore"), time = GetTiming(Config.Timings["Mining"]), cancel = true, icon = "miningdrill"}) then
 			TriggerServerEvent(getScript()..":Reward", { mine = true, cost = nil, setReward = data.setReward })
 			Mining.Other.stoneBreak(data.name, data.stone, data.coords, data.job, data.rot, data.emptyProp)
-			if Config.BreakTool.MiningDrill then 
+			if Config.BreakTool.MiningDrill then
 				breakTool({ item = "miningdrill", damage = math.random(2, 3) })
 			end
 			if Config.BreakTool.DrillBit then
@@ -533,7 +541,7 @@ Mining.MineOre.miningLaser = function(data)
 	if progressBar({label = locale("info", "drilling_ore"), time = GetTiming(Config.Timings["Laser"]), cancel = true, icon = "mininglaser"}) then
 		TriggerServerEvent(getScript()..":Reward", { mine = true, cost = nil, setReward = data.setReward })
 		Mining.Other.stoneBreak(data.name, data.stone, data.coords, data.job, data.rot, data.emptyProp)
-		if Config.BreakTool.MiningLaser then 
+		if Config.BreakTool.MiningLaser then
 			breakTool({ item = "mininglaser", damage = math.random(2, 3) })
 		end
 	end
