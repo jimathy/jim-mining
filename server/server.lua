@@ -105,7 +105,6 @@ onResourceStart(function()
 	Wait(1000)
 	for id, info in pairs(Locations["Mines"]) do
 		if info.Enable then
-			print(id)
 			if info.Store then
 				for i = 1, #info.Store do
 					registerShop("miningShop", Config.Items.label, Config.Items.items, nil, info.Store[i].coords.xyz)
@@ -114,7 +113,7 @@ onResourceStart(function()
 			if info.OreBuyer then
 				for i = 1, #info.OreBuyer do
 					local name = getScript()..":OreBuyer:"..id..":"..i
-					registerSellShop(name, info.Store[i].coords.xyz)
+					registerSellShop(name, info.OreBuyer[i].coords.xyz)
 				end
 			end
 		end
