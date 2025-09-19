@@ -438,7 +438,7 @@ Mining.MineOre.pickaxe = function(data)
 	if progressBar({label = locale("info", "drilling_ore"), time = GetTiming(Config.Timings["Pickaxe"]), cancel = true, icon = "pickaxe"}) then
 		TriggerServerEvent(getScript()..":Reward", { mine = true, cost = nil, setReward = data.setReward })
 		Mining.Other.stoneBreak(data.name, data.stone, data.coords, data.job, data.rot, data.emptyProp)
-		if Config.BreakTool.Pickaxe then
+		if Config.BreakTool and Config.BreakTool.Pickaxe then
 			breakTool({ item = "pickaxe", damage = math.random(2, 3) })
 		end
 	end
@@ -479,10 +479,10 @@ Mining.MineOre.miningDrill = function(data)
 		if progressBar({label = locale("info", "drilling_ore"), time = GetTiming(Config.Timings["Mining"]), cancel = true, icon = "miningdrill"}) then
 			TriggerServerEvent(getScript()..":Reward", { mine = true, cost = nil, setReward = data.setReward })
 			Mining.Other.stoneBreak(data.name, data.stone, data.coords, data.job, data.rot, data.emptyProp)
-			if Config.BreakTool.MiningDrill then
+			if Config.BreakTool and Config.BreakTool.MiningDrill then
 				breakTool({ item = "miningdrill", damage = math.random(2, 3) })
 			end
-			if Config.BreakTool.DrillBit then
+			if Config.BreakTool and Config.BreakTool.DrillBit then
 				breakTool({ item = "drillbit", damage = math.random(2, 3) })
 			else
 				--Destroy drill bit chances
@@ -541,7 +541,7 @@ Mining.MineOre.miningLaser = function(data)
 	if progressBar({label = locale("info", "drilling_ore"), time = GetTiming(Config.Timings["Laser"]), cancel = true, icon = "mininglaser"}) then
 		TriggerServerEvent(getScript()..":Reward", { mine = true, cost = nil, setReward = data.setReward })
 		Mining.Other.stoneBreak(data.name, data.stone, data.coords, data.job, data.rot, data.emptyProp)
-		if Config.BreakTool.MiningLaser then
+		if Config.BreakTool and Config.BreakTool.MiningLaser then
 			breakTool({ item = "mininglaser", damage = math.random(2, 3) })
 		end
 	end
@@ -587,7 +587,7 @@ Mining.Other.crackStart = function(data)
 		--TaskPlayAnim(Ped, dict, anim, 3.0, 3.0, -1, 1, 0, false, false, false)
 		if progressBar({label = locale("info", "cracking_stone"), time = GetTiming(Config.Timings["Cracking"]), cancel = true, icon = "stone"}) then
 			TriggerServerEvent(getScript()..":Reward", { crack = true, cost = cost })
-			if Config.BreakTool.DrillBit then
+			if Config.BreakTool and Config.BreakTool.DrillBit then
 				breakTool({ item = "drillbit", damage = math.random(2, 3) })
 			else
 				--Destroy drill bit chances
@@ -673,7 +673,7 @@ Mining.Other.panStart = function(data)
 	TaskStartScenarioInPlace(Ped, "CODE_HUMAN_MEDIC_KNEEL", 0, true)
 	if progressBar({ label = locale("info", "goldpanning"), time = GetTiming(Config.Timings["Panning"]), cancel = true, icon = "goldpan" }) then
 		TriggerServerEvent(getScript()..":Reward", { pan = true, cost = nil })
-		if Config.BreakTool.GoldPan then
+		if Config.BreakTool and Config.BreakTool.GoldPan then
 			breakTool({ item = "goldpan", damage = math.random(2, 3) })
 		end
 	end
@@ -706,7 +706,7 @@ Mining.Menus.jewelCut = function(data)
 						 soundId = soundId, audioName = "Drill", audioRef = "DLC_HEIST_FLEECA_SOUNDSET"
 					},
 					-- requiredItem = function()
-					-- 	if Config.BreakTool.DrillBit then
+					-- 	if Config.BreakTool and Config.BreakTool.DrillBit then
 					-- 		breakTool({ item = "drillbit", damage = math.random(2, 3) })
 					-- 	else
 					-- 		--Destroy drill bit chances
