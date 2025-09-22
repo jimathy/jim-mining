@@ -1,6 +1,6 @@
-3.0.09
+3.0.11
 
-- Make use of jim_bridge's new shop exploit protection
-- Fix multiple target creation exploit when changing job role
+- Fix sellshops and stores not working with jim_bridge update
+- Workaround for missing `BreakTool` table added last update
 
-https://github.com/jimathy/jim-mining
+https://github.com/jimathy/jim-mining/releases/latest
