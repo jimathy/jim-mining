@@ -1,7 +1,7 @@
 Config = {
 	Lan = "en", -- Pick your language here
 	System = {
-		Debug = false, -- enable debug mode
+		Debug = true, -- enable debug mode
 
 		Menu = "ox",			-- "qb", "ox", "gta"
 		ProgressBar = "gta",	-- "qb", "ox", "gta"
@@ -24,6 +24,8 @@ Config = {
 								-- Add's target option to the store ped at the mine shaft
 
 		requiredJob = nil,
+
+		crackingRequiresDrillbit = true,	-- Toggle for if cracking stone requires a drillbit
 
 	},
 	Crafting = {
