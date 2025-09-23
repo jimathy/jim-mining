@@ -1,7 +1,7 @@
 Config = {
 	Lan = "en", -- Pick your language here
 	System = {
-		Debug = true, -- enable debug mode
+		Debug = false, -- enable debug mode
 
 		Menu = "ox",			-- "qb", "ox", "gta"
 		ProgressBar = "gta",	-- "qb", "ox", "gta"
