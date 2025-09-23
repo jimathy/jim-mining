@@ -5,7 +5,9 @@ local function GetRandItemFromTable(table)
 	local items = {}
 	for _, item in ipairs(table) do
 		if randNum <= tonumber(item.rarity) then
-			items[#items+1] = item.item
+			if doesItemExist(item.item) then
+				items[#items+1] = item.item
+			end
 		end
 	end
 	if #items == 0 then
