@@ -1,6 +1,6 @@
 name "Jim-Mining"
 author "Jimathy"
-version "3.0.11"
+version "3.0.12"
 description "Mining Script"
 fx_version "cerulean"
 game "gta5"

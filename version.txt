@@ -1,6 +1,6 @@
-3.0.11
+3.0.12
 
-- Fix sellshops and stores not working with jim_bridge update
-- Workaround for missing `BreakTool` table added last update
+- Check if the "reward" items exist before giving them
+- Fix cracking process kicks if player has no drillbit (and added config option for it)
 
 https://github.com/jimathy/jim-mining/releases/latest
