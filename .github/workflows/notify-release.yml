@@ -1,0 +1,71 @@
+name: Discord Release Notifier
+
+on:
+  # Manual or UI-published releases
+  release:
+    types: [published]
+
+  # Releases created by your tag-driven workflow
+  workflow_run:
+    workflows: ["Package & Release"]  # must match the 'name:' in release.yml
+    types: [completed]
+
+permissions:
+  contents: read
+
+jobs:
+  # 1) Handle manual / UI / non-workflow-created releases
+  notify-from-release:
+    if: github.event_name == 'release' && github.event.action == 'published'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send release payload to Discord Bot
+        env:
+          URL: http://${{ secrets.DISCORDBOT }}:3000/github-releases
+        run: |
+          curl -sS -X POST "$URL" \
+            -H 'Content-Type: application/json' \
+            --data-binary "@$GITHUB_EVENT_PATH"
+
+  # 2) Handle releases created by your 'Package & Release' workflow
+  #    (which won’t trigger `on: release` when using GITHUB_TOKEN)
+  notify-from-workflow-run:
+    if: >
+      github.event_name == 'workflow_run' &&
+      github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Fetch release JSON by tag
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          OWNER="${GITHUB_REPOSITORY%/*}"
+          REPO="${GITHUB_REPOSITORY#*/}"
+          TAG="${{ github.event.workflow_run.head_branch }}"
+          # head_branch is the tag name for a tag push workflow_run
+          curl -fsSL -H "Authorization: Bearer $GH_TOKEN" \
+               -H "Accept: application/vnd.github+json" \
+               "https://api.github.com/repos/$OWNER/$REPO/releases/tags/$TAG" \
+               > release.json
+
+      - name: Wrap as 'release' event payload & notify bot
+        env:
+          URL: http://${{ secrets.DISCORDBOT }}:3000/github-releases
+        run: |
+          set -euo pipefail
+          jq -n --slurpfile rel release.json \
+                --arg repo "$GITHUB_REPOSITORY" \
+                --arg repo_url "https://github.com/$GITHUB_REPOSITORY" \
+                --arg action "published" '
+            { action: $action,
+              repository: { full_name: $repo, html_url: $repo_url },
+              release: $rel[0],
+              sender: { login: "github-actions[bot]" } }' > payload.json
+
+          curl -sS -X POST "$URL" \
+            -H 'Content-Type: application/json' \
+            --data-binary "@payload.json"
