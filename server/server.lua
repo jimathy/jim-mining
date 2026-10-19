@@ -115,7 +115,7 @@ onResourceStart(function()
 			if info.OreBuyer then
 				for i = 1, #info.OreBuyer do
 					local name = getScript()..":OreBuyer:"..id..":"..i
-					registerSellShop(name, info.OreBuyer[i].coords.xyz)
+					registerSellShop(name, info.OreBuyer[i].coords.xyz, Selling["OreSell"].Items)
 				end
 			end
 		end
@@ -125,7 +125,7 @@ onResourceStart(function()
 	if Locations["JewelBuyer"] and Locations["JewelBuyer"].Enable then
 		for i = 1, #Locations["JewelBuyer"].positions do
 			local name = getScript()..":JewelBuyer:"..i
-			registerSellShop(name, Locations["JewelBuyer"].positions[i].coords.xyz)
+			registerSellShop(name, Locations["JewelBuyer"].positions[i].coords.xyz, Selling["JewelSell"])
 		end
 	end
 
