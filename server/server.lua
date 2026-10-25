@@ -23,7 +23,18 @@ RegisterServerEvent(getScript()..":Reward", function(data)
 	local src = source
 	local amount = 1
 
+	-- Validate mining reward against whitelist (client-supplied item name)
+	local function isValidMiningReward(item)
+		if not item then return false end
+		for _, v in ipairs(Config.setMiningTable) do
+			if v.name == item then return true end
+		end
+		return false
+	end
+
 	if data.mine then
+
+		if not isValidMiningReward(data.setReward) then return end
 
 		local amount = GetTiming(Config.PoolAmounts.Mining.AmountPerSuccess)
 		local carryCheck = canCarry({ [data.setReward] = amount }, src)
@@ -42,7 +53,7 @@ RegisterServerEvent(getScript()..":Reward", function(data)
 		local canCarryCheck = canCarry({ [selectedItem] = amount }, src)
 
 		if selectedItem and canCarryCheck[selectedItem] then
-			removeItem("stone", data.cost, src)
+			removeItem("stone", 1, src)
 			addItem(selectedItem, amount, nil, src)
 		else
 			triggerNotify(nil, locale("error", "full"), "error", src)
@@ -74,7 +85,7 @@ RegisterServerEvent(getScript()..":Reward", function(data)
 
 		-- Step 3: If they can carry, remove and reward. If not, notify.
 		if canCarryAll then
-			removeItem("stone", data.cost, src)
+			removeItem("stone", 1, src)
 
 			for item, amount in pairs(rewards) do
 				addItem(item, amount, nil, src)
